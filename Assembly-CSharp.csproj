@@ -12,7 +12,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{F9E6E07F-B370-6786-B79C-121D28EBD557}</ProjectGuid>
+    <ProjectGuid>{CA6608D5-6386-383E-01E7-401528681CDE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -62,67 +62,67 @@
      <Compile Include="Assets\Scripts\EndEpisodeSideChannel.cs" />
      <Compile Include="Assets\Scripts\Manager.cs" />
  <Reference Include="Unity.Timeline.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Barracuda.MacBLAS">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Barracuda.MacBLAS.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Barracuda.MacBLAS.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
  </Reference>
  <Reference Include="Unity.VSCode.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Barracuda.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Barracuda.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Barracuda.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Timeline">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Barracuda">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Barracuda.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Barracuda.dll</HintPath>
  </Reference>
  <Reference Include="Unity.CollabProxy.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Barracuda.iOSBLAS">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Barracuda.iOSBLAS.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Barracuda.iOSBLAS.dll</HintPath>
  </Reference>
  <Reference Include="Unity.ML-Agents.CommunicatorObjects">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Rider.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Barracuda.BurstBLAS">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Barracuda.BurstBLAS.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Barracuda.BurstBLAS.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Mathematics">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Mathematics.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="Unity.ML-Agents.Editor">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.ML-Agents.Editor.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.ML-Agents.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.ML-Agents">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/Unity.ML-Agents.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/Unity.ML-Agents.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>/Applications/Unity/Hub/Editor/2019.4.11f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -302,22 +302,22 @@
  <HintPath>/Applications/Unity/Hub/Editor/2019.4.11f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
  </Reference>
  <Reference Include="Google.Protobuf">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.barracuda@1.0.3/Barracuda/Runtime/Plugins/ProtoBuffer/Google.Protobuf.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.barracuda@1.0.3/Barracuda/Runtime/Plugins/ProtoBuffer/Google.Protobuf.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Unsafe">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.burst@1.3.4/Unity.Burst.Unsafe.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.burst@1.3.4/Unity.Burst.Unsafe.dll</HintPath>
  </Reference>
  <Reference Include="System.IO.Abstractions">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/System.IO.Abstractions.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/System.IO.Abstractions.dll</HintPath>
  </Reference>
  <Reference Include="System.IO.Abstractions.TestingHelpers">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/System.IO.Abstractions.TestingHelpers.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/System.IO.Abstractions.TestingHelpers.dll</HintPath>
  </Reference>
  <Reference Include="Grpc.Core">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/ProtoBuffer/Grpc.Core.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/ProtoBuffer/Grpc.Core.dll</HintPath>
  </Reference>
  <Reference Include="System.Interactive.Async">
- <HintPath>/Users/redtachyon/projects/AI-Crowd-basic/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/ProtoBuffer/System.Interactive.Async.dll</HintPath>
+ <HintPath>/Users/redtachyon/projects/CrowdAI/Library/PackageCache/com.unity.ml-agents@1.0.5/Plugins/ProtoBuffer/System.Interactive.Async.dll</HintPath>
  </Reference>
  <Reference Include="netstandard">
  <HintPath>/Applications/Unity/Hub/Editor/2019.4.11f1/Unity.app/Contents/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
