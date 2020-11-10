@@ -1,5 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/9x9 90deg.unity
-  isLoaded: 1
-  isActive: 1
-  isSubScene: 0
