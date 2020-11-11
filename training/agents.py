@@ -66,14 +66,6 @@ class BaseAgent:
         if self.model is not None:
             self.model.cpu()
 
-    @staticmethod
-    def load_agent(path: str, weight_idx: int = -1):
-        agent = load_agent(path, weight_idx=weight_idx)
-        return agent
-
-
-
-
 
 class Agent(BaseAgent):
     """Agent variant for Continuous (Normal) action distributions"""
@@ -181,6 +173,29 @@ class Agent(BaseAgent):
 
         return action_logprobs, values, entropies
 
+    @staticmethod
+    def load_agent(base_path: str,
+                   weight_idx: Optional[int] = None,
+                   action_range: Tuple[Tensor, Tensor] = None,
+                   fname: str = 'base_agent.pt',
+                   weight_fname: str = 'weights') -> "Agent":
+        """
+        Loads a saved model and wraps it as an Agent.
+        The input path must point to a directory holding a pytorch file passed as fname
+        """
+        model: BaseModel = torch.load(os.path.join(base_path, fname))
+
+        if weight_idx == -1:
+            weight_idx = max([int(fname.split('_')[-1])  # Get the last agent
+                              for fname in os.listdir(os.path.join(base_path, "saved_weights"))
+                              if fname.startswith(weight_fname)])
+
+        if weight_idx is not None:
+            weights = torch.load(os.path.join(base_path, "saved_weights", f"{weight_fname}_{weight_idx}"))
+            model.load_state_dict(weights)
+
+        return Agent(model, action_range)
+
 
 class StillAgent(BaseAgent):
     """DEPRECATED
@@ -250,23 +265,4 @@ class RandomAgent(BaseAgent):
         return action_logprobs, values, entropies
 
 
-def load_agent(base_path: str,
-               fname: str = 'base_agent.pt',
-               weight_idx: Optional[int] = None,
-               weight_fname: str = 'weights') -> Agent:
-    """
-    Loads a saved model and wraps it as an Agent.
-    The input path must point to a directory holding a pytorch file passed as fname
-    """
-    model: BaseModel = torch.load(os.path.join(base_path, fname))
 
-    if weight_idx == -1:
-        weight_idx = max([int(fname.split('_')[-1])  # Get the last agent
-                          for fname in os.listdir(os.path.join(base_path, "saved_weights"))
-                          if fname.startswith(weight_fname)])
-
-    if weight_idx is not None:
-        weights = torch.load(os.path.join(base_path, "saved_weights", f"{weight_fname}_{weight_idx}"))
-        model.load_state_dict(weights)
-
-    return Agent(model)
