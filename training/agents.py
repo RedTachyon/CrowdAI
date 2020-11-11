@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 import torch
@@ -5,9 +7,8 @@ from torch import nn, Tensor
 from torch.distributions import Categorical, Normal
 
 from models import BaseModel
-from evaluation import load_agent
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 from utils import AgentDataBatch, tanh_norm, atanh_unnorm
 
@@ -247,3 +248,25 @@ class RandomAgent(BaseAgent):
         entropies = torch.zeros(batch_size)
 
         return action_logprobs, values, entropies
+
+
+def load_agent(base_path: str,
+               fname: str = 'base_agent.pt',
+               weight_idx: Optional[int] = None,
+               weight_fname: str = 'weights') -> Agent:
+    """
+    Loads a saved model and wraps it as an Agent.
+    The input path must point to a directory holding a pytorch file passed as fname
+    """
+    model: BaseModel = torch.load(os.path.join(base_path, fname))
+
+    if weight_idx == -1:
+        weight_idx = max([int(fname.split('_')[-1])  # Get the last agent
+                          for fname in os.listdir(os.path.join(base_path, "saved_weights"))
+                          if fname.startswith(weight_fname)])
+
+    if weight_idx is not None:
+        weights = torch.load(os.path.join(base_path, "saved_weights", f"{weight_fname}_{weight_idx}"))
+        model.load_state_dict(weights)
+
+    return Agent(model)

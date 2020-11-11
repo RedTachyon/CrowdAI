@@ -10,33 +10,11 @@ from scipy.stats import sem
 from torch import Tensor
 from tqdm import tqdm
 
-from agents import Agent
+from agents import Agent, load_agent
 from environments import MultiAgentEnv
 from models import BaseModel
 from collectors import CrowdCollector
 from utils import get_episode_lens
-
-
-def load_agent(base_path: str,
-               fname: str = 'base_agent.pt',
-               weight_idx: Optional[int] = None,
-               weight_fname: str = 'weights') -> Agent:
-    """
-    Loads a saved model and wraps it as an Agent.
-    The input path must point to a directory holding a pytorch file passed as fname
-    """
-    model: BaseModel = torch.load(os.path.join(base_path, fname))
-
-    if weight_idx == -1:
-        weight_idx = max([int(fname.split('_')[-1])  # Get the last agent
-                          for fname in os.listdir(os.path.join(base_path, "saved_weights"))
-                          if fname.startswith(weight_fname)])
-
-    if weight_idx is not None:
-        weights = torch.load(os.path.join(base_path, "saved_weights", f"{weight_fname}_{weight_idx}"))
-        model.load_state_dict(weights)
-
-    return Agent(model)
 
 
 def load_weights(base_path: str,
