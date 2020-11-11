@@ -5,10 +5,12 @@ from torch import nn, Tensor
 from torch.distributions import Categorical, Normal
 
 from models import BaseModel
+from evaluation import load_agent
 
 from typing import Tuple
 
 from utils import AgentDataBatch, tanh_norm, atanh_unnorm
+
 
 
 class BaseAgent:
@@ -62,6 +64,14 @@ class BaseAgent:
     def cpu(self):
         if self.model is not None:
             self.model.cpu()
+
+    @staticmethod
+    def load_agent(path: str, weight_idx: int = -1):
+        agent = load_agent(path, weight_idx=weight_idx)
+        return agent
+
+
+
 
 
 class Agent(BaseAgent):

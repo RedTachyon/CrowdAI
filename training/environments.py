@@ -52,6 +52,7 @@ class MultiAgentEnv(gym.Env):
         raise NotImplementedError
 
 
+# TODO: possible bug, env might freeze if all agents actually finish the episode
 class UnityCrowdEnv(MultiAgentEnv):
 
     def __init__(self, *args, **kwargs):
