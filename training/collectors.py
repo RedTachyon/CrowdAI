@@ -114,7 +114,7 @@ class CrowdCollector:
     Class to perform data collection from two agents.
     """
 
-    def __init__(self, agent: Agent, env: UnityCrowdEnv):
+    def __init__(self, agent: Agent, env: MultiAgentEnv):
         self.agent = agent
         self.env = env
         self.memory = Memory(['observations', 'actions', 'rewards', 'logprobs', 'dones'])

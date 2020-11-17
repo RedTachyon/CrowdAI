@@ -41,7 +41,7 @@ public class Manager : Agent
     {
         _finished[agent.transform] = true;
         // agent.EndEpisode();
-        agent.Freeze();
+        // agent.Freeze();
 
         if (!_finished.Values.Contains(false))
         {

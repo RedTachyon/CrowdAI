@@ -9,8 +9,8 @@ public class Controller : Agent
 {
     private Rigidbody _rigidbody;
     private Vector3 _previousPosition;
-    private Vector3 _startPosition;
-    private Quaternion _startRotation;
+    // private Vector3 _startPosition;
+    // private Quaternion _startRotation;
 
     public float moveSpeed = 50f;
     public float rotationSpeed = 3f;
@@ -22,8 +22,8 @@ public class Controller : Agent
     public override void Initialize()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _startPosition = transform.localPosition;
-        _startRotation = transform.localRotation;
+        // _startPosition = transform.localPosition;
+        // _startRotation = transform.localRotation;
     }
 
     public override void OnEpisodeBegin()
@@ -61,6 +61,7 @@ public class Controller : Agent
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
         _rigidbody.MoveRotation(Quaternion.Euler(rotation));
         
+        
     }
 
     public override void Heuristic(float[] actionsOut)
@@ -82,9 +83,14 @@ public class Controller : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        // RayPerceptionSensor structure:
+        // 0 - n_tags: one-hot encoding of what was hit
+        // n_tags: whether *something* was hit
+        // n_tags + 1: normalized distance
         
         Vector3 position = transform.localPosition;
         Vector3 rotation = transform.localRotation.eulerAngles;
+        
         Vector3 velocity = _rigidbody.velocity;
         // Vector3 angularVelocity = _rigidbody.angularVelocity;
         Vector3 goalPosition = goal.localPosition;
@@ -103,7 +109,9 @@ public class Controller : Agent
         var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
         var currentDistance = Vector3.Distance(position, goalPosition);
         var diff = prevDistance - currentDistance;
+        
         AddReward(1f * diff);  // Add reward for getting closer to the goal
+        
         AddReward(-0.01f);  // Small penalty at each step
         // Debug.Log($"Distance {currentDistance}");
         // Debug.Log($"Distance difference {diff}");
@@ -113,12 +121,21 @@ public class Controller : Agent
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     if (other == goal.GetComponent<Collider>())
+    //     {
+    //         AddReward(2f);
+    //         // Debug.Log("Got the goal!");
+    //         GetComponentInParent<Manager>().ReachGoal(this);
+    //     }
+    // }
+
+    private void OnTriggerStay(Collider other)
     {
         if (other == goal.GetComponent<Collider>())
         {
-            AddReward(2f);
-            // Debug.Log("Got the goal!");
+            AddReward(0.1f);
             GetComponentInParent<Manager>().ReachGoal(this);
         }
     }

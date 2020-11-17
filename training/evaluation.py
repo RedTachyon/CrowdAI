@@ -10,7 +10,7 @@ from scipy.stats import sem
 from torch import Tensor
 from tqdm import tqdm
 
-from agents import Agent, load_agent
+from agents import Agent
 from environments import MultiAgentEnv
 from models import BaseModel
 from collectors import CrowdCollector
