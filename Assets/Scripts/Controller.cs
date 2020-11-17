@@ -14,6 +14,8 @@ public class Controller : Agent
 
     public float moveSpeed = 50f;
     public float rotationSpeed = 3f;
+
+    public float dragFactor = 5f;
     
     private int _unfrozen = 1;
 
@@ -55,13 +57,17 @@ public class Controller : Agent
         
         // Apply the force
         Vector3 force = transform.forward * linearSpeed * moveSpeed;
-        _rigidbody.AddForce(force);
+
+        // Reduce the velocity friction-like
+        // Vector3 drag = -dragFactor * _rigidbody.velocity.magnitude * _rigidbody.velocity.normalized;
+        Vector3 drag = -dragFactor * _rigidbody.velocity;
+        // _rigidbody.AddForce(force + drag);
 
         // Apply the rotation
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
-        _rigidbody.MoveRotation(Quaternion.Euler(rotation));
-        
-        
+        // _rigidbody.MoveRotation(Quaternion.Euler(rotation));
+
+        _rigidbody.rotation = Quaternion.Euler(rotation);
     }
 
     public override void Heuristic(float[] actionsOut)
