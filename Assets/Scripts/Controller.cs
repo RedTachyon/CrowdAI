@@ -61,7 +61,7 @@ public class Controller : Agent
         // Reduce the velocity friction-like
         // Vector3 drag = -dragFactor * _rigidbody.velocity.magnitude * _rigidbody.velocity.normalized;
         Vector3 drag = -dragFactor * _rigidbody.velocity;
-        // _rigidbody.AddForce(force + drag);
+        _rigidbody.AddForce(force + drag);
 
         // Apply the rotation
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
