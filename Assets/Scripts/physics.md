@@ -22,3 +22,7 @@ F_d = - dragFactor * || v || * v / || v || = -dragFactor * v
 
 (I tested quadratic drag, but the agents kept drifting for a relatively long time; The best realism would be obtained
 using both a linear and a quadratic term, but at the moment, the linear version seems to be working well)
+
+
+The angular speed is about as simple as it gets - the rotation of the agent is statically changed to a new position, without 
+any angular momentum. Also, the angular drag of the rigidbody is set to a very high value to make sure collisions don't get it spinning.

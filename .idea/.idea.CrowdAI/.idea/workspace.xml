@@ -20,7 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/1-1.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/1-1.unity.meta" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Assets/Scripts/physics.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/physics.md.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" afterDir="false" />
@@ -56,6 +59,7 @@
     <property name="Discover.Launch.Via.Unity" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
@@ -90,7 +94,7 @@
       <workItem from="1605270158763" duration="124000" />
       <workItem from="1605271115815" duration="2680000" />
       <workItem from="1605607759679" duration="158000" />
-      <workItem from="1605608139815" duration="6358000" />
+      <workItem from="1605608139815" duration="6488000" />
     </task>
     <servers />
   </component>
