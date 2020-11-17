@@ -18,7 +18,7 @@ The public parameter moveSpeed determines the scale of the force added.
 
 Additionally, a drag force is added, antiparallel to the current velocity, proportional to its magnitude and to the dragFactor parameter, according to the equation:
 
-F_d = - dragFactor * || v || * v / || v || = -dragFactor * v
+<img src="https://render.githubusercontent.com/render/math?math=F_d = - d\  || v ||  \frac{v}{|| v ||} = -d\  v">
 
 (I tested quadratic drag, but the agents kept drifting for a relatively long time; The best realism would be obtained
 using both a linear and a quadratic term, but at the moment, the linear version seems to be working well)
