@@ -8,7 +8,6 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="Controller.cs" t="Include" />
-          <e p="EndEpisodeSideChannel.cs" t="Include" />
           <e p="Manager.cs" t="Include" />
           <e p="Walker.cs" t="Include" />
         </e>
