@@ -10,6 +10,7 @@
           <e p="Controller.cs" t="Include" />
           <e p="EndEpisodeSideChannel.cs" t="Include" />
           <e p="Manager.cs" t="Include" />
+          <e p="Walker.cs" t="Include" />
         </e>
       </e>
       <e p="CrowdAI.sln" t="IncludeFlat" />

@@ -20,8 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Goal.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Goal.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/testing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +45,7 @@
       <list>
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/physics.md" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controller.cs" />
       </list>
     </option>
@@ -89,7 +95,7 @@
       <workItem from="1605270158763" duration="124000" />
       <workItem from="1605271115815" duration="2680000" />
       <workItem from="1605607759679" duration="158000" />
-      <workItem from="1605608139815" duration="6828000" />
+      <workItem from="1605608139815" duration="10554000" />
     </task>
     <servers />
   </component>

@@ -4,88 +4,13 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 
 
-// TODO: figure out the side channels for extra control?
-public class Controller : Agent
+public class Controller : Walker
 {
-    private Rigidbody _rigidbody;
-    private Vector3 _previousPosition;
     // private Vector3 _startPosition;
     // private Quaternion _startRotation;
-
-    public float moveSpeed = 50f;
-    public float rotationSpeed = 3f;
-
-    public float dragFactor = 5f;
     
-    private int _unfrozen = 1;
-
     public Transform goal;
-
-    public override void Initialize()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-        // _startPosition = transform.localPosition;
-        // _startRotation = transform.localRotation;
-    }
-
-    public override void OnEpisodeBegin()
-    {
-        // Unfreeze();
-        // Vector3 startPos = new Vector3(-9f, 0.25f, UnityEngine.Random.Range(-9f, 9f));
-        // Vector3 startPos = _startPosition;
-        // transform.localPosition = startPos;
-        // transform.localRotation = _startRotation;
-        // // transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-        //
-        // _rigidbody.velocity = Vector3.zero;
-        // _rigidbody.angularVelocity = Vector3.zero;
-        //
-        // _previousPosition = startPos;
-
-
-    }
-
-    public override void OnActionReceived(float[] vectorAction)
-    {
-        // TODO: consider changing the environment dynamics
-        
-        // Forward velocity
-        var linearSpeed = _unfrozen * Mathf.Clamp(vectorAction[0], -0.3f, 1.0f);
-        
-        // Angular velocity
-        var angularSpeed = _unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
-        
-        // Apply the force
-        Vector3 force = transform.forward * linearSpeed * moveSpeed;
-
-        // Reduce the velocity friction-like
-        // Vector3 drag = -dragFactor * _rigidbody.velocity.magnitude * _rigidbody.velocity.normalized;
-        Vector3 drag = -dragFactor * _rigidbody.velocity;
-        _rigidbody.AddForce(force + drag);
-
-        // Apply the rotation
-        Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
-        // _rigidbody.MoveRotation(Quaternion.Euler(rotation));
-
-        _rigidbody.rotation = Quaternion.Euler(rotation);
-    }
-
-    public override void Heuristic(float[] actionsOut)
-    {
-        var forwardValue = 0f;
-        var rotationValue = 0f;
-        
-        if (Input.GetKey(KeyCode.W)) forwardValue = 1f;
-        if (Input.GetKey(KeyCode.S)) forwardValue = -1f;
-        
-        if (Input.GetKey(KeyCode.D)) rotationValue = 1f;
-        if (Input.GetKey(KeyCode.A)) rotationValue = -1f;
-        
-
-        
-        actionsOut[0] = forwardValue;
-        actionsOut[1] = rotationValue;
-    }
+    
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -97,7 +22,7 @@ public class Controller : Agent
         Vector3 position = transform.localPosition;
         Vector3 rotation = transform.localRotation.eulerAngles;
         
-        Vector3 velocity = _rigidbody.velocity;
+        Vector3 velocity = Rigidbody.velocity;
         // Vector3 angularVelocity = _rigidbody.angularVelocity;
         Vector3 goalPosition = goal.localPosition;
         
@@ -108,7 +33,7 @@ public class Controller : Agent
         sensor.AddObservation(goalPosition.x / 20f);
         sensor.AddObservation(goalPosition.z / 20f);
         
-        sensor.AddObservation(_unfrozen);
+        sensor.AddObservation(Unfrozen);
 
         
         // Compute the distance-based reward
@@ -125,24 +50,18 @@ public class Controller : Agent
         PreviousPosition = position;
 
     }
-
-
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     if (other == goal.GetComponent<Collider>())
-    //     {
-    //         AddReward(2f);
-    //         // Debug.Log("Got the goal!");
-    //         GetComponentInParent<Manager>().ReachGoal(this);
-    //     }
-    // }
+    
 
     private void OnTriggerStay(Collider other)
     {
-        if (other == goal.GetComponent<Collider>())
+        Debug.Log("Hitting a trigger");
+
+        if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
             AddReward(0.1f);
             GetComponentInParent<Manager>().ReachGoal(this);
+            
+            Debug.Log("Collecting a reward");
         }
     }
 
@@ -151,44 +70,9 @@ public class Controller : Agent
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             AddReward(-0.01f);
-            // Debug.Log($"Collision with an {other.collider.tag}!");
+            Debug.Log($"Collision with an {other.collider.tag}!");
         }
     }
     
-    public void Freeze()
-    {
-        _unfrozen = 0;
-        _rigidbody.constraints = _rigidbody.constraints |
-                                 RigidbodyConstraints.FreezePositionX | 
-                                 RigidbodyConstraints.FreezePositionZ | 
-                                 RigidbodyConstraints.FreezeRotationY;
-        
-        Debug.Log("Freezing agent");
-        
-        GetComponent<Controller>().enabled = false;
-        // GetComponent<DecisionRequester>().enabled = false;
-        // GetComponent<DecisionRequester>().DecisionPeriod = Int32.MaxValue;
-        
-    }
-
-    public void Unfreeze()
-    {
-        GetComponent<Controller>().enabled = true;
-        // GetComponent<DecisionRequester>().enabled = true;
-        // GetComponent<DecisionRequester>().DecisionPeriod = 5;
-
-        Debug.Log("Unfreezing agent");
-
-        
-        _unfrozen = 1;
-        _rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionX;
-        _rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionZ;
-        _rigidbody.constraints &= ~RigidbodyConstraints.FreezeRotationY;
-    }
-
-    public Vector3 PreviousPosition
-    {
-        get => _previousPosition;
-        set => _previousPosition = value;
-    }
+    public Vector3 PreviousPosition { get; set; }
 }
