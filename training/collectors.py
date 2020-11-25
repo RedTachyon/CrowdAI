@@ -121,27 +121,21 @@ class CrowdCollector:
 
     def collect_data(self,
                      num_steps: Optional[int] = None,
-                     num_episodes: Optional[int] = None,
                      deterministic: bool = False,
                      disable_tqdm: bool = True,
-                     max_steps: int = 500,
                      reset_memory: bool = True,
                      include_last: bool = False,
-                     reset_start: bool = True,
-                     finish_episode: bool = False) -> DataBatch:
+                     reset_start: bool = True) -> DataBatch:
         """
         Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
         Args:
             num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
-            num_episodes: number of episodes to generate
             deterministic: whether each agent should use the greedy policy; False by default
             disable_tqdm: whether a live progress bar should be (not) displayed
-            max_steps: maximum number of steps that can be taken in episodic mode, recommended just above env maximum
             reset_memory: whether to reset the memory before generating data
             include_last: whether to include the last observation in episodic mode - useful for visualizations
             reset_start: whether the environment should be reset at the beginning of collection
-            finish_episode: whether the final episode should be finished, even if it goes over the step limit
 
         Returns: dictionary with the gathered data in the following format:
 
@@ -168,8 +162,6 @@ class CrowdCollector:
                 }
         }
         """
-        assert not ((num_steps is None) == (num_episodes is None)), ValueError("Exactly one of num_steps, num_episodes "
-                                                                               "should receive a value")
 
         if reset_memory:  # clears the memory cache
             self.reset()
@@ -179,15 +171,20 @@ class CrowdCollector:
         else:
             obs_dict = self.env.current_obs
 
+        start_metrics = self.env.current_info['metrics']
+
         # state = {
         #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
         # }
 
-        episode = 0
+        metrics = {
+            "mean_distance": [start_metrics[0]],
+            "mean_speed": [start_metrics[1]],
+            "mean_finish": [start_metrics[2]]
+        }
 
         end_flag = False
-        full_steps = (num_steps + 500 * int(finish_episode)) if num_steps else max_steps * num_episodes
-        for step in trange(full_steps, disable=disable_tqdm):
+        for step in trange(num_steps, disable=disable_tqdm):
             # Compute the action for each agent
             # action_info = {  # action, logprob, entropy, state, sm
             #     agent_id: self.agents[agent_id].compute_single_action(obs[agent_id],
@@ -209,29 +206,21 @@ class CrowdCollector:
             logprob_dict = unpack(logprobs, agent_keys)
 
             # Actual step in the environment
-            next_obs, reward_dict, done_dict, info = self.env.step(action_dict)
+            next_obs, reward_dict, done_dict, info_dict = self.env.step(action_dict)
+
+            # Collect the metrics passed by the environment
+            mean_distance, mean_speed, mean_finish = info_dict["metrics"]
+            metrics["mean_distance"].append(mean_distance)
+            metrics["mean_speed"].append(mean_speed)
+            metrics["mean_finish"].append(mean_finish)  # TODO: change it so that it's mean finish at last step
 
             # Saving to memory
             self.memory.store(obs_dict, action_dict, reward_dict, logprob_dict, done_dict)
-
-            # TODO fix: when the agent leaves the game, it receives one last observation. it's in the previous obs dict,
-            # but it doesn't receive a new reward
-
-
-            # Handle episode/loop ending
-            if finish_episode and step + 1 == num_steps:
-                end_flag = True
 
             # Update the current obs and state - either reset, or keep going
             if done_dict["__all__"]:  # episode is over
                 if include_last:  # record the last observation along with placeholder action/reward/logprob
                     self.memory.store(next_obs, action_dict, reward_dict, logprob_dict, done_dict)
-
-
-                # Episode mode handling
-                episode += 1
-                if episode == num_episodes:
-                    break
 
                 # Step mode with episode finish handling
                 if end_flag:
@@ -245,7 +234,7 @@ class CrowdCollector:
 
         self.memory.set_done()
 
-        return self.memory.get_torch_data()
+        return self.memory.get_torch_data(), metrics
 
     def reset(self):
         self.memory.reset()

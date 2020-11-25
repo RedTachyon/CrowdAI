@@ -47,8 +47,7 @@ class PPOCrowdTrainer(Trainer):
         super().__init__(agent, env, config)
 
         default_config = {
-            # "steps": 10000,  # number of steps we want in one PPO step
-            "episodes": 1,  # number of episodes to collect
+            "steps": 500,  # number of steps we want in one episode
 
             # Tensorboard settings
             "tensorboard_name": None,  # str, set explicitly
@@ -64,7 +63,7 @@ class PPOCrowdTrainer(Trainer):
                     "weight_decay": 0,
                     "amsgrad": False
                 },
-                "gamma": 1.,  # Discount factor
+                "gamma": 1.,  # Discount factor TODO: check if this works
 
                 # PPO settings
                 "ppo_steps": 25,  # How many max. gradient updates in one iterations
@@ -136,7 +135,7 @@ class PPOCrowdTrainer(Trainer):
             ########################################### Collect the data ###############################################
             timer.checkpoint()
 
-            full_batch = self.collector.collect_data(num_episodes=1)
+            full_batch, collector_metrics = self.collector.collect_data(num_steps=self.config["steps"])
 
             data_time = timer.checkpoint()
 
@@ -158,11 +157,15 @@ class PPOCrowdTrainer(Trainer):
                 torch.save(self.agent.model.state_dict(),
                            os.path.join(save_path, "saved_weights", f"weights_{step + 1}"))
 
-            # Write training time metrics to tensorboard
-            time_metric = {f"crowd/time_data_collection": data_time,
-                           f"crowd/total_time": end_time}
+            # Write remaining metrics to tensorboard
+            extra_metric = {f"crowd/time_data_collection": data_time,
+                            f"crowd/total_time": end_time,
+                            f"crowd/mean_distance": np.mean(collector_metrics["mean_distance"]),
+                            f"crowd/mean_speed": np.mean(collector_metrics["mean_speed"]),
+                            f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
+                            f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
 
-            write_dict(time_metric, step, self.writer)
+            write_dict(extra_metric, step, self.writer)
 
 
 if __name__ == '__main__':

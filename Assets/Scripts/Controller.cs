@@ -16,13 +16,19 @@ public class Controller : Walker
     // private Quaternion _startRotation;
 
     private int _decisionPeriod;
+    private Material _material;
+    private Color _originalColor;
     
     public Transform goal;
+    
 
     public override void Initialize()
     {
         base.Initialize();
         _decisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
+        _material = GetComponent<Renderer>().material;
+        _originalColor = _material.color;
+        
         Debug.Log(_decisionPeriod);
     }
 
@@ -63,20 +69,23 @@ public class Controller : Walker
 
         PreviousPosition = position;
 
+        _material.color = _originalColor;
+
     }
     
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log("Hitting a trigger");
+        // Debug.Log("Hitting a trigger");
         
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
             AddReward(0.1f);
             GetComponentInParent<Manager>().ReachGoal(this);
+            _material.color = Color.blue;
             
-            Debug.Log("Collecting a reward");
+            // Debug.Log("Collecting a reward");
         }
     }
 
@@ -85,9 +94,24 @@ public class Controller : Walker
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             AddReward(-0.01f);
-            Debug.Log($"Collision with an {other.collider.tag}!");
+            _material.color = Color.red;
+            // Debug.Log($"Collision with an {other.collider.tag}!");
+
         }
     }
-    
+
+    // private void OnCollisionExit(Collision other)
+    // {
+    //     _material.color = _originalColor;
+    // }
+    //
+    // private void OnCollisionEnter(Collision other)
+    // {
+    //     if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
+    //     {
+    //         _material.color = Color.red;
+    //     }
+    // }
+
     public Vector3 PreviousPosition { get; set; }
 }

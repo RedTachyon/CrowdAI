@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
 
@@ -32,9 +33,43 @@ public class Manager : Agent
             // Get each agent's starting position
             _startPos[agent] = agent.localPosition;
             _startRot[agent] = agent.localRotation;
-
         }
         
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        // Collect summary statistics
+        var distances = new List<float>();
+        var speeds = new List<float>();
+        var dones = new List<float>();
+        
+        foreach (Transform agent in transform)
+        {
+            // Get distance from goal
+            var agentPosition = agent.localPosition;
+            var goalPosition = agent.GetComponent<Controller>().goal.localPosition;
+
+            var distance = Vector3.Distance(agentPosition, goalPosition);
+            distances.Add(distance);
+            
+            // Get speed
+            var speed = agent.GetComponent<Rigidbody>().velocity.magnitude;
+            speeds.Add(speed);
+
+            // Fraction of agents that finished already
+            dones.Add(_finished[agent] ? 1f : 0f);
+        }
+
+        var meanDist = distances.Average();
+        var meanSpeed = speeds.Average();
+        var finished = dones.Average();
+
+        sensor.AddObservation(meanDist);
+        sensor.AddObservation(meanSpeed);
+        sensor.AddObservation(finished);
+        
+        // Debug.Log(finished);
     }
 
     public void ReachGoal(Controller agent)
@@ -62,7 +97,7 @@ public class Manager : Agent
             if (agent.gameObject.activeSelf)
             {
                 _finished[agent] = false;
-                agent.GetComponent<Controller>().Unfreeze();
+                // agent.GetComponent<Controller>().Unfreeze();
                 
                 agent.localPosition = _startPos[agent];
                 agent.localRotation = _startRot[agent];

@@ -49,11 +49,16 @@ class MultiAgentEnv(gym.Env):
         raise NotImplementedError
 
     @property
-    def current_obs(self):
+    def current_obs(self) -> StateDict:
+        raise NotImplementedError
+
+    @property
+    def current_info(self) -> InfoDict:
         raise NotImplementedError
 
 
 # TODO: possible bug, env might freeze if all agents actually finish the episode
+# DEPRECATED
 class UnityCrowdEnv(MultiAgentEnv):
 
     def __init__(self, *args, **kwargs):
@@ -67,6 +72,7 @@ class UnityCrowdEnv(MultiAgentEnv):
 
         self.unity = UnityEnvironment(*args, **kwargs)
         self.behaviors = {}
+        self.manager = ""
 
     def _get_step_info(self) -> Tuple[StateDict, RewardDict, DoneDict, bool]:
         names = self.behaviors.keys()
@@ -150,7 +156,9 @@ class UnityCrowdEnv(MultiAgentEnv):
 
         # All behavior names, except for Manager agents which do not take actions but manage the environment
         self.behaviors = dict(self.unity.behavior_specs)
+        self.manager = [key for key in self.behaviors if key.startswith("Manager")][0]
         self.behaviors = {key: value for key, value in self.behaviors.items() if not key.startswith("Manager")}
+
 
         obs_dict, _, _, _ = self._get_step_info()
 
@@ -183,12 +191,14 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         self.unity = UnityEnvironment(*args, **kwargs)
         self.behaviors = {}
+        self.manager = ""
 
-    def _get_step_info(self) -> Tuple[StateDict, RewardDict, DoneDict, bool]:
+    def _get_step_info(self) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
         names = self.behaviors.keys()
         obs_dict: StateDict = {}
         reward_dict: RewardDict = {}
         done_dict: DoneDict = {}
+        info_dict: InfoDict = {}
 
         has_decision = False
 
@@ -213,7 +223,13 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         done_dict["__all__"] = len(self.active_agents) == 0
 
-        return obs_dict, reward_dict, done_dict, has_decision
+        m_decisions, _ = self.unity.get_steps(self.manager)
+        m_obs = m_decisions.obs[0]
+
+        info_dict["has_decision"] = has_decision
+        info_dict["metrics"] = m_obs.ravel()
+
+        return obs_dict, reward_dict, done_dict, info_dict
 
     def step(self, action: ActionDict) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
 
@@ -231,9 +247,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         # The terminal step handling has been removed as episodes are only reset from here
 
         self.unity.step()
-        obs_dict, reward_dict, done_dict, has_decision = self._get_step_info()
-
-        info_dict = {}
+        obs_dict, reward_dict, done_dict, info_dict = self._get_step_info()
 
         return obs_dict, reward_dict, done_dict, info_dict
 
@@ -241,8 +255,11 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.unity.reset()
 
         # All behavior names, except for Manager agents which do not take actions but manage the environment
-        self.behaviors = dict(self.unity.behavior_specs)
-        self.behaviors = {key: value for key, value in self.behaviors.items() if not key.startswith("Manager")}
+        behaviors = dict(self.unity.behavior_specs)
+        self.behaviors = {key: value for key, value in behaviors.items() if not key.startswith("Manager")}
+
+        # ...but manager is used to collect stats
+        self.manager = [key for key in behaviors if key.startswith("Manager")][0]
 
         obs_dict, _, _, _ = self._get_step_info()
 
@@ -252,8 +269,13 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     @property
     def current_obs(self) -> StateDict:
-        obs_dict, _, _, _ = self._get_step_info()
+        obs_dict, _, _, info_dict = self._get_step_info()
         return obs_dict
+
+    @property
+    def current_info(self) -> InfoDict:
+        _, _, _, info_dict = self._get_step_info()
+        return info_dict
 
     def close(self):
         self.unity.close()
