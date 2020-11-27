@@ -511,7 +511,7 @@ PrefabInstance:
     - target: {fileID: 1074988033116786974, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1074988033116786974, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -528,6 +528,21 @@ PrefabInstance:
       propertyPath: m_UseChildSensors
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1074988033116786974, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1074988033116786974, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1136633751127250434, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 1136633751127250495, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
@@ -538,6 +553,11 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 1175228523778059069, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 1406831427396196339, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
@@ -548,21 +568,46 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 1697631552629441464, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 2328194653148376789, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 2328194653148376808, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 3341818499436846170, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 3341818499436846183, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
+    - target: {fileID: 3667963539775956426, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 3667963539775956471, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 4708924263616092051, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 4708924263616092078, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
@@ -583,6 +628,11 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: Person1
       objectReference: {fileID: 0}
+    - target: {fileID: 6293031108960341007, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 6293031108960341042, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName
@@ -593,6 +643,11 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: Person2
       objectReference: {fileID: 0}
+    - target: {fileID: 6306064973164973941, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fad5a97cf2c914981ba5881101bc8dee, type: 2}
     - target: {fileID: 6560519646126465347, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_BehaviorName

@@ -40,30 +40,46 @@ public class Controller : Walker
         // n_tags + 1: normalized distance
         
         Vector3 position = transform.localPosition;
-        Vector3 rotation = transform.localRotation.eulerAngles;
+        Quaternion rotation = transform.localRotation;
         
         Vector3 velocity = Rigidbody.velocity;
         // Vector3 angularVelocity = _rigidbody.angularVelocity;
         Vector3 goalPosition = goal.localPosition;
         
-        sensor.AddObservation(position.x / 20f);
-        sensor.AddObservation(position.z / 20f);
-        sensor.AddObservation(rotation.y / 360f);
+        // Position: 2
+        sensor.AddObservation(position.x / 10f);
+        sensor.AddObservation(position.z / 10f);
         
-        sensor.AddObservation(goalPosition.x / 20f);
-        sensor.AddObservation(goalPosition.z / 20f);
+        // Rotation: 1
+        sensor.AddObservation(rotation.eulerAngles.y / 360f);
+        
+        // Goal position: 2
+        sensor.AddObservation(goalPosition.x / 10f);
+        sensor.AddObservation(goalPosition.z / 10f);
+        
+        // Relative position: 2
+        var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
+        sensor.AddObservation(relPosition.x / 10f);
+        sensor.AddObservation(relPosition.z / 10f);
+
+        // Velocity: 2
+        sensor.AddObservation(velocity.x / 3f);
+        sensor.AddObservation(velocity.z / 3f);
         
         sensor.AddObservation(Unfrozen);
 
+        // REWARDS
         
-        // Compute the distance-based reward
-        var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
+        // Compute the distance-based reward - temporarily (?) deprecated
+        // var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
         var currentDistance = Vector3.Distance(position, goalPosition);
-        var diff = prevDistance - currentDistance;
+        // var diff = prevDistance - currentDistance;
+        //
+        // AddReward(1f * diff);  // Add reward for getting closer to the goal
+
+        AddReward(-currentDistance / 10f);
         
-        AddReward(1f * diff);  // Add reward for getting closer to the goal
-        
-        AddReward(-0.01f);  // Small penalty at each step
+        // AddReward(-0.01f);  // Small penalty at each step
         // Debug.Log($"Distance {currentDistance}");
         // Debug.Log($"Distance difference {diff}");
 
@@ -81,7 +97,7 @@ public class Controller : Walker
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(0.1f);
+            AddReward(0.1f / _decisionPeriod);
             GetComponentInParent<Manager>().ReachGoal(this);
             _material.color = Color.blue;
             
@@ -93,7 +109,7 @@ public class Controller : Walker
     {
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-0.01f);
+            AddReward(-0.1f / _decisionPeriod);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
 
