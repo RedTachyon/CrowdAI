@@ -77,7 +77,8 @@ public class Controller : Walker
         //
         // AddReward(1f * diff);  // Add reward for getting closer to the goal
 
-        AddReward(-currentDistance / 10f);
+        // Maximum distance: 20; this puts it in the range [0, 0.1]
+        AddReward(-currentDistance / 200f);
         
         // AddReward(-0.01f);  // Small penalty at each step
         // Debug.Log($"Distance {currentDistance}");
