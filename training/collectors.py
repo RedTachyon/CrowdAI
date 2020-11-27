@@ -171,16 +171,16 @@ class CrowdCollector:
         else:
             obs_dict = self.env.current_obs
 
-        start_metrics = self.env.current_info['metrics']
+        # start_metrics = self.env.current_info['metrics']
 
         # state = {
         #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
         # }
 
         metrics = {
-            "mean_distance": [start_metrics[0]],
-            "mean_speed": [start_metrics[1]],
-            "mean_finish": [start_metrics[2]]
+            "mean_distance": [],#[start_metrics[0]],
+            "mean_speed": [],#[start_metrics[1]],
+            "mean_finish": []#[start_metrics[2]]
         }
 
         end_flag = False
@@ -212,7 +212,7 @@ class CrowdCollector:
             mean_distance, mean_speed, mean_finish = info_dict["metrics"]
             metrics["mean_distance"].append(mean_distance)
             metrics["mean_speed"].append(mean_speed)
-            metrics["mean_finish"].append(mean_finish)  # TODO: change it so that it's mean finish at last step
+            metrics["mean_finish"].append(mean_finish)
 
             # Saving to memory
             self.memory.store(obs_dict, action_dict, reward_dict, logprob_dict, done_dict)
@@ -233,6 +233,7 @@ class CrowdCollector:
                 obs_dict = {key: obs for key, obs in next_obs.items() if key in self.env.active_agents}
 
         self.memory.set_done()
+        metrics = {key: np.array(value) for key, value in metrics.items()}
 
         return self.memory.get_torch_data(), metrics
 

@@ -22,10 +22,8 @@
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Materials/Agent 1.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Materials/Agent 1.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/testing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +104,7 @@
       <workItem from="1606082603388" duration="7260000" />
       <workItem from="1606140062289" duration="41000" />
       <workItem from="1606140120581" duration="3449000" />
-      <workItem from="1606207270608" duration="7646000" />
+      <workItem from="1606207270608" duration="8153000" />
     </task>
     <servers />
   </component>

@@ -162,7 +162,10 @@ class PPOCrowdTrainer(Trainer):
                             f"crowd/total_time": end_time,
                             f"crowd/mean_distance": np.mean(collector_metrics["mean_distance"]),
                             f"crowd/mean_speed": np.mean(collector_metrics["mean_speed"]),
+                            f"crowd/mean_speed_100": np.mean(collector_metrics["mean_speed"][:100]),
+                            f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
                             f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
+                            f"crowd/mean_finish_l1": collector_metrics["mean_finish"][-1],
                             f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
 
             write_dict(extra_metric, step, self.writer)
