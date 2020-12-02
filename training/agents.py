@@ -146,7 +146,7 @@ class Agent(BaseAgent):
         else:  # padded == True, BPTT
             # TODO: Might not work, copied from DiscreteAgent; useful if I want BPTT, but slower, otherwise useless
             return NotImplementedError
-            batch_size = obs_batch.size()[1]  # assume it's padded, so in [L, B, *] format
+            batch_size = obs_batch. size()[1]  # assume it's padded, so in [L, B, *] format
             state: Tuple[Tensor, ...] = self.get_initial_state()
             state = tuple(_state.repeat(batch_size, 1) for _state in state)
             entropies = []

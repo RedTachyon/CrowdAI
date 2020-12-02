@@ -10,7 +10,8 @@ using Unity.MLAgents.Sensors;
 // -0.01 reward per decision step for collisions (-1 reward per 100 steps)
 // -0.01 reward per decision step
 
-public class Controller : Walker
+// TODO: Change localPosition to position where applicable... ffs
+public class AgentController : Walker
 {
     // private Vector3 _startPosition;
     // private Quaternion _startRotation;
@@ -29,7 +30,6 @@ public class Controller : Walker
         _material = GetComponent<Renderer>().material;
         _originalColor = _material.color;
         
-        Debug.Log(_decisionPeriod);
     }
 
     public override void CollectObservations(VectorSensor sensor)

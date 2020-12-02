@@ -9,7 +9,7 @@ public class Walker : Agent
     // A basic agent that only implements the environment dynamics, i.e. walking around with friction
     protected Rigidbody Rigidbody;
 
-    public float moveSpeed = 50f;
+    public float moveSpeed = 25f;
     public float rotationSpeed = 3f;
 
     public float dragFactor = 5f;

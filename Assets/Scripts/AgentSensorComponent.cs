@@ -6,15 +6,17 @@ public class AgentSensorComponent : SensorComponent
 {
     public string sensorName;
     public float radius;
+    public int maxAgents;
     
     public override ISensor CreateSensor()
     {
-        var sensor = new AgentSensor(sensorName, radius);
+        var sensor = new AgentSensor(sensorName, radius, transform, maxAgents);
         return sensor;
     }
 
     public override int[] GetObservationShape()
     {
-        throw new System.NotImplementedException();
+        int[] shape = {3};
+        return shape;
     }
 }
