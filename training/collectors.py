@@ -63,7 +63,7 @@ class Memory:
         else:
             self.fields = fields
 
-        self.data = {
+        self.data = {  # TODO: Optimize by allocating some memory beforehand?
             field: {}
             for field in self.fields
         }
@@ -109,8 +109,130 @@ class Memory:
         return self.data.__str__()
 
 
-class CrowdCollector:
+def collect_crowd_data(agent: Agent,
+                       env: MultiAgentEnv,
+                       num_steps: Optional[int] = None,
+                       deterministic: bool = False,
+                       disable_tqdm: bool = True,
+                       include_last: bool = False,
+                       reset_start: bool = True
+                       ) -> Tuple[DataBatch, Dict]:
+
     """
+            Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
+
+            Args:
+                agent: Agent with which to collect the data
+                env: Environment in which the agent will act
+                num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
+                deterministic: whether each agent should use the greedy policy; False by default
+                disable_tqdm: whether a live progress bar should be (not) displayed
+                include_last: whether to include the last observation in episodic mode - useful for visualizations
+                reset_start: whether the environment should be reset at the beginning of collection
+
+            Returns: dictionary with the gathered data in the following format:
+
+            {
+                "observations":
+                    {
+                        "Agent0": tensor([obs1, obs2, ...]),
+
+                        "Agent1": tensor([obs1, obs2, ...])
+                    },
+                "actions":
+                    {
+                        "Agent0": tensor([act1, act2, ...]),
+
+                        "Agent1": tensor([act1, act2, ...])
+                    },
+                ...,
+
+                "states":
+                    {
+                        "Agent0": (tensor([h1, h2, ...]), tensor([c1, c2, ...])),
+
+                        "Agent1": (tensor([h1, h2, ...]), tensor([c1, c2, ...]))
+                    }
+            }
+            """
+    memory = Memory(['observations', 'actions', 'rewards', 'logprobs', 'dones'])
+
+    if reset_start:
+        obs_dict = env.reset()
+    else:
+        obs_dict = env.current_obs
+
+    # start_metrics = self.env.current_info['metrics']
+
+    # state = {
+    #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
+    # }
+
+    metrics = {
+        "mean_distance": [],  # [start_metrics[0]],
+        "mean_speed": [],  # [start_metrics[1]],
+        "mean_finish": []  # [start_metrics[2]]
+    }
+
+    end_flag = False
+    for step in trange(num_steps, disable=disable_tqdm):
+        # Compute the action for each agent
+        # action_info = {  # action, logprob, entropy, state, sm
+        #     agent_id: self.agents[agent_id].compute_single_action(obs[agent_id],
+        #                                                           # state[agent_id],
+        #                                                           deterministic[agent_id])
+        #     for agent_id in obs
+        # }
+
+        # TODO: have a separate agent for each behavior in the environment
+        # TODO: reintroduce recurrent state management
+
+        obs_array, agent_keys = pack(obs_dict)
+        obs_tensor = torch.tensor(obs_array)
+
+        # Centralize the action computation for better parallelization
+        actions, logprobs, _ = agent.compute_actions(obs_tensor, (), deterministic)
+
+        action_dict = unpack(actions, agent_keys)
+        logprob_dict = unpack(logprobs, agent_keys)
+
+        # Actual step in the environment
+        next_obs, reward_dict, done_dict, info_dict = env.step(action_dict)
+
+        # Collect the metrics passed by the environment
+        mean_distance, mean_speed, mean_finish = info_dict["metrics"].T
+        metrics["mean_distance"].append(mean_distance)
+        metrics["mean_speed"].append(mean_speed)
+        metrics["mean_finish"].append(mean_finish)
+
+        # Saving to memory
+        memory.store(obs_dict, action_dict, reward_dict, logprob_dict, done_dict)
+
+        # Update the current obs and state - either reset, or keep going
+        if done_dict["__all__"]:  # episode is over
+            if include_last:  # record the last observation along with placeholder action/reward/logprob
+                memory.store(next_obs, action_dict, reward_dict, logprob_dict, done_dict)
+
+            # Step mode with episode finish handling
+            if end_flag:
+                break
+
+            # If we didn't end, create a new environment
+            obs_dict = env.reset()
+
+        else:  # keep going
+            obs_dict = next_obs
+            # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
+
+    memory.set_done()
+    metrics = {key: np.array(value) for key, value in metrics.items()}
+
+    # TODO: make sure metrics work with parallel environments
+    return memory.get_torch_data(), metrics
+
+
+class CrowdCollector:
+    """DEPRECATED
     Class to perform data collection from two agents.
     """
 
@@ -125,7 +247,7 @@ class CrowdCollector:
                      disable_tqdm: bool = True,
                      reset_memory: bool = True,
                      include_last: bool = False,
-                     reset_start: bool = True) -> DataBatch:
+                     reset_start: bool = True) -> Tuple[DataBatch, Dict]:
         """
         Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
@@ -209,7 +331,7 @@ class CrowdCollector:
             next_obs, reward_dict, done_dict, info_dict = self.env.step(action_dict)
 
             # Collect the metrics passed by the environment
-            mean_distance, mean_speed, mean_finish = info_dict["metrics"]
+            mean_distance, mean_speed, mean_finish = info_dict["metrics"].T
             metrics["mean_distance"].append(mean_distance)
             metrics["mean_speed"].append(mean_speed)
             metrics["mean_finish"].append(mean_finish)
@@ -229,12 +351,14 @@ class CrowdCollector:
                 # If we didn't end, create a new environment
                 obs_dict = self.env.reset()
 
+
             else:  # keep going
                 obs_dict = {key: obs for key, obs in next_obs.items() if key in self.env.active_agents}
 
         self.memory.set_done()
         metrics = {key: np.array(value) for key, value in metrics.items()}
 
+        # TODO: make sure metrics work with parallel environments
         return self.memory.get_torch_data(), metrics
 
     def reset(self):

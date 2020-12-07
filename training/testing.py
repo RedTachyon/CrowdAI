@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from models import MLPModel, FancyMLPModel
 from agents import Agent
-from collectors import Memory, CrowdCollector
+from collectors import Memory, CrowdCollector, collect_crowd_data
 from environments import UnityCrowdEnv, UnitySimpleCrowdEnv
 from policy_optimization import CrowdPPOptimizer
 from trainers import PPOCrowdTrainer
@@ -22,9 +22,15 @@ import matplotlib.pyplot as plt
 from utils import discount_rewards_to_go, get_episode_lens
 
 
-print("Load the environment, please")
-env = UnitySimpleCrowdEnv(file_name=None)
-print("Environment loaded")
+# TODO: Observation - value loss seems to overtake policy loss later in the training; need to make it so that they don't
+#  bother one another, probably by using separate policy/value networks. Maybe just decrease value coeff?
+
+# print("Load the environment, please")
+# env = UnitySimpleCrowdEnv(file_name=None)
+# print("Environment loaded")
+env = UnitySimpleCrowdEnv(file_name="Test.app", no_graphics=True, worker_id=0)
+
+env2 = UnitySimpleCrowdEnv(file_name="Test.app", no_graphics=True, worker_id=1)
 
 env.engine_channel.set_configuration_parameters(time_scale=100)
 
@@ -40,9 +46,7 @@ model = MLPModel({
 
 agent = Agent(model, action_range=action_range)
 
-collector = CrowdCollector(agent, env)
-
-data, metrics = collector.collect_data(500, disable_tqdm=False)
+data, metrics = collect_crowd_data(agent, env, 500, disable_tqdm=False)
 
 data = concat_crowd_batch(data)
 

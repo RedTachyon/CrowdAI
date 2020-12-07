@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -7,17 +9,18 @@ public class AgentSensor : ISensor
 {
     float _radius;
     string _name;
-    int _numAgents;
-    int _maxAgents;
+    int _numAgents; // How many agents (at most) do you want to observe
+    int _maxObjects; // How many objects can be perceived (for Physics.OverlapSphereNonAlloc)
 
     public Transform Transform;
 
-    public AgentSensor(string name, float radius, Transform transform, int maxAgents)
+    public AgentSensor(string name, float radius, Transform transform, int maxObjects, int numAgents)
     {
         _name = name;
         _radius = radius;
         Transform = transform;
-        _maxAgents = maxAgents;
+        _maxObjects = maxObjects; // not used yet
+        _numAgents = numAgents;
 
     }
     
@@ -32,37 +35,44 @@ public class AgentSensor : ISensor
     {
         
         var colliders = Physics.OverlapSphere(Transform.localPosition, _radius)
-            .Where(collider => collider.CompareTag("Agent"))
-            .Where(collider => collider.transform != Transform)
+            .Where(c => c.CompareTag("Agent"))
+            .Where(c => c.transform != Transform)
+            .OrderBy(c => Vector3.Distance(Transform.localPosition, c.transform.localPosition))
+            .Take(_numAgents)
             .ToArray();
         
-        float[] obs;
-        
-        // Debug.Log(colliders.Length);
+        var debugOut = new List<float>();
 
+        var offset = 0;
         foreach (var collider in colliders)
         {
-            Debug.DrawLine(Transform.position, collider.transform.position, Color.red);
+            Debug.DrawLine(Transform.position, collider.transform.position, Color.red, 0.1f);
+            var position = collider.transform.localPosition;
+            var velocity = collider.attachedRigidbody.velocity;
+            var vals = new[] {position.x, position.z, velocity.x, velocity.z};
+            writer.AddRange(vals, offset);
+            offset += 4;
+
+            debugOut.AddRange(vals);
         }
 
+        var numValues = offset;
 
-        if (colliders.Length == 0)
+        for (var i = colliders.Length; i < _numAgents; i++)
         {
-            obs = new[] {0f, 0f, 0f};
-        }
-        else
-        {
-            var pos = colliders[0].transform.localPosition;
-            // Debug.Log("Something's actually detected");
-            obs = new[] {pos.x, pos.y, pos.z};
+            var vals = new[] {float.NaN, float.NaN, float.NaN, float.NaN};
+            writer.AddRange(vals, offset);
+            offset += 4;
+            
+            debugOut.AddRange(vals);
         }
         
-        writer.AddRange(obs);
-        
-        // Debug.Log(obs[0]);
+        Debug.Log("Agents sensed = [" + string.Join(",",
+            debugOut
+                .ConvertAll(i => i.ToString())
+                .ToArray()) + "]");
 
-
-        return 3;
+        return numValues;
     }
 
     public byte[] GetCompressedObservation()

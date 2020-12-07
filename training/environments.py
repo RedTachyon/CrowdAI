@@ -227,7 +227,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         m_obs = m_decisions.obs[0]
 
         info_dict["has_decision"] = has_decision
-        info_dict["metrics"] = m_obs.ravel()
+        info_dict["metrics"] = m_obs
 
         return obs_dict, reward_dict, done_dict, info_dict
 

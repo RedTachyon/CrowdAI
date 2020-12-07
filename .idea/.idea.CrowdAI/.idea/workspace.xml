@@ -20,25 +20,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/training/test.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1-1.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1-1.unity.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1x1 90deg.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1x1 90deg.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Test.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Test.unity.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controller.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Manager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/testing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/environments.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/training.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +46,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Sensors/RayPerceptionSensorComponent3D.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/94/eb24392d/List`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9824E569-944E-4F06-AD7B-E39216D0553D/ce/70aa791b/ISensor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/2a/704b55d8/Single.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Sensors/SensorComponent.cs" root0="SKIP_HIGHLIGHTING" />
@@ -70,12 +67,13 @@
       <list>
         <option value="$PROJECT_DIR$/Assets/Scripts/physics.md" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controller.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
+        <option value="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" />
       </list>
     </option>
   </component>
@@ -93,6 +91,14 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/training/Test.app/Contents/MacOS/AICrowd" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/training/Test.app/Contents/MacOS" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2" />
+    </configuration>
     <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
@@ -130,7 +136,7 @@
       <workItem from="1606140120581" duration="3449000" />
       <workItem from="1606207270608" duration="9973000" />
       <workItem from="1606728291960" duration="3561000" />
-      <workItem from="1606826876271" duration="6199000" />
+      <workItem from="1606826876271" duration="13530000" />
     </task>
     <servers />
   </component>
