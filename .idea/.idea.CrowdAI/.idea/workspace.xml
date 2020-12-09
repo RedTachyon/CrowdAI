@@ -20,21 +20,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/parallel/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/parallel/base_vec_env.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/parallel/subproc_vec_env.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1x1 90deg.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1x1 90deg.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/.idea/Coltra-RL.iml" beforeDir="false" afterPath="$PROJECT_DIR$/training/.idea/Coltra-RL.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/Test.app/Contents/ML-Agents/Timers/9x9 90deg_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/training/Test.app/Contents/ML-Agents/Timers/9x9 90deg_timers.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/environments.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/policy_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/policy_optimization.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/trainers.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/training.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +140,9 @@
       <workItem from="1606140120581" duration="3449000" />
       <workItem from="1606207270608" duration="9973000" />
       <workItem from="1606728291960" duration="3561000" />
-      <workItem from="1606826876271" duration="13530000" />
+      <workItem from="1606826876271" duration="14535000" />
+      <workItem from="1607437343321" duration="255000" />
+      <workItem from="1607438180015" duration="609000" />
     </task>
     <servers />
   </component>
@@ -169,5 +175,9 @@
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state x="694" y="481" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1792.1097@0.23.1792.1097" timestamp="1606904730006" />
+    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup" timestamp="1607340822879">
+      <screen x="0" y="0" width="1792" height="1120" />
+    </state>
+    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup/0.0.1792.1120@0.0.1792.1120" timestamp="1607340822879" />
   </component>
 </project>

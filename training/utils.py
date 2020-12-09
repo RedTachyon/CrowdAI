@@ -59,20 +59,34 @@ def with_default_config(config: Dict, default: Dict) -> Dict:
     return config
 
 
-def discount_rewards_to_go(rewards: Tensor, dones: Tensor, gamma: float = 1., batch_mode: bool = False) -> Tensor:
+def discount_rewards_to_go(rewards: Tensor,
+                           dones: Tensor,
+                           gamma: float = 1.,
+                           batch_mode: bool = False,
+                           ep_len: int = 0) -> Tensor:
     """
     Computes the discounted rewards to go, handling episode endings. Nothing unusual.
     """
-    if batch_mode:  # for the RNN-compatible case
+    if ep_len:
+        rewards = rewards.view(-1, ep_len)
+
+        current_reward = 0
+        discounted_rewards = []
+        for reward in rewards.T.flip(0):
+            current_reward = reward + gamma * current_reward
+            discounted_rewards.insert(0, current_reward)
+        result = torch.stack(discounted_rewards).T.reshape(-1)
+        return result
+
+    if batch_mode or ep_len:  # for the RNN-compatible case
         current_reward = 0
         discounted_rewards = []
         for reward in rewards.flip(0):
             current_reward = reward + gamma * current_reward
             discounted_rewards.insert(0, current_reward)
-        return torch.stack(discounted_rewards)
+        return torch.stack(discounted_rewards).view(-1)
 
     else:
-        dones = dones.to(torch.int32)  # Torch can't handle reversing boolean tensors
         current_reward = 0
         discounted_rewards = []
         for reward, done in zip(rewards.flip(0), dones.flip(0)):
@@ -80,7 +94,7 @@ def discount_rewards_to_go(rewards: Tensor, dones: Tensor, gamma: float = 1., ba
                 current_reward = 0
             current_reward = reward + gamma * current_reward
             discounted_rewards.insert(0, current_reward)
-        return torch.tensor(discounted_rewards)
+        return torch.tensor(discounted_rewards).view(-1)
 
 
 def discount_td_rewards(rewards_batch: Tensor,
@@ -102,13 +116,12 @@ def discount_td_rewards(rewards_batch: Tensor,
         next_value = values_batch[i + 1]
 
         returns = rewards + gamma * terminals * returns  # v(s) = r + y*v(s+1)
+        returns_batch.insert(0, returns)
 
         # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
         td_error = rewards + gamma * terminals * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
         advantages = advantages * tau * gamma * terminals + td_error
-
         advantages_batch.insert(0, advantages)
-        returns_batch.insert(0, returns)
 
     return torch.tensor(returns_batch), torch.tensor(advantages_batch)
 
@@ -288,6 +301,13 @@ def concat_batches(batches: List[AgentDataBatch]) -> AgentDataBatch:
     return merged
 
 
+def concat_metrics(metrics: List[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:
+    merged = {}
+    for key in metrics[0]:
+        merged[key] = np.concatenate([metric[key] for metric in metrics], axis=1)
+    return merged
+
+
 def concat_crowd_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDataBatch:
     """Concatenate multiple sets of data in a single batch"""
     if exclude is None:
@@ -399,7 +419,6 @@ class Batcher:
 
         self.reset()
 
-
     def reset(self):
         self.batch_start = 0
         self.batch_end = self.batch_start + self.batch_size
@@ -443,9 +462,9 @@ def unpack(values: Array, keys: List[str]) -> Dict[str, Array]:
 
 def tanh_norm(x: Tensor, a: Tensor, b: Tensor):
     """Transforms the input via tanh to be in the [a, b] range"""
-    return (b-a) * (1 + torch.tanh(x)) / 2 + a
+    return (b - a) * (1 + torch.tanh(x)) / 2 + a
 
 
 def atanh_unnorm(y: Tensor, a: Tensor, b: Tensor):
     """Inverse to the above function w.r.t. the first input, with parameters a,b unchanged"""
-    return torch.atanh(2 / (b-a) * (y - a) - 1)
+    return torch.atanh(2 / (b - a) * (y - a) - 1)

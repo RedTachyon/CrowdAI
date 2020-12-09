@@ -19,17 +19,17 @@ from agents import Agent
 from environments import MultiAgentEnv
 from utils import Timer, with_default_config, write_dict, transpose_batch, concat_batches, AgentDataBatch, DataBatch, \
     np_float, get_episode_rewards
-from collectors import CrowdCollector
+from collectors import CrowdCollector, collect_crowd_data, collect_parallel_unity
 from policy_optimization import CrowdPPOptimizer
 
 
 class Trainer:
     def __init__(self,
                  agent: Agent,
-                 env: MultiAgentEnv,
+                 env_path: str,
                  config: Dict[str, Any]):
         self.agent = agent
-        self.env = env
+        self.env_path = env_path
         self.config = config
 
     def train(self, num_iterations: int,
@@ -43,14 +43,17 @@ class PPOCrowdTrainer(Trainer):
     """This performs training in a sampling paradigm, where each agent is stored, and during data collection,
     some part of the dataset is collected with randomly sampled old agents"""
 
-    def __init__(self, agent: Agent, env: MultiAgentEnv, config: Dict[str, Any]):
-        super().__init__(agent, env, config)
+    def __init__(self, agent: Agent, env_path: str, config: Dict[str, Any]):
+        super().__init__(agent, env_path, config)
 
         default_config = {
             "steps": 500,  # number of steps we want in one episode
+            "workers": 8,
 
             # Tensorboard settings
             "tensorboard_name": None,  # str, set explicitly
+
+            "save_freq": 10,
 
             # PPO
             "ppo_config": {
@@ -63,7 +66,7 @@ class PPOCrowdTrainer(Trainer):
                     "weight_decay": 0,
                     "amsgrad": False
                 },
-                "gamma": 1.,  # Discount factor TODO: check if this works
+                "gamma": 1.,  # Discount factor
 
                 # PPO settings
                 "ppo_steps": 25,  # How many max. gradient updates in one iterations
@@ -80,7 +83,6 @@ class PPOCrowdTrainer(Trainer):
 
         self.config = with_default_config(config, default_config)
 
-        self.collector = CrowdCollector(agent=self.agent, env=self.env)
         self.ppo = CrowdPPOptimizer(self.agent, config=self.config["ppo_config"])
 
         # Setup tensorboard
@@ -99,13 +101,6 @@ class PPOCrowdTrainer(Trainer):
             with open(str(self.path / f"crowd_config.json"), "w") as f:
                 json.dump(self.agent.model.config, f)
 
-            with open(str(self.path / "env_config.json"), "w") as f:
-                try:
-                    env_config = self.env.config
-                    json.dump(env_config, f)
-                except AttributeError:  # if env doesn't have a config for some reason
-                    pass
-
             self.path = str(self.path)
         else:
             self.path = None
@@ -123,11 +118,6 @@ class PPOCrowdTrainer(Trainer):
         timer = Timer()
         step_timer = Timer()
 
-        # Store the first agent
-        # saved_agents = [copy.deepcopy(self.agent.model.state_dict())]
-
-        # List to keep each agent's mean return as a crude skill approximation
-
         if save_path:
             torch.save(self.agent.model, os.path.join(save_path, "base_agent.pt"))
 
@@ -135,7 +125,11 @@ class PPOCrowdTrainer(Trainer):
             ########################################### Collect the data ###############################################
             timer.checkpoint()
 
-            full_batch, collector_metrics = self.collector.collect_data(num_steps=self.config["steps"])
+            full_batch, collector_metrics = collect_parallel_unity(num_workers=self.config["workers"],
+                                                                   num_runs=self.config["workers"],
+                                                                   agent=self.agent,
+                                                                   env_path=self.env_path,
+                                                                   num_steps=self.config["steps"])
 
             data_time = timer.checkpoint()
 
@@ -148,11 +142,8 @@ class PPOCrowdTrainer(Trainer):
 
             ########################################## Save the updated agent ##########################################
 
-            # Save the agent
-            # saved_agents.append(copy.deepcopy(self.agents["Agent0"].model.state_dict()))
-
             # Save the agent to disk
-            if save_path:
+            if save_path and (step % self.config["save_freq"] == 0):
                 # torch.save(old_returns, os.path.join(save_path, "returns.pt"))
                 torch.save(self.agent.model.state_dict(),
                            os.path.join(save_path, "saved_weights", f"weights_{step + 1}"))
@@ -165,7 +156,7 @@ class PPOCrowdTrainer(Trainer):
                             f"crowd/mean_speed_100": np.mean(collector_metrics["mean_speed"][:100]),
                             f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
                             f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
-                            f"crowd/mean_finish_l1": collector_metrics["mean_finish"][-1],
+                            f"crowd/mean_finish_l1": np.mean(collector_metrics["mean_finish"][-1]),
                             f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
 
             write_dict(extra_metric, step, self.writer)

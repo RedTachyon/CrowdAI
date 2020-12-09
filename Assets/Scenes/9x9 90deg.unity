@@ -572,7 +572,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (13)
+      value: Board 9x9 90deg (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -841,12 +846,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (5)
+      value: Board 9x9 90deg (7)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -1117,7 +1122,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (6)
+      value: Board 9x9 90deg (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -1469,12 +1479,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (4)
+      value: Board 9x9 90deg (5)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -1805,12 +1815,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (9)
+      value: Board 9x9 90deg (11)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -2081,12 +2091,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (8)
+      value: Board 9x9 90deg (9)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -2452,7 +2462,7 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -2701,12 +2711,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (14)
+      value: Board 9x9 90deg (10)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -2955,12 +2965,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (11)
+      value: Board 9x9 90deg (14)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -3273,12 +3283,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (2)
+      value: Board 9x9 90deg (3)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -3569,12 +3579,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (12)
+      value: Board 9x9 90deg (13)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -3949,12 +3959,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (7)
+      value: Board 9x9 90deg (6)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -4474,12 +4484,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (3)
+      value: Board 9x9 90deg (2)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -4812,7 +4822,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (10)
+      value: Board 9x9 90deg (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
@@ -5103,12 +5118,12 @@ PrefabInstance:
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_Name
-      value: Board 9x9 90deg (15)
+      value: Board 9x9 90deg (12)
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798617, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112607702000798622, guid: ebcc90e170d4d4ef0902fd66963df478,
         type: 3}

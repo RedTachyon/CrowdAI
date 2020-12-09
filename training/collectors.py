@@ -5,12 +5,14 @@ import gym
 import numpy as np
 import torch
 from torch import Tensor
+import torch.multiprocessing as mp
 from tqdm import trange
 
 from agents import BaseAgent, Agent, StillAgent, RandomAgent
 from preprocessors import simple_padder
-from utils import DataBatch, with_default_config, np_float, transpose_batch, concat_batches, pack, unpack
-from environments import MultiAgentEnv, UnityCrowdEnv
+from utils import DataBatch, with_default_config, np_float, transpose_batch, concat_batches, pack, unpack, \
+    concat_crowd_batch, concat_metrics
+from environments import MultiAgentEnv, UnityCrowdEnv, UnitySimpleCrowdEnv
 
 T = TypeVar('T')
 
@@ -117,7 +119,6 @@ def collect_crowd_data(agent: Agent,
                        include_last: bool = False,
                        reset_start: bool = True
                        ) -> Tuple[DataBatch, Dict]:
-
     """
             Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
@@ -227,8 +228,33 @@ def collect_crowd_data(agent: Agent,
     memory.set_done()
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
-    # TODO: make sure metrics work with parallel environments
+    print("Process done")
     return memory.get_torch_data(), metrics
+
+def _worker(agent: Agent, i: int, env_path: str, num_steps: int) -> Tuple[DataBatch, Dict]:
+    env = UnitySimpleCrowdEnv(file_name=env_path, no_graphics=True, worker_id=i, timeout_wait=5)
+    env.engine_channel.set_configuration_parameters(time_scale=100)
+    data, metrics = collect_crowd_data(agent, env, num_steps)
+    env.close()
+    return data, metrics
+
+def collect_parallel_unity(num_workers: int,
+                           num_runs: int,
+                           agent: Agent,
+                           env_path: str,
+                           num_steps: int,
+                           # deterministic: bool = False,
+                           # include_last: bool = False,
+                           # reset_start: bool = True
+                           ) -> Tuple[DataBatch, Dict]:
+
+    with mp.Pool(num_workers) as p:
+        result = p.starmap(_worker, [(agent, i, env_path, num_steps) for i in range(num_runs)])
+
+        data = concat_batches([concat_crowd_batch(batch[0]) for batch in result])
+        metrics = concat_metrics([batch[1] for batch in result])
+
+    return data, metrics
 
 
 class CrowdCollector:
@@ -300,9 +326,9 @@ class CrowdCollector:
         # }
 
         metrics = {
-            "mean_distance": [],#[start_metrics[0]],
-            "mean_speed": [],#[start_metrics[1]],
-            "mean_finish": []#[start_metrics[2]]
+            "mean_distance": [],  # [start_metrics[0]],
+            "mean_speed": [],  # [start_metrics[1]],
+            "mean_finish": []  # [start_metrics[2]]
         }
 
         end_flag = False
@@ -315,8 +341,6 @@ class CrowdCollector:
             #     for agent_id in obs
             # }
 
-            # TODO: have a separate agent for each behavior in the environment
-            # TODO: reintroduce recurrent state management
 
             obs_array, agent_keys = pack(obs_dict)
             obs_tensor = torch.tensor(obs_array)
@@ -358,7 +382,6 @@ class CrowdCollector:
         self.memory.set_done()
         metrics = {key: np.array(value) for key, value in metrics.items()}
 
-        # TODO: make sure metrics work with parallel environments
         return self.memory.get_torch_data(), metrics
 
     def reset(self):

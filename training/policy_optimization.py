@@ -46,6 +46,8 @@ class CrowdPPOptimizer:
 
             "max_grad_norm": 0.5,
 
+            "ep_len": 0,
+
             # GPU
             "use_gpu": False,
         }
@@ -86,7 +88,8 @@ class CrowdPPOptimizer:
         optimizer = self.optimizer
 
         ####################################### Unpack and prepare the data #######################################
-        agent_batch: AgentDataBatch = concat_crowd_batch(data_batch)
+        # agent_batch: AgentDataBatch = concat_crowd_batch(data_batch)
+        agent_batch = data_batch
 
         if self.config["use_gpu"]:
             agent_batch = batch_to_gpu(agent_batch)
@@ -114,8 +117,8 @@ class CrowdPPOptimizer:
         # Compute discounted rewards to go
         discounted_batch = discount_rewards_to_go(reward_batch,
                                                   done_batch,
-                                                  self.gamma)
-
+                                                  self.gamma,
+                                                  ep_len=self.config["ep_len"])
         # Move data to GPU if applicable
         if self.config["use_gpu"]:
             discounted_batch = discounted_batch.cuda()
@@ -173,7 +176,6 @@ class CrowdPPOptimizer:
         agent.cpu()
 
         # Training-related metrics
-        metrics[f"{agent_id}/time_update"] = timer.checkpoint()
         metrics[f"{agent_id}/kl_divergence"] = kl_divergence
         metrics[f"{agent_id}/ppo_steps_made"] = ppo_step + 1
         metrics[f"{agent_id}/policy_loss"] = masked_mean(policy_loss, mask).cpu().item()
@@ -207,6 +209,8 @@ class CrowdPPOptimizer:
         # Other metrics
         metrics[f"{agent_id}/episodes_this_iter"] = len(ep_lens)
         metrics[f"{agent_id}/mean_entropy"] = torch.mean(entropy_batch).item()
+
+        metrics[f"{agent_id}/time_update"] = timer.checkpoint()
 
         # Write the metrics to tensorboard
         write_dict(metrics, step, writer)

@@ -49,7 +49,7 @@ class MLPModel(BaseModel):
         super().__init__(config)
 
         default_config = {
-            "input_size": 90,
+            "input_size": 94,
             "num_actions": 2,
             "activation": "leaky_relu",
 
