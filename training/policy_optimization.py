@@ -143,6 +143,7 @@ class CrowdPPOptimizer:
             # Evaluate again after the PPO step, for new values and gradients
             logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
 
+            # FIXME: something's off with logprobs later on in the training
             # Compute the KL divergence for early stopping
             kl_divergence = masked_mean(old_logprobs_batch - logprob_batch, mask).item()
             if kl_divergence > self.config["target_kl"]:

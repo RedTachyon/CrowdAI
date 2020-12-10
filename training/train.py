@@ -22,6 +22,10 @@ if __name__ == '__main__':
                         help="Path to the Unity environment binary")
     parser.add_argument("--name", "-n", action="store", type=str, default=None,
                         help="Name of the tb directory to store the logs")
+    parser.add_argument("--start_dir", "-sd", action="store", type=str, default=None,
+                        help="Name of the tb directory containing the run from which we want to (re)start the trianing")
+    parser.add_argument("--start_idx", "-si", action="store", type=int, default=-1,
+                        help="From which iteration we should start (only if start_dir is set)")
     parser.add_argument("--learning_rate", "-lr", action="store", type=float, default=1e-4,
                         help="Initial Adam learning rate")
     parser.add_argument("--entropy_bonus", "-eb", action="store", type=float, default=1e-2,
@@ -71,13 +75,16 @@ if __name__ == '__main__':
         torch.tensor([1., 1.])
     )
 
-    model = MLPModel({
-        "input_size": 94,
-    })
+    if args.start_dir:
+        agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
+    else:
+        model = MLPModel({
+            "input_size": 94,
+        })
+        agent = Agent(model, action_range=action_range)
 
-    model.share_memory()
+    agent.model.share_memory()
 
-    agent = Agent(model, action_range=action_range)
 
     trainer = PPOCrowdTrainer(agent, args.env, trainer_config)
     trainer.train(args.iters, disable_tqdm=False, save_path=trainer.path)
