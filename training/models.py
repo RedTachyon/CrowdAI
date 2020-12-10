@@ -55,7 +55,7 @@ class MLPModel(BaseModel):
 
             "hidden_sizes": (64, 64),
 
-            "sigma0": 0.1,
+            "sigma0": 0.3,
 
             "initializer": "kaiming_uniform",
         }

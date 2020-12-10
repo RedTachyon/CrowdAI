@@ -54,7 +54,7 @@ if __name__ == '__main__':
                 "weight_decay": 0,
                 "amsgrad": False
             },
-            "gamma": 0.99,  # Discount factor
+            "gamma": 0.95,  # Discount factor
 
             # PPO settings
             "ppo_steps": 25,  # How many max. gradient updates in one iterations
@@ -78,9 +78,19 @@ if __name__ == '__main__':
     if args.start_dir:
         agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
     else:
-        model = MLPModel({
+        model_config = {
             "input_size": 94,
-        })
+            "num_actions": 2,
+            "activation": "leaky_relu",
+
+            "hidden_sizes": (64, 64),
+
+            "sigma0": 0.3,
+
+            "initializer": "kaiming_uniform",
+        }
+
+        model = MLPModel(model_config)
         agent = Agent(model, action_range=action_range)
 
     agent.model.share_memory()
