@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("--name", "-n", action="store", type=str, default=None,
                         help="Name of the tb directory to store the logs")
     parser.add_argument("--start_dir", "-sd", action="store", type=str, default=None,
-                        help="Name of the tb directory containing the run from which we want to (re)start the trianing")
+                        help="Name of the tb directory containing the run from which we want to (re)start the training")
     parser.add_argument("--start_idx", "-si", action="store", type=int, default=-1,
                         help="From which iteration we should start (only if start_dir is set)")
     parser.add_argument("--learning_rate", "-lr", action="store", type=float, default=1e-4,
@@ -70,10 +70,12 @@ if __name__ == '__main__':
         }
     }
 
-    action_range = (
-        torch.tensor([-.3, -1.]),
-        torch.tensor([1., 1.])
-    )
+    # action_range = (
+    #     torch.tensor([-.3, -1.]),
+    #     torch.tensor([1., 1.])
+    # )
+
+    action_range = None
 
     if args.start_dir:
         agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)

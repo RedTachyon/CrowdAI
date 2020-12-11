@@ -76,7 +76,7 @@ class Agent(BaseAgent):
 
         super().__init__(model)
         self.stateful = model.stateful
-        self.action_range = tuple((x.view(1, -1) for x in action_range))
+        self.action_range = None if action_range is None else tuple((x.view(1, -1) for x in action_range))
 
     def compute_actions(self, obs_batch: Tensor,
                         state_batch: Tuple = (),
@@ -105,6 +105,8 @@ class Agent(BaseAgent):
 
         logprobs = action_distribution.log_prob(actions).sum(1)
 
+        # TODO: rethink this so that I don't need this weird process? MIGHT be source of instabilities
+        #  also, test this?
         if self.action_range:
             a, b = self.action_range
             out_actions = tanh_norm(actions, a, b)
