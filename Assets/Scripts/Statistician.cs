@@ -12,6 +12,7 @@ public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
     protected Dictionary<Transform, bool> _finished;
+    protected Dictionary<Transform, bool> _collision;
 
 
     public override void CollectObservations(VectorSensor sensor)
@@ -24,8 +25,8 @@ public class Statistician : Agent
         foreach (Transform agent in transform)
         {
             // Get distance from goal
-            var agentPosition = agent.position;
-            var goalPosition = agent.GetComponent<AgentController>().goal.position;
+            var agentPosition = agent.localPosition;
+            var goalPosition = agent.GetComponent<AgentController>().goal.localPosition;
 
             var distance = Vector3.Distance(agentPosition, goalPosition);
             distances.Add(distance);
@@ -49,4 +50,22 @@ public class Statistician : Agent
         // Debug.Log(finished);
     }
     
+    public void ReachGoal(Walker agent)
+    {
+        _finished[agent.transform] = true;
+        // agent.EndEpisode();
+        // agent.Freeze();
+
+        if (!_finished.Values.Contains(false))
+        {
+            
+            // _done = true;
+        }
+    }
+
+    public void RecordCollision(Walker agent)
+    {
+        
+    }
+
 }

@@ -164,7 +164,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
 
 # DEPRECATED
-class UnityCrowdEnv(MultiAgentEnv):
+class DEPRECATEDUnityCrowdEnv(MultiAgentEnv):
 
     def __init__(self, *args, **kwargs):
 

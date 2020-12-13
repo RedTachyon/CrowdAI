@@ -27,12 +27,13 @@ public class AgentSensor : ISensor
     // IDEA: use Physics.OverlapSphere to find all objects in range -> sort them by distance? -> get the ones in front of object via some smart dot product
     public int[] GetObservationShape()
     {
-        int[] shape = {3};
+        int[] shape = {_numAgents * 4};
         return shape;
     }
 
     public int Write(ObservationWriter writer)
     {
+        const float nan = 1e6f;
         
         var colliders = Physics.OverlapSphere(Transform.localPosition, _radius)
             .Where(c => c.CompareTag("Agent"))
@@ -60,7 +61,8 @@ public class AgentSensor : ISensor
 
         for (var i = colliders.Length; i < _numAgents; i++)
         {
-            var vals = new[] {float.NaN, float.NaN, float.NaN, float.NaN};
+            var vals = new[] {nan, nan, nan, nan};
+            // var vals = new[] {0f, 0f, 0f, 0f};
             writer.AddRange(vals, offset);
             offset += 4;
             

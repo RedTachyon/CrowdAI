@@ -11,6 +11,7 @@
           <e p="AgentSensor.cs" t="Include" />
           <e p="AgentSensorComponent.cs" t="Include" />
           <e p="Manager.cs" t="Include" />
+          <e p="ManagerRandom.cs" t="Include" />
           <e p="Statistician.cs" t="Include" />
           <e p="Walker.cs" t="Include" />
         </e>

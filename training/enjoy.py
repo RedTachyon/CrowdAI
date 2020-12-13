@@ -6,7 +6,7 @@ import torch
 
 from agents import Agent
 from collectors import collect_crowd_data, collect_parallel_unity
-from environments import UnityCrowdEnv, UnitySimpleCrowdEnv
+from environments import UnitySimpleCrowdEnv
 from models import BaseModel, MLPModel, FancyMLPModel
 from trainers import PPOCrowdTrainer
 

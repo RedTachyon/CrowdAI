@@ -151,7 +151,7 @@ def get_activation(act_name: str) -> Callable[[Tensor], Tensor]:
         "elu": F.elu,
         "leaky_relu": F.leaky_relu,
         "sigmoid": F.sigmoid,
-        "tanh": F.tanh,
+        "tanh": torch.tanh,
         "softmax": F.softmax,
         "gelu": lambda x: x * F.sigmoid(1.702 * x)
     }

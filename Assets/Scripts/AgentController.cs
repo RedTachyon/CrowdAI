@@ -99,7 +99,7 @@ public class AgentController : Walker
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
             AddReward(0.1f / _decisionPeriod);
-            GetComponentInParent<Manager>().ReachGoal(this);
+            GetComponentInParent<Statistician>().ReachGoal(this);
             _material.color = Color.blue;
             
             // Debug.Log("Collecting a reward");

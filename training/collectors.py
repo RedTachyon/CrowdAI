@@ -12,7 +12,7 @@ from agents import BaseAgent, Agent, StillAgent, RandomAgent
 from preprocessors import simple_padder
 from utils import DataBatch, with_default_config, np_float, transpose_batch, concat_batches, pack, unpack, \
     concat_crowd_batch, concat_metrics
-from environments import MultiAgentEnv, UnityCrowdEnv, UnitySimpleCrowdEnv
+from environments import MultiAgentEnv, DEPRECATEDUnityCrowdEnv, UnitySimpleCrowdEnv
 
 T = TypeVar('T')
 

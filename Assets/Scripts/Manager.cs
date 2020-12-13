@@ -30,24 +30,11 @@ public class Manager : Statistician
         
     }
     
-
-    public void ReachGoal(AgentController agent)
-    {
-        _finished[agent.transform] = true;
-        // agent.EndEpisode();
-        // agent.Freeze();
-
-        if (!_finished.Values.Contains(false))
-        {
-            
-            // _done = true;
-        }
-    }
-
+    
 
     public override void OnEpisodeBegin()
     {
-        Debug.Log("Manager starting an episode");
+        // Debug.Log("Manager starting an episode");
         _finished.Clear();
         // _done = false;
         
