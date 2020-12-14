@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 10
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 02000000
     VectorActionDescriptions: []
@@ -158,7 +158,7 @@ MonoBehaviour:
   MaxStep: 0
   moveSpeed: 25
   rotationSpeed: 3
-  dragFactor: 10
+  dragFactor: 5
   goal: {fileID: 0}
 --- !u!114 &5454719560782718980
 MonoBehaviour:
@@ -190,7 +190,7 @@ MonoBehaviour:
   m_DetectableTags:
   - Obstacle
   - Agent
-  m_RaysPerDirection: 10
+  m_RaysPerDirection: 0
   m_MaxRayDegrees: 75
   m_SphereCastRadius: 0.1
   m_RayLength: 20

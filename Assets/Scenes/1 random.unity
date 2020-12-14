@@ -225,6 +225,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -552,6 +557,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -620,6 +630,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -690,6 +705,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -758,6 +778,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -828,6 +853,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -896,6 +926,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -966,6 +1001,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -1034,6 +1074,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -1104,6 +1149,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -1172,6 +1222,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -1242,6 +1297,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -1310,6 +1370,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
@@ -1380,6 +1445,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board 1 random (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_RootOrder
@@ -1448,6 +1518,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Board 1 random (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348924, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}

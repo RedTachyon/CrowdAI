@@ -44,41 +44,46 @@ public class AgentRandom : Walker
         Vector3 goalPosition = goal.localPosition;
         
         // Position: 2
-        sensor.AddObservation(position.x / 10f);
-        sensor.AddObservation(position.z / 10f);
+        // sensor.AddObservation(position.x / 10f);
+        // sensor.AddObservation(position.z / 10f);
         
         // Rotation: 1
-        sensor.AddObservation(rotation.eulerAngles.y / 360f);
+        // sensor.AddObservation(rotation.eulerAngles.y / 360f);
         
         // Goal position: 2
-        sensor.AddObservation(goalPosition.x / 10f);
-        sensor.AddObservation(goalPosition.z / 10f);
+        // sensor.AddObservation(goalPosition.x / 10f);
+        // sensor.AddObservation(goalPosition.z / 10f);
         
         // Relative position: 2
         var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
-        sensor.AddObservation(relPosition.x / 10f);
-        sensor.AddObservation(relPosition.z / 10f);
+        sensor.AddObservation(relPosition.x / 20f);
+        sensor.AddObservation(relPosition.z / 20f);
         
         Debug.Log(relPosition);
         Debug.DrawLine(transform.position, transform.position + rotation * relPosition, Color.red, 0.02f);
 
-        // Velocity: 2
-        sensor.AddObservation(velocity.x / 3f);
-        sensor.AddObservation(velocity.z / 3f);
+        // Velocity: 2, up to ~5
+        sensor.AddObservation(velocity.x / 5f);
+        sensor.AddObservation(velocity.z / 5f);
         
-        sensor.AddObservation(Unfrozen);
+        // Debug.Log(velocity);
+        // sensor.AddObservation(Unfrozen);
 
         // REWARDS
         
         // Compute the distance-based reward - temporarily (?) deprecated
-        // var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
+        var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
         var currentDistance = Vector3.Distance(position, goalPosition);
-        // var diff = prevDistance - currentDistance;
-        //
-        // AddReward(1f * diff);  // Add reward for getting closer to the goal
+        // Debug.Log(currentDistance);
+        // Up to ~0.1
+        var diff = prevDistance - currentDistance;
+        
+        // Debug.Log(diff);
+        
+        AddReward(1f * diff);  // Add reward for getting closer to the goal
 
         // Maximum distance: 20; this puts it in the range [0, 0.1]
-        AddReward(-currentDistance / 200f);
+        // AddReward(-currentDistance / 200f);
         
         // AddReward(-0.01f);  // Small penalty at each step
         // Debug.Log($"Distance {currentDistance}");
@@ -87,18 +92,20 @@ public class AgentRandom : Walker
         PreviousPosition = position;
 
         _material.color = _originalColor;
+        
+        Debug.Log($"Total reward: {GetCumulativeReward()}");
 
     }
     
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         // Debug.Log("Hitting a trigger");
         
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(0.1f);
+            AddReward(2f);
             GetComponentInParent<ManagerRandom>().ReachGoal(this);
             _material.color = Color.blue;
             
