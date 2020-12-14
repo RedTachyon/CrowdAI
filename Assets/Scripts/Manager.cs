@@ -14,10 +14,9 @@ public class Manager : Statistician
 
     public override void Initialize()
     {
-        
+        base.Initialize();
 
-        QualitySettings.vSyncCount = 0;
-        _finished = new Dictionary<Transform, bool>();
+        // _finished = new Dictionary<Transform, bool>();
         _startPos = new Dictionary<Transform, Vector3>();
         _startRot = new Dictionary<Transform, Quaternion>();
         

@@ -20,23 +20,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/9x9 90deg_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Board 9x9 90deg.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Board 9x9 90deg.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Board 9x9 90deg.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Board 9x9 90deg.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Board.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Board.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Goal (1).prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Goal (1).prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Goal.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Goal.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Person.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg random.unity" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/9x9 90deg random.unity.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Manager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/DynamicsManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/DynamicsManager.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/enjoy.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/enjoy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/environments.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainers.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,13 +73,14 @@
       <list>
         <option value="$PROJECT_DIR$/Assets/Scripts/physics.md" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Controller.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
         <option value="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
       </list>
     </option>
@@ -146,6 +151,7 @@
       <workItem from="1607680081584" duration="142000" />
       <workItem from="1607682992638" duration="3930000" />
       <workItem from="1607859851284" duration="3000" />
+      <workItem from="1607859859609" duration="2575000" />
     </task>
     <servers />
   </component>

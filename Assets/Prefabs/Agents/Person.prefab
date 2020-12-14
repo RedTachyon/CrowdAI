@@ -192,7 +192,7 @@ MonoBehaviour:
   - Agent
   m_RaysPerDirection: 10
   m_MaxRayDegrees: 75
-  m_SphereCastRadius: 0.25
+  m_SphereCastRadius: 0.1
   m_RayLength: 20
   m_RayLayerMask:
     serializedVersion: 2
@@ -200,8 +200,8 @@ MonoBehaviour:
   m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0
-  m_EndVerticalOffset: 0
+  m_StartVerticalOffset: 0.7
+  m_EndVerticalOffset: 0.7
 --- !u!1 &2634057980368055816
 GameObject:
   m_ObjectHideFlags: 0

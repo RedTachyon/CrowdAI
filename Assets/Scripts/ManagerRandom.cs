@@ -10,16 +10,7 @@ using Unity.MLAgents.SideChannels;
 public class ManagerRandom : Statistician
 {
 
-
-    public override void Initialize()
-    {
-        
-
-        QualitySettings.vSyncCount = 0;
-        _finished = new Dictionary<Transform, bool>();
-        
-    }
-
+    
     public override void OnEpisodeBegin()
     {
         // Debug.Log("Manager starting an episode");
@@ -39,9 +30,9 @@ public class ManagerRandom : Statistician
                     UnityEngine.Random.Range(-9f, 9f)
                 );
 
-                agent.GetComponent<AgentController>().goal.localPosition = new Vector3(
+                agent.GetComponent<AgentRandom>().goal.localPosition = new Vector3(
                     UnityEngine.Random.Range(-9f, 9f),
-                    0.25f,
+                    0.15f,
                     UnityEngine.Random.Range(-9f, 9f)
                 );
                 
@@ -50,7 +41,7 @@ public class ManagerRandom : Statistician
                 agent.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         
-                agent.GetComponent<AgentController>().PreviousPosition = agent.localPosition;
+                agent.GetComponent<AgentRandom>().PreviousPosition = agent.localPosition;
             }
         }
     }
@@ -58,5 +49,15 @@ public class ManagerRandom : Statistician
     public override void Heuristic(float[] actionsOut)
     {
         actionsOut[0] = 0f;
+    }
+
+    public new void ReachGoal(Walker agent)
+    {
+        base.ReachGoal(agent);
+        Debug.Log("I'm here!");
+        agent.goal.localPosition = new Vector3(
+            UnityEngine.Random.Range(-9f, 9f),
+            0.15f,
+            UnityEngine.Random.Range(-9f, 9f));
     }
 }

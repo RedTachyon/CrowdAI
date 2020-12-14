@@ -12,8 +12,13 @@ public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
     protected Dictionary<Transform, bool> _finished;
-    protected Dictionary<Transform, bool> _collision;
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        
+        _finished = new Dictionary<Transform, bool>();
+    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -26,7 +31,7 @@ public class Statistician : Agent
         {
             // Get distance from goal
             var agentPosition = agent.localPosition;
-            var goalPosition = agent.GetComponent<AgentController>().goal.localPosition;
+            var goalPosition = agent.GetComponent<Walker>().goal.localPosition;
 
             var distance = Vector3.Distance(agentPosition, goalPosition);
             distances.Add(distance);

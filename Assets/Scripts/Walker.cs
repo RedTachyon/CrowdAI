@@ -16,6 +16,8 @@ public class Walker : Agent
 
     protected int Unfrozen = 1;
 
+    public Transform goal;
+
 
     public override void Initialize()
     {

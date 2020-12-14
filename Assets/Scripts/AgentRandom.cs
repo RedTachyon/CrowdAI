@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using UnityEngine;
 using Unity.MLAgents;
@@ -10,13 +10,11 @@ using Unity.MLAgents.Sensors;
 // -0.01 reward per decision step for collisions (-1 reward per 100 steps)
 // -0.01 reward per decision step
 
-// TODO: Change localPosition to position where applicable... ffs
-public class AgentController : Walker
+public class AgentRandom : Walker
 {
     // private Vector3 _startPosition;
     // private Quaternion _startRotation;
 
-    private int _decisionPeriod;
     private Material _material;
     private Color _originalColor;
     
@@ -26,7 +24,6 @@ public class AgentController : Walker
     public override void Initialize()
     {
         base.Initialize();
-        _decisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
         _material = GetComponent<Renderer>().material;
         _originalColor = _material.color;
         
@@ -101,8 +98,8 @@ public class AgentController : Walker
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(0.1f / _decisionPeriod);
-            GetComponentInParent<Statistician>().ReachGoal(this);
+            AddReward(0.1f);
+            GetComponentInParent<ManagerRandom>().ReachGoal(this);
             _material.color = Color.blue;
             
             // Debug.Log("Collecting a reward");
@@ -113,7 +110,7 @@ public class AgentController : Walker
     {
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-0.1f / _decisionPeriod);
+            AddReward(-0.1f);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
 

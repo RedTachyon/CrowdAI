@@ -83,7 +83,7 @@ if __name__ == '__main__':
         model_config = {
             "input_size": 94,
             "num_actions": 2,
-            "activation": "leaky_relu",
+            "activation": "tanh",
 
             "hidden_sizes": (64, 64),
 
