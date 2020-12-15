@@ -54,6 +54,7 @@ class MLPModel(BaseModel):
             "activation": "leaky_relu",
 
             "hidden_sizes": (64, 64),
+            "separate_value": False,
 
             "sigma0": 0.3,
 
@@ -74,6 +75,13 @@ class MLPModel(BaseModel):
         ])
 
         self.policy_head = nn.Linear(layer_sizes[-1], num_actions)
+
+        if self.config["separate_value"]:
+            self.value_layers = nn.ModuleList([
+                nn.Linear(in_size, out_size)
+                for in_size, out_size in zip(layer_sizes, layer_sizes[1:])
+            ])
+
         self.value_head = nn.Linear(layer_sizes[-1], 1)
 
         self.std = nn.Parameter(torch.ones(1, num_actions) * self.config["sigma0"])
@@ -95,12 +103,20 @@ class MLPModel(BaseModel):
 
     def forward(self, x: Tensor,
                 state: Tuple = ()) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
-        
+        inp = x
         for layer in self.hidden_layers:
             x = layer(x)
             x = self.activation(x)
 
         action_mu = self.policy_head(x)
+
+        # TODO: make value evaluation optional?
+        if self.config["separate_value"]:
+            x = inp
+            for layer in self.value_layers:
+                x = layer(x)
+                x = self.activation(x)
+
         value = self.value_head(x)
 
         action_distribution = Normal(loc=action_mu, scale=self.std)

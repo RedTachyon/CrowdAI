@@ -81,11 +81,12 @@ if __name__ == '__main__':
         agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
     else:
         model_config = {
-            "input_size": 94,
+            "input_size": 8,
             "num_actions": 2,
             "activation": "tanh",
 
             "hidden_sizes": (64, 64),
+            "separate_value": True,
 
             "sigma0": 0.3,
 
