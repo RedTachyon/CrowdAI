@@ -146,7 +146,7 @@ class CrowdPPOptimizer:
             # FIXME: Sometimes logprob_batch can be inf - figure out why the fuck
             # Compute the KL divergence for early stopping
             kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
-            if torch.isnan(kl_divergence): breakpoint()
+            if np.isnan(kl_divergence): breakpoint()
             if kl_divergence > self.config["target_kl"]:
                 break
 
