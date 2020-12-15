@@ -38,9 +38,10 @@ public class Walker : Agent
         Vector3 force = transform.forward * linearSpeed * moveSpeed;
 
         // Reduce the velocity friction-like
-        // Vector3 drag = -dragFactor * _rigidbody.velocity.magnitude * _rigidbody.velocity.normalized;
-        Vector3 drag = -dragFactor * Rigidbody.velocity;
-        Rigidbody.AddForce(force + drag);
+        // Vector3 drag = -dragFactor * Rigidbody.velocity;
+        // Rigidbody.AddForce(force + drag);
+
+        Rigidbody.velocity = force / 10f;
 
         // Apply the rotation
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;

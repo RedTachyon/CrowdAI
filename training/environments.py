@@ -79,7 +79,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         done_dict: DoneDict = {}
         info_dict: InfoDict = {}
 
-        has_decision = False
+        # has_decision = False
 
         for name in names:
             decisions, terminals = self.unity.get_steps(name)
@@ -97,15 +97,15 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
                 obs = np.concatenate([o[dec_ids.index(idx)] for o in dec_obs])
                 obs_dict[agent_name] = obs
                 reward_dict[agent_name] = decisions.reward[dec_ids.index(idx)]
-                done_dict[agent_name] = obs[-1] == 0.
-                has_decision = True
+                done_dict[agent_name] = False
+                # has_decision = True
 
         done_dict["__all__"] = len(self.active_agents) == 0
 
         m_decisions, _ = self.unity.get_steps(self.manager)
         m_obs = m_decisions.obs[0]
 
-        info_dict["has_decision"] = has_decision
+        # info_dict["has_decision"] = has_decision
         info_dict["metrics"] = m_obs
 
         return obs_dict, reward_dict, done_dict, info_dict

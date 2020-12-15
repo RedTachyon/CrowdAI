@@ -156,9 +156,9 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  moveSpeed: 25
+  moveSpeed: 35
   rotationSpeed: 3
-  dragFactor: 5
+  dragFactor: 10
   goal: {fileID: 0}
 --- !u!114 &5454719560782718980
 MonoBehaviour:

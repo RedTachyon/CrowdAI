@@ -228,7 +228,9 @@ def collect_crowd_data(agent: Agent,
     memory.set_done()
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
-    print("Process done")
+    # FIXME: sometimes gives an extra done?
+
+    # print("Process done")
     return memory.get_torch_data(), metrics
 
 def _worker(agent: Agent, i: int, env_path: str, num_steps: int) -> Tuple[DataBatch, Dict]:

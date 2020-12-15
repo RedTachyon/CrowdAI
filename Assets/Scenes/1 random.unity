@@ -1588,6 +1588,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4071786924875301932, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: m_ObservationStacks
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071786924875301934, guid: b28a9401b4a8549a0a6ced60e282e60b,
+        type: 3}
+      propertyPath: rotationSpeed
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4071786926467348923, guid: b28a9401b4a8549a0a6ced60e282e60b,
         type: 3}
       propertyPath: m_Name

@@ -32,7 +32,7 @@ public class ManagerRandom : Statistician
 
                 agent.GetComponent<AgentRandom>().goal.localPosition = new Vector3(
                     UnityEngine.Random.Range(-9f, 9f),
-                    0.15f,
+                    0.25f,
                     UnityEngine.Random.Range(-9f, 9f)
                 );
                 
@@ -54,10 +54,10 @@ public class ManagerRandom : Statistician
     public new void ReachGoal(Walker agent)
     {
         base.ReachGoal(agent);
-        Debug.Log("I'm here!");
-        agent.goal.localPosition = new Vector3(
-            UnityEngine.Random.Range(-9f, 9f),
-            0.15f,
-            UnityEngine.Random.Range(-9f, 9f));
+        // Debug.Log("I'm here!");
+        // agent.goal.localPosition = new Vector3(
+        //     UnityEngine.Random.Range(-9f, 9f),
+        //     0.15f,
+        //     UnityEngine.Random.Range(-9f, 9f));
     }
 }

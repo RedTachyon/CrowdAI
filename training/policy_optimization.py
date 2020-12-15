@@ -99,8 +99,8 @@ class CrowdPPOptimizer:
         #     agent_batch, mask = simple_padder(agent_batch)
         #     ep_lens = tuple(mask.sum(0).cpu().numpy())
         # else:
-        mask = torch.ones_like(agent_batch['rewards'])
-        ep_lens = None
+        # mask = torch.ones_like(agent_batch['rewards'])
+        # ep_lens = None
 
         # Unpacking the data for convenience
 
@@ -126,8 +126,8 @@ class CrowdPPOptimizer:
         # breakpoint()
         # Compute the normalized advantage
         advantages_batch = (discounted_batch - value_batch).detach()
-        advantages_batch = (advantages_batch - masked_mean(advantages_batch, mask))
-        advantages_batch = advantages_batch / (torch.sqrt(masked_mean(advantages_batch ** 2, mask)) + 1e-8)
+        advantages_batch = (advantages_batch - advantages_batch.mean())
+        advantages_batch = advantages_batch / (torch.sqrt(torch.mean(advantages_batch ** 2) + 1e-8))
 
         # Initialize metrics
         kl_divergence = 0.
@@ -145,7 +145,8 @@ class CrowdPPOptimizer:
 
             # FIXME: Sometimes logprob_batch can be inf - figure out why the fuck
             # Compute the KL divergence for early stopping
-            kl_divergence = masked_mean(old_logprobs_batch - logprob_batch, mask).item()
+            kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
+            if torch.isnan(kl_divergence): breakpoint()
             if kl_divergence > self.config["target_kl"]:
                 break
 
@@ -161,9 +162,11 @@ class CrowdPPOptimizer:
             policy_loss = -torch.min(surr1, surr2)
             value_loss = (value_batch - discounted_batch) ** 2
 
-            loss = (masked_mean(policy_loss, mask)
-                    + (self.config["value_loss_coeff"] * masked_mean(value_loss, mask))
-                    - (entropy_coeff * masked_mean(entropy_batch, mask)))
+            loss = (
+                    policy_loss.mean()
+                    + (self.config["value_loss_coeff"] * value_loss.mean())
+                    - (entropy_coeff * entropy_batch.mean())
+                    )
 
             ############################################# Update step ##############################################
             optimizer.zero_grad()
@@ -179,10 +182,10 @@ class CrowdPPOptimizer:
         # Training-related metrics
         metrics[f"{agent_id}/kl_divergence"] = kl_divergence
         metrics[f"{agent_id}/ppo_steps_made"] = ppo_step + 1
-        metrics[f"{agent_id}/policy_loss"] = masked_mean(policy_loss, mask).cpu().item()
-        metrics[f"{agent_id}/value_loss"] = masked_mean(value_loss, mask).cpu().item()
+        metrics[f"{agent_id}/policy_loss"] = policy_loss.mean().cpu().item()
+        metrics[f"{agent_id}/value_loss"] = value_loss.mean().cpu().item()
         metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
-        metrics[f"{agent_id}/total_steps"] = mask.cpu().numpy().sum()
+        metrics[f"{agent_id}/total_steps"] = len(reward_batch)
 
         # ep_lens = ep_lens if self.config["pad_sequences"] else get_episode_lens(done_batch.cpu())
         ep_lens = get_episode_lens(done_batch.cpu())

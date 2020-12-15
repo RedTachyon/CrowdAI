@@ -20,12 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/training/base_config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/environments.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/policy_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/policy_optimization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,11 +63,11 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
         <option value="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
       </list>
     </option>
@@ -136,7 +138,7 @@
       <workItem from="1607680081584" duration="142000" />
       <workItem from="1607682992638" duration="3930000" />
       <workItem from="1607859851284" duration="3000" />
-      <workItem from="1607859859609" duration="4250000" />
+      <workItem from="1607859859609" duration="9139000" />
     </task>
     <servers />
   </component>
