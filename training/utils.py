@@ -101,7 +101,7 @@ def discount_td_rewards(rewards_batch: Tensor,
                         values_batch: Tensor,
                         dones_batch: Tensor,
                         gamma: float = 0.99,
-                        tau: float = 0.95) -> Tuple[Tensor, Tensor]:
+                        lam: float = 0.95) -> Tuple[Tensor, Tensor]:
     """An alternative TD-based method of return-to-go and advantage estimation via GAE"""
     returns_batch = []
     advantages_batch = []
@@ -120,7 +120,7 @@ def discount_td_rewards(rewards_batch: Tensor,
 
         # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
         td_error = rewards + gamma * terminals * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
-        advantages = advantages * tau * gamma * terminals + td_error
+        advantages = advantages * lam * gamma * terminals + td_error
         advantages_batch.insert(0, advantages)
 
     return torch.tensor(returns_batch), torch.tensor(advantages_batch)
