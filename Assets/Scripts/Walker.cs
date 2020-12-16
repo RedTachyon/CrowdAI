@@ -49,10 +49,10 @@ public class Walker : Agent
 
         // Rigidbody.velocity = force / 10f;
 
-
-
-        Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity.normalized);
-
+        if (Rigidbody.velocity.magnitude > 0f)
+        {
+            Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity.normalized);
+        }
     }
 
     public override void Heuristic(float[] actionsOut)

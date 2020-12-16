@@ -112,12 +112,14 @@ def discount_td_rewards(data_batch: AgentDataBatch,
 
     for i in reversed(range(len(rewards_batch) - 1)):
         rewards = rewards_batch[i]
-        value = values_batch[i]
-        next_value = values_batch[i + 1]
+
 
         returns = rewards + gamma * returns  # v(s) = r + y*v(s+1)
         returns_batch.insert(0, returns)
 
+        value = values_batch[i]
+        next_value = values_batch[i + 1]
+        
         # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
         delta = rewards + gamma * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
         advantages = advantages * lam * gamma + delta

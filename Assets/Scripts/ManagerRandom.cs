@@ -6,6 +6,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
+using Random = System.Random;
 
 public class ManagerRandom : Statistician
 {
@@ -16,6 +17,8 @@ public class ManagerRandom : Statistician
         // Debug.Log("Manager starting an episode");
         _finished.Clear();
         // _done = false;
+        // Debug.Log(UnityEngine.Random.state.GetHashCode());
+        // UnityEngine.Random.InitState(DateTime.Now.Millisecond);
         
         foreach (Transform agent in transform)
         {
