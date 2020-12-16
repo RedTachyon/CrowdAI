@@ -21,13 +21,16 @@
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/environments.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/policy_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/policy_optimization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +48,7 @@
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Sensors/SensorComponent.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/DecisionRequester.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/1d/c4b4c02e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Sensors/VectorSensor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Sensors/ObservationWriter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/eb/841bd18a/Physics.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ml-agents@1.0.5/Runtime/Academy.cs" root0="SKIP_HIGHLIGHTING" />
@@ -138,7 +142,7 @@
       <workItem from="1607680081584" duration="142000" />
       <workItem from="1607682992638" duration="3930000" />
       <workItem from="1607859851284" duration="3000" />
-      <workItem from="1607859859609" duration="9139000" />
+      <workItem from="1607859859609" duration="11077000" />
     </task>
     <servers />
   </component>

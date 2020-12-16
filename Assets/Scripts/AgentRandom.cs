@@ -72,8 +72,8 @@ public class AgentRandom : Walker
         // Velocity: 2, up to ~5
         sensor.AddObservation(velocity.x / 5f);
         sensor.AddObservation(velocity.z / 5f);
-        
-        Debug.Log(velocity);
+
+        // Debug.Log(velocity);
         // sensor.AddObservation(Unfrozen);
 
         // REWARDS
@@ -87,7 +87,7 @@ public class AgentRandom : Walker
         
         // Debug.Log(diff);
         
-        AddReward(2.5f * diff);  // Add reward for getting closer to the goal
+        AddReward(4f * diff);  // Add reward for getting closer to the goal
 
         // Maximum distance: 20; this puts it in the range [0, 0.1]
         // AddReward(-currentDistance / 200f);
@@ -108,10 +108,10 @@ public class AgentRandom : Walker
     {
         base.OnActionReceived(vectorAction);
         var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
-        if (Mathf.Abs(angularSpeed) > 0.7f)
-        {
-            AddReward(-0.1f * Mathf.Abs(angularSpeed));
-        }
+        // if (Mathf.Abs(angularSpeed) > 0.7f)
+        // {
+        //     AddReward(-0.1f * Mathf.Abs(angularSpeed));
+        // }
     }
 
 
@@ -122,7 +122,7 @@ public class AgentRandom : Walker
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(15f);
+            AddReward(3f);
             GetComponentInParent<ManagerRandom>().ReachGoal(this);
             _material.color = Color.blue;
             
@@ -134,7 +134,7 @@ public class AgentRandom : Walker
     {
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-15f);
+            AddReward(-3f);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");

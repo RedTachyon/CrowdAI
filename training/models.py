@@ -24,7 +24,8 @@ class BaseModel(nn.Module):
         self.device = 'cpu'
 
     def forward(self, x: Tensor,
-                state: Tuple) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
+                state: Tuple,
+                get_value: bool) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
         # Output: action_dist, state, {value, whatever else}
         raise NotImplementedError
 
@@ -102,7 +103,8 @@ class MLPModel(BaseModel):
             nn.init.zeros_(self.value_head.bias)
 
     def forward(self, x: Tensor,
-                state: Tuple = ()) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
+                state: Tuple = (),
+                get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
         inp = x
         for layer in self.hidden_layers:
             x = layer(x)
@@ -110,20 +112,20 @@ class MLPModel(BaseModel):
 
         action_mu = self.policy_head(x)
 
-        # TODO: make value evaluation optional?
-        if self.config["separate_value"]:
-            x = inp
-            for layer in self.value_layers:
-                x = layer(x)
-                x = self.activation(x)
-
-        value = self.value_head(x)
-
         action_distribution = Normal(loc=action_mu, scale=self.std)
 
         extra_outputs = {
-            "value": value,
         }
+
+        if get_value:
+            if self.config["separate_value"]:
+                x = inp
+                for layer in self.value_layers:
+                    x = layer(x)
+                    x = self.activation(x)
+
+            value = self.value_head(x)
+            extra_outputs["value"] = value
 
         return action_distribution, state, extra_outputs
 
@@ -195,7 +197,8 @@ class FancyMLPModel(BaseModel):
             nn.init.zeros_(self.std_head.bias)
 
     def forward(self, x: Tensor,
-                state: Tuple = ()) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
+                state: Tuple = (),
+                get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
 
         input_ = x
 
@@ -208,18 +211,18 @@ class FancyMLPModel(BaseModel):
         action_std = self.std_head(x)
         action_std = F.softplus(action_std)  # TODO: add a negative offset here?
 
-        x = input_
-        for layer in self.v_hidden_layers:
-            x = layer(x)
-            x = self.activation(x)
-
-        value = self.value_head(x)
-
         action_distribution = Normal(loc=action_mu, scale=action_std)
 
-        extra_outputs = {
-            "value": value,
-        }
+        extra_outputs = {}
+
+        if get_value:
+            x = input_
+            for layer in self.v_hidden_layers:
+                x = layer(x)
+                x = self.activation(x)
+
+            value = self.value_head(x)
+            extra_outputs["value"] = value
 
         return action_distribution, state, extra_outputs
 

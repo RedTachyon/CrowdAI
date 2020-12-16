@@ -54,11 +54,11 @@ if __name__ == '__main__':
                 "weight_decay": 0,
                 "amsgrad": False
             },
-            "gamma": 0.95,  # Discount factor
+            "gamma": 0.9,  # Discount factor
 
             # PPO settings
             "ppo_steps": 25,  # How many max. gradient updates in one iterations
-            "eps": 0.1,  # PPO clip parameter
+            "eps": 0.25,  # PPO clip parameter
             "target_kl": 0.01,  # KL divergence limit
             "value_loss_coeff": 0.1,
             "entropy_coeff": 0.1,

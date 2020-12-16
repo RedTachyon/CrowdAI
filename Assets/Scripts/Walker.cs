@@ -29,25 +29,27 @@ public class Walker : Agent
     {
         
         // Forward velocity
-        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -0.3f, 1.0f);
+        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1.0f);
         
         // Angular velocity
         var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
         
         // Apply the force
         Vector3 force = transform.forward * linearSpeed * moveSpeed;
-
+        
         // Reduce the velocity friction-like
-        // Vector3 drag = -dragFactor * Rigidbody.velocity;
-        // Rigidbody.AddForce(force + drag);
+        Vector3 drag = -dragFactor * Rigidbody.velocity;
+        Rigidbody.AddForce(force + drag);
 
-        Rigidbody.velocity = force / 10f;
+        // Rigidbody.velocity = force / 10f;
 
         // Apply the rotation
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
         // _rigidbody.MoveRotation(Quaternion.Euler(rotation));
 
         Rigidbody.rotation = Quaternion.Euler(rotation);
+        
+        // Rigidbody.velocity = new Vector3(linearSpeed, 0f, angularSpeed) * moveSpeed;
     }
 
     public override void Heuristic(float[] actionsOut)

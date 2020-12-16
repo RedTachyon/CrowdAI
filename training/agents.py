@@ -33,7 +33,7 @@ class BaseAgent:
 
     def compute_single_action(self, obs: np.ndarray,
                               state: Tuple[Tensor, ...] = (),
-                              deterministic: bool = False) -> Tuple[np.ndarray, float, Tuple]:
+                              deterministic: bool = False) -> Tuple[np.ndarray, float, float, Tuple]:
         """
         Computes the action for a single observation with the given hidden state. Breaks gradients.
 
@@ -48,9 +48,9 @@ class BaseAgent:
         obs = torch.tensor([obs])
 
         with torch.no_grad():
-            action, logprob, new_state = self.compute_actions(obs, state, deterministic)
+            action, logprob, values, new_state = self.compute_actions(obs, state, deterministic)
 
-        return action.numpy().ravel(), logprob.item(), new_state
+        return action.numpy().ravel(), logprob.item(), values.item(), new_state
 
     def get_initial_state(self, requires_grad=True):
         return getattr(self.model, "get_initial_state", lambda *x, **xx: ())(requires_grad=requires_grad)
@@ -80,7 +80,7 @@ class Agent(BaseAgent):
 
     def compute_actions(self, obs_batch: Tensor,
                         state_batch: Tuple = (),
-                        deterministic: bool = False) -> Tuple[Tensor, Tensor, Tuple]:
+                        deterministic: bool = False) -> Tuple[Tensor, Tensor, Tensor, Tuple]:
         """
         Computes the action for a batch of observations with given hidden states. Breaks gradients.
 
@@ -95,25 +95,25 @@ class Agent(BaseAgent):
         action_distribution: Normal
         states: Tuple
         with torch.no_grad():
-            action_distribution, states, extra_outputs = self.model(obs_batch, state_batch)
+            action_distribution, states, extra_outputs = self.model(obs_batch, state_batch, get_value=True)
 
         action: Tensor
         if deterministic:
             actions = action_distribution.loc
         else:
-            actions = action_distribution.sample()
+            actions = action_distribution.rsample()
 
         logprobs = action_distribution.log_prob(actions).sum(1)
+        values = extra_outputs['value']
 
-        # TODO: rethink this so that I don't need this weird process? MIGHT be source of instabilities
-        #  also, test this?
+        # TODO: Just remove this?
         if self.action_range:
             a, b = self.action_range
             out_actions = tanh_norm(actions, a, b)
         else:
             out_actions = actions
 
-        return out_actions.detach().cpu().numpy(), logprobs.detach().cpu().numpy(), states
+        return out_actions.detach().cpu().numpy(), logprobs.detach().cpu().numpy(), values, states
 
     def evaluate_actions(self, data_batch: AgentDataBatch,
                          padded: bool = False) -> Tuple[Tensor, Tensor, Tensor]:
@@ -140,10 +140,9 @@ class Agent(BaseAgent):
                 a, b = self.action_range
                 action_batch = atanh_unnorm(action_batch, a, b)
             action_distribution, new_states, extra_outputs = self.model(obs_batch)
-            values = extra_outputs["value"]
-            action_logprobs = action_distribution.log_prob(action_batch).sum(1)
-            values = values.view(-1)
-            entropies = action_distribution.entropy().sum(1)
+            values = extra_outputs["value"].sum(-1)
+            action_logprobs = action_distribution.log_prob(action_batch).sum(-1)
+            entropies = action_distribution.entropy().sum(-1)
 
         else:  # padded == True, BPTT
             # TODO: Might not work, copied from DiscreteAgent; useful if I want BPTT, but slower, otherwise useless

@@ -97,33 +97,41 @@ def discount_rewards_to_go(rewards: Tensor,
         return torch.tensor(discounted_rewards).view(-1)
 
 
-def discount_td_rewards(rewards_batch: Tensor,
-                        values_batch: Tensor,
-                        dones_batch: Tensor,
+def discount_td_rewards(data_batch: AgentDataBatch,
                         gamma: float = 0.99,
-                        lam: float = 0.95) -> Tuple[Tensor, Tensor]:
+                        lam: float = 0.95) -> AgentDataBatch:
     """An alternative TD-based method of return-to-go and advantage estimation via GAE"""
+
+    rewards_batch = data_batch['rewards']  # (T, E)
+    values_batch = data_batch['values']  # (T, E)
+
     returns_batch = []
     advantages_batch = []
     returns = values_batch[-1]
     advantages = 0
 
-    for i in reversed(range(len(dones_batch) - 1)):
-        terminals = ~dones_batch[i]
+    values_batch = torch.cat([values_batch, torch.zeros(1, values_batch.shape[1])], dim=0)
 
+    for i in reversed(range(len(rewards_batch) - 1)):
         rewards = rewards_batch[i]
         value = values_batch[i]
         next_value = values_batch[i + 1]
 
-        returns = rewards + gamma * terminals * returns  # v(s) = r + y*v(s+1)
+        returns = rewards + gamma * returns  # v(s) = r + y*v(s+1)
         returns_batch.insert(0, returns)
 
         # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
-        td_error = rewards + gamma * terminals * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
-        advantages = advantages * lam * gamma * terminals + td_error
+        delta = rewards + gamma * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
+        advantages = advantages * lam * gamma + delta
         advantages_batch.insert(0, advantages)
 
-    return torch.tensor(returns_batch), torch.tensor(advantages_batch)
+    for key in data_batch:
+        data_batch[key] = data_batch[key][:-1]
+
+    data_batch['advantages'] = torch.stack(advantages_batch)
+    data_batch['returns'] = torch.stack(returns_batch)
+
+    return data_batch
 
 
 def get_optimizer(opt_name: str) -> Callable[..., Optimizer]:
@@ -291,12 +299,14 @@ def mean_accuracy(preds: Tensor, labels: Tensor) -> float:
 def concat_batches(batches: List[AgentDataBatch]) -> AgentDataBatch:
     """Concatenate multiple batches of data"""
     merged = {}
+    if len(batches) == 1:
+        return batches[0]
     for key in batches[0]:
         if key == 'states':
             merged[key] = tuple(
                 torch.cat([batch[key][i] for batch in batches], dim=0) for i in range(len(batches[0][key])))
         else:
-            merged[key] = torch.cat([batch[key] for batch in batches], dim=0)
+            merged[key] = torch.cat([batch[key] for batch in batches], dim=1)
 
     return merged
 
@@ -320,7 +330,7 @@ def concat_crowd_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDa
 
     merged = {}
     for key in batches[agents[0]]:
-        merged[key] = torch.cat([batch[key] for batch in batches.values()], dim=0)
+        merged[key] = torch.stack([batch[key] for batch in batches.values()], dim=1)
 
     return merged
 

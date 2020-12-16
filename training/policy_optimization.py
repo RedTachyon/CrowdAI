@@ -9,7 +9,8 @@ from torch.utils.tensorboard import SummaryWriter
 from agents import Agent
 from preprocessors import simple_padder
 from utils import with_default_config, get_optimizer, DataBatch, Timer, DataBatchT, transpose_batch, AgentDataBatch, \
-    discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch
+    discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch, \
+    discount_td_rewards
 
 
 class CrowdPPOptimizer:
@@ -38,23 +39,24 @@ class CrowdPPOptimizer:
             "ppo_steps": 5,
             "eps": 0.1,  # PPO clip parameter
             "target_kl": 0.01,  # KL divergence limit
-            "value_loss_coeff": 0.1,
+
+            # Value estimator settings
+            "value_steps": 10,
 
             "entropy_coeff": 0.1,
             "entropy_decay_time": 100,  # How many steps to decrease entropy to 0.1 of the original value
             "min_entropy": 0.0001,  # Minimum value of the entropy bonus - use this to disable decay
-
-            "max_grad_norm": 0.5,
-
-            "ep_len": 0,
 
             # GPU
             "use_gpu": False,
         }
         self.config = with_default_config(config, default_config)
 
-        self.optimizer = get_optimizer(self.config["optimizer"])(agent.model.parameters(),
+        self.policy_optimizer = get_optimizer(self.config["optimizer"])(agent.model.parameters(),
                                                                  **self.config["optimizer_kwargs"])
+
+        self.value_optimizer = get_optimizer(self.config["optimizer"])(agent.model.parameters(),
+                                                                       **self.config["optimizer_kwargs"])
 
         self.gamma: float = self.config["gamma"]
         self.eps: float = self.config["eps"]
@@ -85,7 +87,6 @@ class CrowdPPOptimizer:
 
         agent_id = "crowd"
         agent = self.agent
-        optimizer = self.optimizer
 
         ####################################### Unpack and prepare the data #######################################
         # agent_batch: AgentDataBatch = concat_crowd_batch(data_batch)
@@ -104,28 +105,32 @@ class CrowdPPOptimizer:
 
         # Unpacking the data for convenience
 
+        # Compute discounted rewards to go
+        # add the 'returns' and 'advantages' keys, and removes last position from other fields
+
+        agent_batch = discount_td_rewards(agent_batch,
+                                          gamma=self.gamma,
+                                          lam=0.95)
+
         # obs_batch = agent_batch['observations']
         # action_batch = agent_batch['actions']  # actions taken
         reward_batch = agent_batch['rewards']  # rewards obtained
         old_logprobs_batch = agent_batch['logprobs']  # logprobs of taken actions
         done_batch = agent_batch['dones']  # whether the step is the end of an episode
         # state_batch = agent_batch['states']  # hidden LSTM state
+        discounted_batch = agent_batch['returns']
+        advantages_batch = agent_batch['advantages']
 
         # Evaluate actions to have values that require gradients
-        logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
+        # logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
 
-        # Compute discounted rewards to go
-        discounted_batch = discount_rewards_to_go(reward_batch,
-                                                  done_batch,
-                                                  self.gamma,
-                                                  ep_len=self.config["ep_len"])
         # Move data to GPU if applicable
         if self.config["use_gpu"]:
             discounted_batch = discounted_batch.cuda()
 
         # breakpoint()
         # Compute the normalized advantage
-        advantages_batch = (discounted_batch - value_batch).detach()
+        # advantages_batch = (discounted_batch - value_batch).detach()
         advantages_batch = (advantages_batch - advantages_batch.mean())
         advantages_batch = advantages_batch / (torch.sqrt(torch.mean(advantages_batch ** 2) + 1e-8))
 
@@ -135,6 +140,7 @@ class CrowdPPOptimizer:
         value_loss = torch.tensor(0)
         policy_loss = torch.tensor(0)
         loss = torch.tensor(0)
+        entropy_batch = torch.tensor([0])
 
         # Start a timer
         timer.checkpoint()
@@ -142,7 +148,6 @@ class CrowdPPOptimizer:
         for ppo_step in range(self.config["ppo_steps"]):
             # Evaluate again after the PPO step, for new values and gradients
             logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
-
             # FIXME: Sometimes logprob_batch can be inf - figure out why the fuck
             # Compute the KL divergence for early stopping
             kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
@@ -160,20 +165,29 @@ class CrowdPPOptimizer:
                                 (1 - self.eps) * advantages_batch)
 
             policy_loss = -torch.min(surr1, surr2)
-            value_loss = (value_batch - discounted_batch) ** 2
 
             loss = (
                     policy_loss.mean()
-                    + (self.config["value_loss_coeff"] * value_loss.mean())
                     - (entropy_coeff * entropy_batch.mean())
-                    )
+            )
 
             ############################################# Update step ##############################################
-            optimizer.zero_grad()
+            self.policy_optimizer.zero_grad()
             loss.backward()
-            if self.config["max_grad_norm"] is not None:
-                nn.utils.clip_grad_norm_(agent.model.parameters(), self.config["max_grad_norm"])
-            optimizer.step()
+
+            self.policy_optimizer.step()
+
+        for value_step in range(self.config["value_steps"]):
+            _, value_batch, _ = agent.evaluate_actions(agent_batch)
+
+            value_loss = (value_batch - discounted_batch) ** 2
+
+            loss = value_loss.mean()
+
+            self.value_optimizer.zero_grad()
+            loss.backward()
+            self.value_optimizer.step()
+
 
         ############################################## Collect metrics #############################################
 
@@ -184,24 +198,26 @@ class CrowdPPOptimizer:
         metrics[f"{agent_id}/ppo_steps_made"] = ppo_step + 1
         metrics[f"{agent_id}/policy_loss"] = policy_loss.mean().cpu().item()
         metrics[f"{agent_id}/value_loss"] = value_loss.mean().cpu().item()
-        metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
+        # metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
         metrics[f"{agent_id}/total_steps"] = len(reward_batch)
 
         # ep_lens = ep_lens if self.config["pad_sequences"] else get_episode_lens(done_batch.cpu())
-        ep_lens = get_episode_lens(done_batch.cpu())
+        # ep_lens = get_episode_lens(done_batch.cpu())
 
         # Group rewards by episode and sum them up to get full episode returns
         # if self.config["pad_sequences"]:
         #     ep_rewards = reward_batch.sum(0)
         # else:
-        ep_rewards = torch.tensor([torch.sum(rewards) for rewards in torch.split(reward_batch, ep_lens)])
+        # ep_rewards = torch.tensor([torch.sum(rewards) for rewards in torch.split(reward_batch, ep_lens)])
 
-        # Episode length metrics
-        metrics[f"{agent_id}/episode_len_mean"] = np.mean(ep_lens)
-        metrics[f"{agent_id}/episode_len_median"] = np.median(ep_lens)
-        metrics[f"{agent_id}/episode_len_min"] = np.min(ep_lens)
-        metrics[f"{agent_id}/episode_len_max"] = np.max(ep_lens)
-        metrics[f"{agent_id}/episode_len_std"] = np.std(ep_lens)
+        # # Episode length metrics
+        # metrics[f"{agent_id}/episode_len_mean"] = np.mean(ep_lens)
+        # metrics[f"{agent_id}/episode_len_median"] = np.median(ep_lens)
+        # metrics[f"{agent_id}/episode_len_min"] = np.min(ep_lens)
+        # metrics[f"{agent_id}/episode_len_max"] = np.max(ep_lens)
+        # metrics[f"{agent_id}/episode_len_std"] = np.std(ep_lens)
+
+        ep_rewards = reward_batch.sum(0)
 
         # Episode reward metrics
         metrics[f"{agent_id}/episode_reward_mean"] = torch.mean(ep_rewards).item()
@@ -211,7 +227,7 @@ class CrowdPPOptimizer:
         metrics[f"{agent_id}/episode_reward_std"] = torch.std(ep_rewards).item()
 
         # Other metrics
-        metrics[f"{agent_id}/episodes_this_iter"] = len(ep_lens)
+        metrics[f"{agent_id}/episodes_this_iter"] = done_batch.shape[1]
         metrics[f"{agent_id}/mean_entropy"] = torch.mean(entropy_batch).item()
 
         metrics[f"{agent_id}/time_update"] = timer.checkpoint()

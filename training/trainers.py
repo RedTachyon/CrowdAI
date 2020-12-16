@@ -19,7 +19,7 @@ from agents import Agent
 from environments import MultiAgentEnv
 from utils import Timer, with_default_config, write_dict, transpose_batch, concat_batches, AgentDataBatch, DataBatch, \
     np_float, get_episode_rewards
-from collectors import CrowdCollector, collect_crowd_data, collect_parallel_unity
+from collectors import collect_crowd_data, collect_parallel_unity
 from policy_optimization import CrowdPPOptimizer
 
 
@@ -39,121 +39,121 @@ class Trainer:
         raise NotImplementedError
 
 
-def train_agent(agent: Agent,
-                env_path: str,
-                num_iterations: int,
-                config: Dict[str, Any],
-                disable_tqdm: bool = False):
-
-    # INIT
-
-    # TODO: finish the functional training function
-    default_config = {
-        "steps": 500,  # number of steps we want in one episode
-        "workers": 8,
-
-        # Tensorboard settings
-        "tensorboard_name": None,  # str, set explicitly
-
-        "save_freq": 10,
-
-        # PPO
-        "ppo_config": {
-            # GD settings
-            "optimizer": "adam",
-            "optimizer_kwargs": {
-                "lr": 1e-4,
-                "betas": (0.9, 0.999),
-                "eps": 1e-7,
-                "weight_decay": 0,
-                "amsgrad": False
-            },
-            "gamma": 1.,  # Discount factor
-
-            # PPO settings
-            "ppo_steps": 25,  # How many max. gradient updates in one iterations
-            "eps": 0.1,  # PPO clip parameter
-            "target_kl": 0.01,  # KL divergence limit
-            "value_loss_coeff": 0.1,
-            "entropy_coeff": 0.1,
-            "max_grad_norm": 0.5,
-
-            # Backpropagation settings
-            "use_gpu": False,
-        }
-    }
-
-    config = with_default_config(config, default_config)
-    ppo = CrowdPPOptimizer(agent, config=config["ppo_config"])
-
-    writer: SummaryWriter
-    if config["tensorboard_name"]:
-        dt_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        path = Path.home() / "tb_logs" / f"{config['tensorboard_name']}_{dt_string}"
-
-        writer = SummaryWriter(str(path))
-        os.mkdir(str(path / "saved_weights"))
-
-        # Log the configs
-        with open(str(path / "trainer_config.json"), "w") as f:
-            json.dump(config, f)
-
-        with open(str(path / f"crowd_config.json"), "w") as f:
-            json.dump(agent.model.config, f)
-
-        path = str(path)
-    else:
-        path = None
-        writer = None
-
-    # TRAINING
-
-    print(f"Begin training, logged in {path}")
-    timer = Timer()
-    step_timer = Timer()
-
-    if path:
-        torch.save(agent.model, os.path.join(path, "base_agent.pt"))
-
-    for step in trange(num_iterations, disable=disable_tqdm):
-        ########################################### Collect the data ###############################################
-        timer.checkpoint()
-
-        full_batch, collector_metrics = collect_parallel_unity(num_workers=self.config["workers"],
-                                                               num_runs=self.config["workers"],
-                                                               agent=self.agent,
-                                                               env_path=self.env_path,
-                                                               num_steps=self.config["steps"])
-
-        data_time = timer.checkpoint()
-
-        ############################################## Update policy ##############################################
-
-        # Perform the PPO update
-        metrics = self.ppo.train_on_data(full_batch, step, writer=self.writer)
-
-        end_time = step_timer.checkpoint()
-
-        ########################################## Save the updated agent ##########################################
-
-        # Save the agent to disk
-        if save_path and (step % self.config["save_freq"] == 0):
-            # torch.save(old_returns, os.path.join(save_path, "returns.pt"))
-            torch.save(self.agent.model.state_dict(),
-                       os.path.join(save_path, "saved_weights", f"weights_{step + 1}"))
-
-        # Write remaining metrics to tensorboard
-        extra_metric = {f"crowd/time_data_collection": data_time,
-                        f"crowd/total_time": end_time,
-                        f"crowd/mean_distance": np.mean(collector_metrics["mean_distance"]),
-                        f"crowd/mean_speed": np.mean(collector_metrics["mean_speed"]),
-                        f"crowd/mean_speed_100": np.mean(collector_metrics["mean_speed"][:100]),
-                        f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
-                        f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
-                        f"crowd/mean_finish_l1": np.mean(collector_metrics["mean_finish"][-1]),
-                        f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
-
-        write_dict(extra_metric, step, self.writer)
+# def train_agent(agent: Agent,
+#                 env_path: str,
+#                 num_iterations: int,
+#                 config: Dict[str, Any],
+#                 disable_tqdm: bool = False):
+#
+#     # INIT
+#
+#     # TODO: finish the functional training function
+#     default_config = {
+#         "steps": 500,  # number of steps we want in one episode
+#         "workers": 8,
+#
+#         # Tensorboard settings
+#         "tensorboard_name": None,  # str, set explicitly
+#
+#         "save_freq": 10,
+#
+#         # PPO
+#         "ppo_config": {
+#             # GD settings
+#             "optimizer": "adam",
+#             "optimizer_kwargs": {
+#                 "lr": 1e-4,
+#                 "betas": (0.9, 0.999),
+#                 "eps": 1e-7,
+#                 "weight_decay": 0,
+#                 "amsgrad": False
+#             },
+#             "gamma": 1.,  # Discount factor
+#
+#             # PPO settings
+#             "ppo_steps": 25,  # How many max. gradient updates in one iterations
+#             "eps": 0.1,  # PPO clip parameter
+#             "target_kl": 0.01,  # KL divergence limit
+#             "value_loss_coeff": 0.1,
+#             "entropy_coeff": 0.1,
+#             "max_grad_norm": 0.5,
+#
+#             # Backpropagation settings
+#             "use_gpu": False,
+#         }
+#     }
+#
+#     config = with_default_config(config, default_config)
+#     ppo = CrowdPPOptimizer(agent, config=config["ppo_config"])
+#
+#     writer: SummaryWriter
+#     if config["tensorboard_name"]:
+#         dt_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+#         path = Path.home() / "tb_logs" / f"{config['tensorboard_name']}_{dt_string}"
+#
+#         writer = SummaryWriter(str(path))
+#         os.mkdir(str(path / "saved_weights"))
+#
+#         # Log the configs
+#         with open(str(path / "trainer_config.json"), "w") as f:
+#             json.dump(config, f)
+#
+#         with open(str(path / f"crowd_config.json"), "w") as f:
+#             json.dump(agent.model.config, f)
+#
+#         path = str(path)
+#     else:
+#         path = None
+#         writer = None
+#
+#     # TRAINING
+#
+#     print(f"Begin training, logged in {path}")
+#     timer = Timer()
+#     step_timer = Timer()
+#
+#     if path:
+#         torch.save(agent.model, os.path.join(path, "base_agent.pt"))
+#
+#     for step in trange(num_iterations, disable=disable_tqdm):
+#         ########################################### Collect the data ###############################################
+#         timer.checkpoint()
+#
+#         full_batch, collector_metrics = collect_parallel_unity(num_workers=self.config["workers"],
+#                                                                num_runs=self.config["workers"],
+#                                                                agent=self.agent,
+#                                                                env_path=self.env_path,
+#                                                                num_steps=self.config["steps"])
+#
+#         data_time = timer.checkpoint()
+#
+#         ############################################## Update policy ##############################################
+#
+#         # Perform the PPO update
+#         metrics = self.ppo.train_on_data(full_batch, step, writer=self.writer)
+#
+#         end_time = step_timer.checkpoint()
+#
+#         ########################################## Save the updated agent ##########################################
+#
+#         # Save the agent to disk
+#         if save_path and (step % self.config["save_freq"] == 0):
+#             # torch.save(old_returns, os.path.join(save_path, "returns.pt"))
+#             torch.save(self.agent.model.state_dict(),
+#                        os.path.join(save_path, "saved_weights", f"weights_{step + 1}"))
+#
+#         # Write remaining metrics to tensorboard
+#         extra_metric = {f"crowd/time_data_collection": data_time,
+#                         f"crowd/total_time": end_time,
+#                         f"crowd/mean_distance": np.mean(collector_metrics["mean_distance"]),
+#                         f"crowd/mean_speed": np.mean(collector_metrics["mean_speed"]),
+#                         f"crowd/mean_speed_100": np.mean(collector_metrics["mean_speed"][:100]),
+#                         f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
+#                         f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
+#                         f"crowd/mean_finish_l1": np.mean(collector_metrics["mean_finish"][-1]),
+#                         f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
+#
+#         write_dict(extra_metric, step, self.writer)
 
 class PPOCrowdTrainer(Trainer):
     """This performs training in a sampling paradigm, where each agent is stored, and during data collection,
