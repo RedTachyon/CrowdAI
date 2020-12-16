@@ -110,8 +110,6 @@ def discount_td_rewards(data_batch: AgentDataBatch,
     returns = values_batch[-1]
     advantages = 0
 
-    values_batch = torch.cat([values_batch, torch.zeros(1, values_batch.shape[1])], dim=0)
-
     for i in reversed(range(len(rewards_batch) - 1)):
         rewards = rewards_batch[i]
         value = values_batch[i]
