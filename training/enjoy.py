@@ -38,6 +38,7 @@ if __name__ == '__main__':
     time.sleep(args.wait)
 
     env = UnitySimpleCrowdEnv(args.env)
+    env.engine_channel.set_configuration_parameters(width=1000, height=1000)
 
     env.reset()
 
