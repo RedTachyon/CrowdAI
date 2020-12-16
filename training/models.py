@@ -95,6 +95,11 @@ class MLPModel(BaseModel):
                 initializer_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
+            if self.config["separate_value"]:
+                for layer in self.value_layers:
+                    initializer_(layer.weight)
+                    nn.init.zeros_(layer.bias)
+
             initializer_(self.policy_head.weight)
             self.policy_head.weight.data /= 100.
             initializer_(self.value_head.weight)
