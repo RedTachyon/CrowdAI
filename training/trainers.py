@@ -8,6 +8,7 @@ import copy
 
 import numpy as np
 import torch
+import yaml
 from torch import Tensor
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Adam
@@ -197,7 +198,7 @@ class PPOCrowdTrainer(Trainer):
             }
         }
 
-        self.config = with_default_config(config, default_config)
+        self.config = with_default_config(config["trainer"], default_config)
 
         self.ppo = CrowdPPOptimizer(self.agent, config=self.config["ppo_config"])
 
@@ -211,11 +212,10 @@ class PPOCrowdTrainer(Trainer):
             os.mkdir(str(self.path / "saved_weights"))
 
             # Log the configs
-            with open(str(self.path / "trainer_config.json"), "w") as f:
-                json.dump(self.config, f)
-
-            with open(str(self.path / f"crowd_config.json"), "w") as f:
-                json.dump(self.agent.model.config, f)
+            with open(str(self.path / "trainer_config.yaml"), "w") as f:
+                yaml.dump(self.config, f)
+            with open(str(self.path / f"full_config.yaml"), "w") as f:
+                yaml.dump(config, f)
 
             self.path = str(self.path)
         else:
@@ -237,7 +237,7 @@ class PPOCrowdTrainer(Trainer):
         if save_path:
             torch.save(self.agent.model, os.path.join(save_path, "base_agent.pt"))
 
-        for step in trange(num_iterations, disable=disable_tqdm):
+        for step in trange(1, num_iterations+1, disable=disable_tqdm):
             ########################################### Collect the data ###############################################
             timer.checkpoint()
 
@@ -262,7 +262,7 @@ class PPOCrowdTrainer(Trainer):
             if save_path and (step % self.config["save_freq"] == 0):
                 # torch.save(old_returns, os.path.join(save_path, "returns.pt"))
                 torch.save(self.agent.model.state_dict(),
-                           os.path.join(save_path, "saved_weights", f"weights_{step + 1}"))
+                           os.path.join(save_path, "saved_weights", f"weights_{step}"))
 
             # Write remaining metrics to tensorboard
             extra_metric = {f"crowd/time_data_collection": data_time,
