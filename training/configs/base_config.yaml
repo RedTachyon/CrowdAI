@@ -6,17 +6,6 @@ trainer:
   tensorboard_name:
   save_freq: 10
 
-  gamma: 0.95
-  ppo_steps: 25
-  eps: 0.25
-  target_kl: 0.01
-
-  value_steps: 25
-
-  entropy_coeff: 0.1
-  entropy_decay_time: 100
-  min_entropy: 0.1
-
   use_gpu: false
 
   ppo_config:
@@ -27,6 +16,18 @@ trainer:
       eps: 1.0e-07
       weight_decay: 0
       amsgrad: false
+
+    gamma: 0.95
+    ppo_steps: 25
+    eps: 0.25
+    target_kl: 0.01
+
+    value_steps: 25
+
+    entropy_coeff: 0.1
+    entropy_decay_time: 100
+    min_entropy: 0.1
+
 model:
   input_size: 6
   num_activations: 2
