@@ -199,7 +199,7 @@ class CrowdPPOptimizer:
         metrics[f"{agent_id}/policy_loss"] = policy_loss.mean().cpu().item()
         metrics[f"{agent_id}/value_loss"] = value_loss.mean().cpu().item()
         # metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
-        metrics[f"{agent_id}/total_steps"] = len(reward_batch)
+        metrics[f"{agent_id}/total_steps"] = len(reward_batch.view(-1))
 
         # ep_lens = ep_lens if self.config["pad_sequences"] else get_episode_lens(done_batch.cpu())
         # ep_lens = get_episode_lens(done_batch.cpu())
