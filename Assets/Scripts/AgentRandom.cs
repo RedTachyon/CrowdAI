@@ -44,27 +44,27 @@ public class AgentRandom : Walker
         Vector3 goalPosition = goal.localPosition;
         
         // Position: 2
-        // sensor.AddObservation(position.x / 10f);
-        // sensor.AddObservation(position.z / 10f);
+        sensor.AddObservation(position.x / 10f);
+        sensor.AddObservation(position.z / 10f);
         
         // Rotation: 1
         // sensor.AddObservation(rotation.eulerAngles.y / 360f);
         
         // Goal position: 2
-        // sensor.AddObservation(goalPosition.x / 10f);
-        // sensor.AddObservation(goalPosition.z / 10f);
+        sensor.AddObservation(goalPosition.x / 10f);
+        sensor.AddObservation(goalPosition.z / 10f);
         
         // Relative position: 2
         var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
         // sensor.AddObservation(relPosition.x / 20f);
         // sensor.AddObservation(relPosition.z / 20f);
 
-        var distance = (goalPosition - position).magnitude;
-        var angle = Vector3.Angle(Vector3.forward, relPosition);
-        
-        // Debug.Log($"Distance: {distance}, angle: {angle}");
-        sensor.AddObservation(distance / 20f);
-        sensor.AddObservation(angle / 180f);
+        // var distance = (goalPosition - position).magnitude;
+        // var angle = Vector3.Angle(Vector3.forward, relPosition);
+        //
+        // // Debug.Log($"Distance: {distance}, angle: {angle}");
+        // sensor.AddObservation(distance / 20f);
+        // sensor.AddObservation(angle / 180f);
         
         // Debug.Log(relPosition);
         Debug.DrawLine(transform.position, transform.position + rotation * relPosition, Color.red, 0.02f);
@@ -78,7 +78,7 @@ public class AgentRandom : Walker
 
         // REWARDS
         
-        // Compute the distance-based reward - temporarily (?) deprecated
+        // Compute the distance-based reward
         var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
         var currentDistance = Vector3.Distance(position, goalPosition);
         // Debug.Log(currentDistance);
@@ -87,7 +87,7 @@ public class AgentRandom : Walker
         
         // Debug.Log(diff);
         
-        AddReward(4f * diff);  // Add reward for getting closer to the goal
+        AddReward(1f * diff);  // Add reward for getting closer to the goal
 
         // Maximum distance: 20; this puts it in the range [0, 0.1]
         // AddReward(-currentDistance / 200f);
@@ -100,22 +100,24 @@ public class AgentRandom : Walker
 
         _material.color = _originalColor;
         
+        Debug.Log(GetCumulativeReward());
+        
         // Debug.Log($"Total reward: {GetCumulativeReward()}");
 
     }
 
-    public override void OnActionReceived(float[] vectorAction)
-    {
-        base.OnActionReceived(vectorAction);
-        var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
-        // if (Mathf.Abs(angularSpeed) > 0.7f)
-        // {
-        //     AddReward(-0.1f * Mathf.Abs(angularSpeed));
-        // }
-    }
+    // public override void OnActionReceived(float[] vectorAction)
+    // {
+    //     base.OnActionReceived(vectorAction);
+    //     // var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
+    //     // if (Mathf.Abs(angularSpeed) > 0.7f)
+    //     // {
+    //     //     AddReward(-0.1f * Mathf.Abs(angularSpeed));
+    //     // }
+    // }
 
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         // Debug.Log("Hitting a trigger");
         
@@ -130,7 +132,7 @@ public class AgentRandom : Walker
         }
     }
 
-    private void OnCollisionStay(Collision other)
+    private void OnCollisionEnter(Collision other)
     {
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {

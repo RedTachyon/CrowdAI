@@ -1,3 +1,4 @@
+import time
 from collections import OrderedDict
 from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Any
 
@@ -236,8 +237,10 @@ def collect_crowd_data(agent: Agent,
     return data, metrics
 
 
-def _collection_worker(agent: Agent, i: int, env_path: str, num_steps: int) -> Tuple[DataBatch, Dict]:
-    env = UnitySimpleCrowdEnv(file_name=env_path, no_graphics=True, worker_id=i, timeout_wait=5)
+def _collection_worker(agent: Agent, i: int, env_path: str, num_steps: int, base_seed: int) -> Tuple[DataBatch, Dict]:
+    # seed = round(time.time() % 100000) + i  # Ensure it's different every time
+    seed = base_seed * 100 + i
+    env = UnitySimpleCrowdEnv(file_name=env_path, no_graphics=True, worker_id=i, timeout_wait=5, seed=seed)
     env.engine_channel.set_configuration_parameters(time_scale=100)
     data, metrics = collect_crowd_data(agent, env, num_steps)
     env.close()
@@ -249,12 +252,10 @@ def collect_parallel_unity(num_workers: int,
                            agent: Agent,
                            env_path: str,
                            num_steps: int,
-                           # deterministic: bool = False,
-                           # include_last: bool = False,
-                           # reset_start: bool = True
+                           base_seed: int = 0
                            ) -> Tuple[DataBatch, Dict]:
     with mp.Pool(num_workers) as p:
-        result = p.starmap(_collection_worker, [(agent, i, env_path, num_steps) for i in range(num_runs)])
+        result = p.starmap(_collection_worker, [(agent, i, env_path, num_steps, base_seed) for i in range(num_runs)])
 
         data = concat_batches([concat_crowd_batch(batch[0]) for batch in result])
         metrics = concat_metrics([batch[1] for batch in result])

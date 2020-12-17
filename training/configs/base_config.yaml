@@ -23,7 +23,7 @@ trainer:
       weight_decay: 0
       amsgrad: false
 model:
-  input_size: 8
+  input_size: 6
   num_activations: 2
   activation: tanh
 

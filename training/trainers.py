@@ -245,7 +245,8 @@ class PPOCrowdTrainer(Trainer):
                                                                    num_runs=self.config["workers"],
                                                                    agent=self.agent,
                                                                    env_path=self.env_path,
-                                                                   num_steps=self.config["steps"])
+                                                                   num_steps=self.config["steps"],
+                                                                   base_seed=step)
 
             data_time = timer.checkpoint()
 

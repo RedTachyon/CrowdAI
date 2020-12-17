@@ -21,9 +21,13 @@
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/configs/base_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/training/configs/base_config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/trainers.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,9 +67,9 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
       </list>
     </option>
   </component>
@@ -137,7 +141,7 @@
       <workItem from="1607859851284" duration="3000" />
       <workItem from="1607859859609" duration="11077000" />
       <workItem from="1608128134757" duration="6000" />
-      <workItem from="1608128146841" duration="2134000" />
+      <workItem from="1608128146841" duration="3000000" />
     </task>
     <servers />
   </component>

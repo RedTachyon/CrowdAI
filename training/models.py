@@ -196,6 +196,7 @@ class FancyMLPModel(BaseModel):
             self.policy_head.weight.data /= 100.
             initializer_(self.value_head.weight)
             initializer_(self.std_head.weight)
+            self.std_head.weight.data /= 100.
 
             nn.init.zeros_(self.policy_head.bias)
             nn.init.zeros_(self.value_head.bias)
@@ -214,7 +215,7 @@ class FancyMLPModel(BaseModel):
         action_mu = self.policy_head(x)
 
         action_std = self.std_head(x)
-        action_std = F.softplus(action_std)  # TODO: add a negative offset here?
+        action_std = F.softplus(action_std - 0.5)  # TODO: add a negative offset here?
 
         action_distribution = Normal(loc=action_mu, scale=action_std)
 

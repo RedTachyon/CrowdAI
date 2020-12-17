@@ -7,7 +7,7 @@ import torch.multiprocessing as mp
 from agents import Agent
 from collectors import collect_crowd_data, collect_parallel_unity, _collection_worker
 from environments import UnitySimpleCrowdEnv
-from models import MLPModel
+from models import MLPModel, FancyMLPModel
 from policy_optimization import CrowdPPOptimizer
 
 from utils import concat_crowd_batch, concat_batches, DataBatch, concat_metrics, discount_td_rewards
@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
 
-    agent = Agent(MLPModel({
+    agent = Agent(FancyMLPModel({
         "input_size": 8,
         "separate_value": True
     }))
@@ -29,5 +29,5 @@ if __name__ == '__main__':
     batch = concat_crowd_batch(batch)
     # batch = discount_td_rewards(batch, gamma=1)
 
-    ppo = CrowdPPOptimizer(agent, {})
-    ppo.train_on_data(batch)
+    # ppo = CrowdPPOptimizer(agent, {})
+    # ppo.train_on_data(batch)

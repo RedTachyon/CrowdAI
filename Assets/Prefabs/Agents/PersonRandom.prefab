@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 5454719560782718982}
   - component: {fileID: 5454719560782718983}
   - component: {fileID: 5454719560782718980}
-  - component: {fileID: 5454719560782718981}
   m_Layer: 0
   m_Name: PersonRandom
   m_TagString: Agent
@@ -129,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 6
     NumStackedVectorObservations: 1
     VectorActionSize: 02000000
     VectorActionDescriptions: []
@@ -156,7 +155,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  moveSpeed: 35
+  moveSpeed: 50
   rotationSpeed: 3
   dragFactor: 10
   goal: {fileID: 0}
@@ -174,34 +173,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 1
   TakeActionsBetweenDecisions: 1
---- !u!114 &5454719560782718981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5454719560782718979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor
-  m_DetectableTags:
-  - Obstacle
-  - Agent
-  m_RaysPerDirection: 0
-  m_MaxRayDegrees: 75
-  m_SphereCastRadius: 0.1
-  m_RayLength: 20
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967291
-  m_ObservationStacks: 1
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.7
-  m_EndVerticalOffset: 0.7
 --- !u!1 &5454719561118733526
 GameObject:
   m_ObjectHideFlags: 0
