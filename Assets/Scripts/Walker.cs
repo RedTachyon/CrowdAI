@@ -49,7 +49,7 @@ public class Walker : Agent
 
         // Rigidbody.velocity = force / 10f;
 
-        if (Rigidbody.velocity.magnitude > 0f)
+        if (Rigidbody.velocity.magnitude > 0.1f)
         {
             Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity.normalized);
         }

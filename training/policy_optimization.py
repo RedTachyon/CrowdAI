@@ -148,7 +148,7 @@ class CrowdPPOptimizer:
         for ppo_step in range(self.config["ppo_steps"]):
             # Evaluate again after the PPO step, for new values and gradients
             logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
-            # FIXME: Sometimes logprob_batch can be inf - figure out why the fuck
+
             # Compute the KL divergence for early stopping
             kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
             if np.isnan(kl_divergence): breakpoint()
@@ -229,6 +229,8 @@ class CrowdPPOptimizer:
         # Other metrics
         metrics[f"{agent_id}/episodes_this_iter"] = done_batch.shape[1]
         metrics[f"{agent_id}/mean_entropy"] = torch.mean(entropy_batch).item()
+
+        metrics[f"{agent_id}/entropy_bonus"] = entropy_coeff
 
         metrics[f"{agent_id}/time_update"] = timer.checkpoint()
 
