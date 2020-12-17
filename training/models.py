@@ -148,7 +148,6 @@ class FancyMLPModel(BaseModel):
             "activation": "leaky_relu",
 
             "pi_hidden_sizes": (64, 64),
-            "v_hidden_sizes": (64, 64),
 
             "initializer": "kaiming_uniform",
         }
@@ -157,7 +156,7 @@ class FancyMLPModel(BaseModel):
         input_size: int = self.config.get("input_size")
         num_actions: int = self.config.get("num_actions")
         pi_hidden_sizes: Tuple[int] = self.config.get("pi_hidden_sizes")
-        v_hidden_sizes: Tuple[int] = self.config.get("v_hidden_sizes")
+        v_hidden_sizes: Tuple[int] = self.config.get("pi_hidden_sizes")  # Identical policy and value networks
         self.activation: Callable = get_activation(self.config.get("activation"))
 
         pi_layer_sizes = (input_size,) + pi_hidden_sizes
@@ -215,7 +214,7 @@ class FancyMLPModel(BaseModel):
         action_mu = self.policy_head(x)
 
         action_std = self.std_head(x)
-        action_std = F.softplus(action_std - 0.5)  # TODO: add a negative offset here?
+        action_std = F.softplus(action_std - 0.5)
 
         action_distribution = Normal(loc=action_mu, scale=action_std)
 

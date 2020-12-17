@@ -44,7 +44,7 @@ if __name__ == '__main__':
     if args.start_dir:
         agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
     else:
-        model = MLPModel(model_config)
+        model = FancyMLPModel(model_config)
         agent = Agent(model, action_range=action_range)
 
     agent.model.share_memory()
