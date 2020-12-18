@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5454719560782718982}
   - component: {fileID: 5454719560782718983}
   - component: {fileID: 5454719560782718980}
+  - component: {fileID: 6468657103997608510}
   m_Layer: 0
   m_Name: PersonRandom
   m_TagString: Agent
@@ -31,8 +32,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5454719560782718979}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -9, y: 0.25, z: 0.75}
-  m_LocalScale: {x: 0.25, y: 0.26, z: 0.25}
+  m_LocalPosition: {x: 0.25, y: 0.85, z: 0}
+  m_LocalScale: {x: 0.45, y: 0.85, z: 0.45}
   m_Children:
   - {fileID: 5454719561118733513}
   m_Father: {fileID: 0}
@@ -61,6 +62,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -85,6 +87,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &5454719560782719032
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -155,10 +158,11 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  moveSpeed: 50
+  moveSpeed: 35
   rotationSpeed: 3
   dragFactor: 10
   goal: {fileID: 0}
+  StartY: 0
 --- !u!114 &5454719560782718980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,6 +177,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 1
   TakeActionsBetweenDecisions: 1
+--- !u!114 &6468657103997608510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454719560782718979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: RayPerceptionSensor
+  m_DetectableTags:
+  - Agent
+  - Obstacle
+  m_RaysPerDirection: 8
+  m_MaxRayDegrees: 70
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  m_ObservationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &5454719561118733526
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,6 +261,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -253,6 +286,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5454719561118733512
 BoxCollider:
   m_ObjectHideFlags: 0

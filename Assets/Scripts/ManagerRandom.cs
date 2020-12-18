@@ -29,7 +29,7 @@ public class ManagerRandom : Statistician
                 
                 agent.localPosition = new Vector3(
                     UnityEngine.Random.Range(-9f, 9f), 
-                    0.25f,
+                    agent.GetComponent<Walker>().StartY,
                     UnityEngine.Random.Range(-9f, 9f)
                 );
 

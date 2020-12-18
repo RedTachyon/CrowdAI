@@ -121,6 +121,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -145,6 +146,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &4071786925675879635
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -186,8 +188,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4071786925878325908}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 10}
-  m_LocalScale: {x: 0.5, y: 1, z: 20}
+  m_LocalPosition: {x: 0, y: 1, z: 10}
+  m_LocalScale: {x: 0.5, y: 2, z: 20}
   m_Children: []
   m_Father: {fileID: 4071786924963163160}
   m_RootOrder: 2
@@ -215,6 +217,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -239,6 +242,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &4071786925878325910
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -279,8 +283,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4071786926092358818}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 20}
+  m_LocalPosition: {x: -10, y: 1, z: 0}
+  m_LocalScale: {x: 0.5, y: 2, z: 20}
   m_Children: []
   m_Father: {fileID: 4071786924963163160}
   m_RootOrder: 1
@@ -308,6 +312,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -332,6 +337,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &4071786926092358820
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -372,8 +378,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4071786926393838446}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 20}
+  m_LocalPosition: {x: 10, y: 1, z: 0}
+  m_LocalScale: {x: 0.5, y: 2, z: 20}
   m_Children: []
   m_Father: {fileID: 4071786924963163160}
   m_RootOrder: 0
@@ -401,6 +407,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -425,6 +432,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &4071786926393838416
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -499,8 +507,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4071786926608813123}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: -10}
-  m_LocalScale: {x: 0.5, y: 1, z: 20}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalScale: {x: 0.5, y: 2, z: 20}
   m_Children: []
   m_Father: {fileID: 4071786924963163160}
   m_RootOrder: 3
@@ -528,6 +536,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -552,6 +561,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &4071786926608813125
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -742,13 +752,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5454719560782718978, guid: 9a7df89f3a496473481e4ab89f91c35c,
         type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454719560782718978, guid: 9a7df89f3a496473481e4ab89f91c35c,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: -9
       objectReference: {fileID: 0}
     - target: {fileID: 5454719560782718978, guid: 9a7df89f3a496473481e4ab89f91c35c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.25
+      value: 0.875
       objectReference: {fileID: 0}
     - target: {fileID: 5454719560782718978, guid: 9a7df89f3a496473481e4ab89f91c35c,
         type: 3}

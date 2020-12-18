@@ -65,6 +65,8 @@ public class AgentRandom : Walker
         // // Debug.Log($"Distance: {distance}, angle: {angle}");
         sensor.AddObservation(distance / 20f);
         sensor.AddObservation(angle / 180f);
+
+        // Debug.Log(distance);
         
         // Debug.Log(relPosition);
         Debug.DrawLine(transform.position, transform.position + rotation * relPosition, Color.red, 0.02f);
@@ -140,6 +142,16 @@ public class AgentRandom : Walker
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");
+
+        }
+    }
+
+    private void OnCollisionStay(Collision other)
+    {
+        if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
+        {
+            // AddReward(-.5f);
+            _material.color = Color.red;
 
         }
     }

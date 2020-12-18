@@ -22,10 +22,12 @@
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,10 +41,11 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/94/eb24392d/List`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9824E569-944E-4F06-AD7B-E39216D0553D/ce/70aa791b/ISensor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/2a/704b55d8/Single.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/1d/c4b4c02e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/eb/841bd18a/Physics.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/41255891-47EE-4C70-963F-E403C2B5C5B1/fa/701b3452/Quaternion.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/1d/c4b4c02e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/41255891-47EE-4C70-963F-E403C2B5C5B1/62/290c9462/Transform.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7C881E71-2F79-461D-96F9-95658A2D07FF/d2/6fedb0c4/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/eb/841bd18a/Physics.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -56,8 +59,8 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
       </list>
     </option>
   </component>
@@ -131,6 +134,7 @@
       <workItem from="1608128134757" duration="6000" />
       <workItem from="1608128146841" duration="3763000" />
       <workItem from="1608248892532" duration="391000" />
+      <workItem from="1608298554045" duration="8452000" />
     </task>
     <servers />
   </component>
@@ -163,9 +167,9 @@
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state x="694" y="481" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1792.1097@0.23.1792.1097" timestamp="1606904730006" />
-    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup" timestamp="1607340822879">
+    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup" timestamp="1608307961383">
       <screen x="0" y="0" width="1792" height="1120" />
     </state>
-    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup/0.0.1792.1120@0.0.1792.1120" timestamp="1607340822879" />
+    <state x="559" y="249" width="672" height="678" key="search.everywhere.popup/0.0.1792.1120@0.0.1792.1120" timestamp="1608307961383" />
   </component>
 </project>
