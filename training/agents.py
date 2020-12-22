@@ -102,8 +102,7 @@ class Agent(BaseAgent):
             actions = action_distribution.loc
         else:
             actions = action_distribution.rsample()
-
-        logprobs = action_distribution.log_prob(actions).sum(1)
+        logprobs = action_distribution.log_prob(actions).sum(-1)
         values = extra_outputs['value']
 
         # TODO: Just remove this?
@@ -113,7 +112,7 @@ class Agent(BaseAgent):
         else:
             out_actions = actions
 
-        return out_actions.detach().cpu().numpy(), logprobs.detach().cpu().numpy(), values, states
+        return out_actions.detach().cpu().numpy(), logprobs.detach().cpu().numpy(), values.detach().cpu().numpy().squeeze(-1), states
 
     def evaluate_actions(self, data_batch: AgentDataBatch,
                          padded: bool = False) -> Tuple[Tensor, Tensor, Tensor]:

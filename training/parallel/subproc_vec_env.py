@@ -1,11 +1,11 @@
 import multiprocessing
 from collections import OrderedDict
-from typing import Sequence
+from typing import Sequence, Any, Dict, List
 
 import gym
 import numpy as np
 
-from base_vec_env import VecEnv, CloudpickleWrapper
+from parallel.base_vec_env import VecEnv, CloudpickleWrapper
 
 
 def _worker(remote, parent_remote, env_fn_wrapper):
@@ -100,15 +100,18 @@ class SubprocVecEnv(VecEnv):
         VecEnv.__init__(self, len(env_fns), observation_space, action_space)
 
     def step_async(self, actions):
-        for remote, action in zip(self.remotes, actions):
+        for i, remote in enumerate(self.remotes):
+            action = {k: a[i] for k, a in actions.items()}
             remote.send(('step', action))
+        # for remote, action in zip(self.remotes, actions):
+        #     remote.send(('step', action))
         self.waiting = True
 
     def step_wait(self):
         results = [remote.recv() for remote in self.remotes]
         self.waiting = False
         obs, rews, dones, infos = zip(*results)
-        return _flatten_obs(obs, self.observation_space), np.stack(rews), np.stack(dones), infos
+        return _flatten_obs(obs, self.observation_space), _flatten_scalar(rews), _flatten_scalar(dones), infos
 
     def seed(self, seed=None):
         for idx, remote in enumerate(self.remotes):
@@ -197,5 +200,13 @@ def _flatten_obs(obs, space):
         assert isinstance(obs[0], tuple), "non-tuple observation for environment with Tuple observation space"
         obs_len = len(space.spaces)
         return tuple((np.stack([o[i] for o in obs]) for i in range(obs_len)))
+    elif isinstance(obs[0], dict):
+        keys = obs[0].keys()  # Assume all envs have the same keys
+        return {k: np.stack([o[k] for o in obs]) for k in keys}
     else:
         return np.stack(obs)
+
+
+def _flatten_scalar(values: List[Dict[str, Any]]) -> Dict[str, np.ndarray]:
+    keys = values[0].keys()
+    return {k: np.array([v[k] for v in values]) for k in keys}

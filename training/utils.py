@@ -335,6 +335,22 @@ def concat_crowd_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDa
     return merged
 
 
+def concat_subproc_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDataBatch:
+    """Concatenate multiple sets of data in a single batch"""
+    if exclude is None:
+        exclude = ["__all__"]
+
+    batches = transpose_batch(batches)
+
+    batches = {key: value for key, value in batches.items() if key not in exclude}
+    agents = list(batches.keys())
+
+    merged = {}
+    for key in batches[agents[0]]:
+        merged[key] = torch.cat([batch[key] for batch in batches.values()], dim=1)
+
+    return merged
+
 def write_dict(metrics: Dict[str, Union[int, float]],
                step: int,
                writer: Optional[SummaryWriter] = None):

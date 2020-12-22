@@ -4,10 +4,18 @@ import argparse
 import torch
 
 from agents import Agent
+from environments import UnitySimpleCrowdEnv
 from models import BaseModel, MLPModel, FancyMLPModel
+from parallel import SubprocVecEnv
 from trainers import PPOCrowdTrainer
 import yaml
 
+def get_env_creator(*args, **kwargs):
+    def _inner():
+        env = UnitySimpleCrowdEnv(*args, **kwargs)
+        env.engine_channel.set_configuration_parameters(time_scale=100)
+        return env
+    return _inner
 
 if __name__ == '__main__':
     CUDA = torch.cuda.is_available()
@@ -17,7 +25,7 @@ if __name__ == '__main__':
                         help="Config file for the training")
     parser.add_argument("--iters", "-i", action="store", type=int, default=1000,
                         help="Number of training iterations")
-    parser.add_argument("--env", "-e", action="store", type=str, default="Test.app",
+    parser.add_argument("--env", "-e", action="store", type=str, default=None,
                         help="Path to the Unity environment binary")
     parser.add_argument("--name", "-n", action="store", type=str, default=None,
                         help="Name of the tb directory to store the logs")
@@ -39,15 +47,23 @@ if __name__ == '__main__':
     trainer_config["tensorboard_name"] = args.name
     trainer_config["use_gpu"] = CUDA
 
+    workers = trainer_config.get("workers") or 8  # default value
+
     action_range = None
 
     if args.start_dir:
         agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
     else:
-        model = FancyMLPModel(model_config)
+        model = MLPModel(model_config)
         agent = Agent(model, action_range=action_range)
 
-    agent.model.share_memory()
+    # agent.model.share_memory()
 
-    trainer = PPOCrowdTrainer(agent, args.env, config)
+    env = SubprocVecEnv([
+        get_env_creator(file_name=args.env, no_graphics=True, worker_id=10+i, seed=i)
+        for i in range(workers)
+    ])
+
+
+    trainer = PPOCrowdTrainer(agent, env, config)
     trainer.train(args.iters, disable_tqdm=False, save_path=trainer.path)

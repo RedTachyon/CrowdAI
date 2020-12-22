@@ -2,7 +2,9 @@ import time
 from typing import Dict
 
 import torch
+from torch import nn, tensor, Tensor
 import torch.multiprocessing as mp
+import numpy as np
 
 from agents import Agent
 from collectors import collect_crowd_data, collect_parallel_unity, _collection_worker
@@ -16,18 +18,39 @@ from torch.distributions import Normal
 
 import matplotlib.pyplot as plt
 
+from parallel import SubprocVecEnv
+
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.w = nn.Parameter(tensor([0.]))
+
+    def forward(self, x: Tensor):
+        return self.w + x
+
+
+def _test_worker(model: Model):
+    model.w.data += 1.
+
+def get_env_creator(*args, **kwargs):
+    def _inner():
+        env = UnitySimpleCrowdEnv(*args, **kwargs)
+        env.engine_channel.set_configuration_parameters(time_scale=100)
+        return env
+    return _inner
+
+
 
 if __name__ == '__main__':
 
-    agent = Agent(FancyMLPModel({
-        "input_size": 8,
-        "separate_value": True
+    venv = SubprocVecEnv(
+        [get_env_creator(file_name="builds/1-random-16-mac.app", no_graphics=True, worker_id=i, seed=i)
+         for i in range(8)]
+    )
+
+    agent = Agent(MLPModel({
+        "input_size": 72,
     }))
 
-    # batch, metrics = collect_parallel_unity(8, 8, agent=agent, env_path="builds/1-random-16-mac.app", num_steps=500)
-    batch, metrics = _collection_worker(agent, 0, "builds/1-random-16-mac.app", 500)
-    batch = concat_crowd_batch(batch)
-    # batch = discount_td_rewards(batch, gamma=1)
-
-    # ppo = CrowdPPOptimizer(agent, {})
-    # ppo.train_on_data(batch)
+    data, metrics = collect_crowd_data(agent, venv, 500, disable_tqdm=False)

@@ -29,7 +29,7 @@ trainer:
     min_entropy: 0.1
 
 model:
-  input_size: 6
+  input_size: 72
   num_activations: 2
   activation: tanh
 

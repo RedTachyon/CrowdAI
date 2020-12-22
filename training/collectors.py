@@ -1,6 +1,6 @@
 import time
 from collections import OrderedDict
-from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Any
+from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Any, Union
 
 import gym
 import numpy as np
@@ -10,6 +10,7 @@ import torch.multiprocessing as mp
 from tqdm import trange
 
 from agents import BaseAgent, Agent, StillAgent, RandomAgent
+from parallel import SubprocVecEnv
 from preprocessors import simple_padder
 from utils import DataBatch, with_default_config, np_float, transpose_batch, concat_batches, pack, unpack, \
     concat_crowd_batch, concat_metrics
@@ -92,11 +93,19 @@ class Memory:
         """
 
         # The first version is old and worked, the second one is shorter and should work too
-        torch_data = {
-            # field_name: self.apply_to_dict(lambda agent: torch.tensor(self.data[field_name][agent]), field)
-            field_name: {agent: torch.tensor(field[agent]) for agent in field}
-            for field_name, field in self.data.items()
-        }
+        # torch_data = {
+        #     # field_name: self.apply_to_dict(lambda agent: torch.tensor(self.data[field_name][agent]), field)
+        #     field_name: {agent: torch.tensor(field[agent]) for agent in field}
+        #     for field_name, field in self.data.items()
+        # }
+
+        # Unrolled version of the above for debugging
+        torch_data = {}
+        for field_name, field in self.data.items():
+            torch_data[field_name] = {}
+            for agent in field:
+                # print(f"Currently in field {field_name}, agent {agent}")
+                torch_data[field_name][agent] = torch.tensor(field[agent])
 
         return torch_data
 
@@ -104,7 +113,7 @@ class Memory:
         assert 'dones' in self.data, "Must collect dones in the memory"
         for data in self.data['dones'].values():
             for i in range(1, n + 1):
-                data[-i] = True
+               data[-i] = np.logical_not(data[-1])
 
     def __getitem__(self, item):
         return self.data[item]
@@ -114,11 +123,10 @@ class Memory:
 
 
 def collect_crowd_data(agent: Agent,
-                       env: MultiAgentEnv,
+                       env: Union[MultiAgentEnv, SubprocVecEnv],
                        num_steps: Optional[int] = None,
                        deterministic: bool = False,
                        disable_tqdm: bool = True,
-                       include_last: bool = False,
                        reset_start: bool = True
                        ) -> Tuple[DataBatch, Dict]:
     """
@@ -130,7 +138,6 @@ def collect_crowd_data(agent: Agent,
                 num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
                 deterministic: whether each agent should use the greedy policy; False by default
                 disable_tqdm: whether a live progress bar should be (not) displayed
-                include_last: whether to include the last observation in episodic mode - useful for visualizations
                 reset_start: whether the environment should be reset at the beginning of collection
 
             Returns: dictionary with the gathered data in the following format:
@@ -204,29 +211,38 @@ def collect_crowd_data(agent: Agent,
         next_obs, reward_dict, done_dict, info_dict = env.step(action_dict)
 
         # Collect the metrics passed by the environment
-        mean_distance, mean_speed, mean_finish = info_dict["metrics"].T
+        if isinstance(info_dict, tuple):
+            all_metrics = np.concatenate([info["metrics"] for info in info_dict])
+        else:
+            all_metrics = info_dict["metrics"]
+
+        mean_distance, mean_speed, mean_finish = all_metrics.T
         metrics["mean_distance"].append(mean_distance)
         metrics["mean_speed"].append(mean_speed)
         metrics["mean_finish"].append(mean_finish)
-
         # Saving to memory
+        # breakpoint()
+
         memory.store(obs_dict, action_dict, reward_dict, logprob_dict, values_dict, done_dict)
 
+        # \/ Unused if the episode can't end by itself, interrupts vectorized env collection
         # Update the current obs and state - either reset, or keep going
-        if done_dict["__all__"]:  # episode is over
-            if include_last:  # record the last observation along with placeholder action/reward/logprob
-                memory.store(next_obs, action_dict, reward_dict, logprob_dict, values_dict, done_dict)
+        # if done_dict["__all__"]:  # episode is over
+        #     if include_last:  # record the last observation along with placeholder action/reward/logprob
+        #         memory.store(next_obs, action_dict, reward_dict, logprob_dict, values_dict, done_dict)
+        #
+        #     # Step mode with episode finish handling
+        #     if end_flag:
+        #         break
+        #
+        #     # If we didn't end, create a new environment
+        #     obs_dict = env.reset()
+        #
+        # else:  # keep going
+        #     obs_dict = next_obs
+        #     # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
 
-            # Step mode with episode finish handling
-            if end_flag:
-                break
-
-            # If we didn't end, create a new environment
-            obs_dict = env.reset()
-
-        else:  # keep going
-            obs_dict = next_obs
-            # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
+        obs_dict = next_obs
 
     memory.set_done(2)
     metrics = {key: np.array(value) for key, value in metrics.items()}

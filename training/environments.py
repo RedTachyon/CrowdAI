@@ -2,6 +2,7 @@ import numpy as np
 import gym
 from typing import Dict, Any, Tuple, Callable, List
 
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 
@@ -114,7 +115,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         for name in self.behaviors.keys():
             decisions, terminals = self.unity.get_steps(name)
-            action_shape = self.behaviors[name].action_shape
+            action_shape = self.behaviors[name].action_spec.continuous_size
             dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
             all_actions = np.array([action.get(f"{name}&id={id_}", np.zeros(action_shape)).ravel()
                                     for id_ in dec_ids])
