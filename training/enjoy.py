@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read training arguments')
     parser.add_argument("--steps", "-s", action="store", type=int, default=500,
                         help="Number of steps agent should collect in one episode")
-    parser.add_argument("--env", "-e", action="store", type=str, default="Test.app",
+    parser.add_argument("--env", "-e", action="store", type=str, default=None,
                         help="Path to the Unity environment binary")
     parser.add_argument("--start_dir", "-sd", action="store", type=str, default=None,
                         help="Name of the tb directory containing the run from which we want to (re)start the training")
@@ -24,6 +24,8 @@ if __name__ == '__main__':
                         help="From which iteration we should start (only if start_dir is set)")
     parser.add_argument("--wait", "-w", action="store", type=int, default=1,
                         help="How many seconds to sleep before running")
+    parser.add_argument("--seed", "-seed", action="store", type=int, default=0,
+                        help="Random seed for Unity")
     args = parser.parse_args()
 
     # action_range = (
@@ -37,7 +39,7 @@ if __name__ == '__main__':
 
     time.sleep(args.wait)
 
-    env = UnitySimpleCrowdEnv(args.env)
+    env = UnitySimpleCrowdEnv(args.env, seed=args.seed)
     env.engine_channel.set_configuration_parameters(width=1000, height=1000)
 
     env.reset()

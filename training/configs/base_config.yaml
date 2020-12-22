@@ -33,7 +33,7 @@ model:
   num_activations: 2
   activation: tanh
 
-  hidden_sizes: !!python/tuple [64, 64]
+  hidden_sizes: !!python/tuple [32, 32]
   separate_value: true
 
   sigma0: 0.7
