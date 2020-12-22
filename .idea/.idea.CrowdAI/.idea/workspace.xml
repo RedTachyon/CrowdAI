@@ -20,13 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/1 random.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Walker.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,11 +50,11 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
         <option value="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
       </list>
     </option>
@@ -134,7 +129,8 @@
       <workItem from="1608128134757" duration="6000" />
       <workItem from="1608128146841" duration="3763000" />
       <workItem from="1608248892532" duration="391000" />
-      <workItem from="1608298554045" duration="8452000" />
+      <workItem from="1608298554045" duration="8792000" />
+      <workItem from="1608385747182" duration="1065000" />
     </task>
     <servers />
   </component>

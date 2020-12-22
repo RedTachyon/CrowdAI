@@ -10,7 +10,6 @@ using Unity.MLAgents.Sensors;
 // -0.01 reward per decision step for collisions (-1 reward per 100 steps)
 // -0.01 reward per decision step
 
-// TODO: Change localPosition to position where applicable... ffs
 public class AgentController : Walker
 {
     // private Vector3 _startPosition;

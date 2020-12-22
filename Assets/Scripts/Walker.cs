@@ -26,7 +26,7 @@ public class Walker : Agent
     public override void Initialize()
     {
         Rigidbody = GetComponent<Rigidbody>();
-        StartY = transform.position.y;
+        StartY = transform.localPosition.y;
     }
     
 
