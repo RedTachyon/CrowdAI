@@ -56,15 +56,15 @@ public class AgentRandom : Walker
         
         // Relative position: 2
         var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
-        // sensor.AddObservation(relPosition.x / 20f);
-        // sensor.AddObservation(relPosition.z / 20f);
+        sensor.AddObservation(relPosition.x / 20f);
+        sensor.AddObservation(relPosition.z / 20f);
 
-        var distance = (goalPosition - position).magnitude;
-        var angle = Vector3.Angle(Vector3.forward, relPosition);
+        // var distance = (goalPosition - position).magnitude;
+        // var angle = Vector3.Angle(Vector3.forward, relPosition);
         //
         // // Debug.Log($"Distance: {distance}, angle: {angle}");
-        sensor.AddObservation(distance / 20f);
-        sensor.AddObservation(angle / 180f);
+        // sensor.AddObservation(distance / 20f);
+        // sensor.AddObservation(angle / 180f);
 
         // Debug.Log(distance);
         
