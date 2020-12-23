@@ -59,6 +59,9 @@ if __name__ == '__main__':
 
     # agent.model.share_memory()
 
+    if CUDA:
+        agent.cuda()
+
     env = SubprocVecEnv([
         get_env_creator(file_name=args.env, no_graphics=True, worker_id=10+i, seed=i)
         for i in range(workers)
