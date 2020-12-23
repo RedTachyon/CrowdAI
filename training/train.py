@@ -45,7 +45,7 @@ if __name__ == '__main__':
     model_config = config["model"]
 
     trainer_config["tensorboard_name"] = args.name
-    trainer_config["use_gpu"] = CUDA
+    trainer_config["ppo_config"]["use_gpu"] = CUDA
 
     workers = trainer_config.get("workers") or 8  # default value
 
@@ -63,7 +63,6 @@ if __name__ == '__main__':
         get_env_creator(file_name=args.env, no_graphics=True, worker_id=10+i, seed=i)
         for i in range(workers)
     ])
-
 
     trainer = PPOCrowdTrainer(agent, env, config)
     trainer.train(args.iters, disable_tqdm=False, save_path=trainer.path)

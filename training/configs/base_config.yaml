@@ -6,8 +6,6 @@ trainer:
   tensorboard_name:
   save_freq: 10
 
-  use_gpu: false
-
   ppo_config:
     optimizer: adam
     optimizer_kwargs:
@@ -27,6 +25,7 @@ trainer:
     entropy_coeff: 0.1
     entropy_decay_time: 100
     min_entropy: 0.1
+    use_gpu: false
 
 model:
   input_size: 72
