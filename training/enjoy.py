@@ -42,6 +42,7 @@ if __name__ == '__main__':
     env = UnitySimpleCrowdEnv(args.env, seed=args.seed)
     env.engine_channel.set_configuration_parameters(width=1000, height=1000)
 
-    env.reset()
+    for _ in range(5):
+        env.reset()
 
-    data, metrics = collect_crowd_data(agent, env, args.steps)
+        data, metrics = collect_crowd_data(agent, env, args.steps)

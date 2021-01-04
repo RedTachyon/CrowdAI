@@ -130,7 +130,7 @@ class Agent(BaseAgent):
             values: tensor of observation values (batch_size, )
             entropies: tensor of entropy values (batch_size, )
         """
-        obs_batch = data_batch['observations']
+        obs_batch = data_batch['observations'].to(self.model.device)
         action_batch = data_batch['actions']
         # state_batch = data_batch['states']
 
