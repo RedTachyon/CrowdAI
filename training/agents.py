@@ -131,7 +131,7 @@ class Agent(BaseAgent):
             entropies: tensor of entropy values (batch_size, )
         """
         obs_batch = data_batch['observations'].to(self.model.device)
-        action_batch = data_batch['actions']
+        action_batch = data_batch['actions'].to(self.model.device)
         # state_batch = data_batch['states']
 
         if not padded:  # BP or non-recurrent
