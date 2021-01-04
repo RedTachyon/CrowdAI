@@ -1,14 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Unity.MLAgents.SideChannels;
-using UnityEngine.Serialization;
-using Object = UnityEngine.Object;
-using Random = System.Random;
 
 public class ManagerRandom : Statistician
 {
@@ -48,17 +39,33 @@ public class ManagerRandom : Statistician
                 _finished[agent] = false;
                 // agent.GetComponent<Controller>().Unfreeze();
                 
-                agent.localPosition = new Vector3(
-                    UnityEngine.Random.Range(-9f, 9f), 
-                    agent.GetComponent<Walker>().StartY,
-                    UnityEngine.Random.Range(-9f, 9f)
-                );
+                // agent.localPosition = new Vector3(
+                //     UnityEngine.Random.Range(-9f, 9f), 
+                //     agent.GetComponent<Walker>().StartY,
+                //     UnityEngine.Random.Range(-9f, 9f)
+                // );
+                
+                // agent.GetComponent<AgentRandom>().goal.localPosition = new Vector3(
+                //     UnityEngine.Random.Range(-9f, 9f),
+                //     0.25f,
+                //     UnityEngine.Random.Range(-9f, 9f)
+                // );
 
-                agent.GetComponent<AgentRandom>().goal.localPosition = new Vector3(
-                    UnityEngine.Random.Range(-9f, 9f),
-                    0.25f,
-                    UnityEngine.Random.Range(-9f, 9f)
-                );
+                agent.localPosition = MLUtils.NoncollidingPosition(
+                    -9f,
+                    9f,
+                    agent.GetComponent<Walker>().StartY,
+                    transform);
+
+                var goal = agent.GetComponent<AgentRandom>().goal;
+                
+                goal.localPosition = MLUtils.NoncollidingPosition(
+                    -9f,
+                    9f,
+                    0.15f,
+                    goal.parent);
+
+
                 
                 agent.localRotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
         

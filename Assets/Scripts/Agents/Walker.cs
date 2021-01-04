@@ -86,6 +86,7 @@ public class Walker : Agent
     {
         var xValue = 0f;
         var zValue = 0f;
+        Vector3 force;
 
         // Only for polar WASD controls
         // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
@@ -98,6 +99,17 @@ public class Walker : Agent
         if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
         if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
 
+        if (Input.anyKey)
+        {
+            force = new Vector3(xValue, 0, zValue);
+        }
+        else
+        {
+            force = goal.position - transform.position;
+            force.y = 0f;
+            force = force.normalized;
+        }
+
         // if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
         //     &&
         //     (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
@@ -105,7 +117,6 @@ public class Walker : Agent
         //     xValue *= ratio;
         // }
         //
-        var force = new Vector3(xValue, 0, zValue);
         // force = transform.rotation * force;
         //
         // Debug.Log(force);

@@ -19,6 +19,7 @@
             <e p="ManagerRandom.cs" t="Include" />
             <e p="Statistician.cs" t="Include" />
           </e>
+          <e p="MLUtils.cs" t="Include" />
         </e>
       </e>
       <e p="CrowdAI.sln" t="IncludeFlat" />
