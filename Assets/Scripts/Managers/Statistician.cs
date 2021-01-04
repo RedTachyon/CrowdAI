@@ -42,11 +42,12 @@ public class Statistician : Agent
 
             // Fraction of agents that finished already
             dones.Add(_finished[agent] ? 1f : 0f);
-        }
+            // Debug.Log(_finished[agent]);
 
+        }
         var meanDist = distances.Average();
         var meanSpeed = speeds.Average();
-        var finished = dones.Average();
+        var finished =  dones.Average();
 
         sensor.AddObservation(meanDist);
         sensor.AddObservation(meanSpeed);

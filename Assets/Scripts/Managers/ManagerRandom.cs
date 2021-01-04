@@ -6,12 +6,33 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
+using UnityEngine.Serialization;
+using Object = UnityEngine.Object;
 using Random = System.Random;
 
 public class ManagerRandom : Statistician
 {
-
+    public int numAgents = 1;
     
+    public override void Initialize()
+    {
+        base.Initialize();
+    
+        var agent = GetComponentInChildren<AgentRandom>();
+        var goal = agent.goal;
+        
+    
+        for (var i = 1; i < numAgents; i++)
+        {
+            var newAgent = Instantiate(agent, transform);
+            var newGoal = Instantiate(goal, goal.parent);
+            
+            newAgent.GetComponent<AgentRandom>().goal = newGoal;
+            newAgent.name = agent.name + $" ({i})";
+            newGoal.name = goal.name + $"({i})";
+        }
+    }
+
     public override void OnEpisodeBegin()
     {
         // Debug.Log("Manager starting an episode");

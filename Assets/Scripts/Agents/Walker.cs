@@ -49,7 +49,7 @@ public class Walker : Agent
         // Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
         // Rigidbody.rotation = Quaternion.Euler(rotation);
         
-        Vector3 force = new Vector3(xSpeed, 0f, zSpeed) * moveSpeed;
+        Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
         
         
         // Reduce the velocity friction-like
@@ -66,7 +66,7 @@ public class Walker : Agent
         if (dirVector.magnitude > .1f)
         {
             var orthogonal = Vector3.Cross(Vector3.up, forward).normalized;
-            var angle = Vector3.Angle(forward, dirVector.normalized)/180f;
+            var angle = Vector3.Angle(forward, dirVector.normalized) / 180f;
             // var dot = Vector3.Dot(rotation * Vector3.forward, dirVector.normalized);
             var sign = Mathf.Sign(Vector3.Dot(orthogonal, dirVector));
 

@@ -7,14 +7,18 @@
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
-          <e p="AgentController.cs" t="Include" />
-          <e p="AgentRandom.cs" t="Include" />
+          <e p="Agents" t="Include">
+            <e p="AgentController.cs" t="Include" />
+            <e p="AgentRandom.cs" t="Include" />
+            <e p="Walker.cs" t="Include" />
+          </e>
           <e p="AgentSensor.cs" t="Include" />
           <e p="AgentSensorComponent.cs" t="Include" />
-          <e p="Manager.cs" t="Include" />
-          <e p="ManagerRandom.cs" t="Include" />
-          <e p="Statistician.cs" t="Include" />
-          <e p="Walker.cs" t="Include" />
+          <e p="Managers" t="Include">
+            <e p="Manager.cs" t="Include" />
+            <e p="ManagerRandom.cs" t="Include" />
+            <e p="Statistician.cs" t="Include" />
+          </e>
         </e>
       </e>
       <e p="CrowdAI.sln" t="IncludeFlat" />
