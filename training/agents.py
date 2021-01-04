@@ -92,6 +92,9 @@ class Agent(BaseAgent):
         Returns:
             action, logprob of the action, new state vectors
         """
+        if self.model.device == 'cuda':
+            obs_batch = obs_batch.to('cuda')
+            state_batch = tuple(s.to('cuda') for s in state_batch)
         action_distribution: Normal
         states: Tuple
         with torch.no_grad():
@@ -130,8 +133,8 @@ class Agent(BaseAgent):
             values: tensor of observation values (batch_size, )
             entropies: tensor of entropy values (batch_size, )
         """
-        obs_batch = data_batch['observations']
-        action_batch = data_batch['actions']
+        obs_batch = data_batch['observations'].to(self.model.device)
+        action_batch = data_batch['actions'].to(self.model.device)
         # state_batch = data_batch['states']
 
         if not padded:  # BP or non-recurrent

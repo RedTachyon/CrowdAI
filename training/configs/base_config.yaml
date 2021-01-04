@@ -15,7 +15,7 @@ trainer:
       weight_decay: 0
       amsgrad: false
 
-    gamma: 0.95
+    gamma: 0.5
     ppo_steps: 25
     eps: 0.25
     target_kl: 0.01
