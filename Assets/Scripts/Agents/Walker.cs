@@ -49,7 +49,7 @@ public class Walker : Agent
         // Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
         // Rigidbody.rotation = Quaternion.Euler(rotation);
         
-        Vector3 force = new Vector3(xSpeed, 0f, zSpeed) * moveSpeed;
+        Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
         
         
         // Reduce the velocity friction-like
@@ -66,7 +66,7 @@ public class Walker : Agent
         if (dirVector.magnitude > .1f)
         {
             var orthogonal = Vector3.Cross(Vector3.up, forward).normalized;
-            var angle = Vector3.Angle(forward, dirVector.normalized)/180f;
+            var angle = Vector3.Angle(forward, dirVector.normalized) / 180f;
             // var dot = Vector3.Dot(rotation * Vector3.forward, dirVector.normalized);
             var sign = Mathf.Sign(Vector3.Dot(orthogonal, dirVector));
 
@@ -86,6 +86,7 @@ public class Walker : Agent
     {
         var xValue = 0f;
         var zValue = 0f;
+        Vector3 force;
 
         // Only for polar WASD controls
         // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
@@ -98,6 +99,17 @@ public class Walker : Agent
         if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
         if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
 
+        if (Input.anyKey)
+        {
+            force = new Vector3(xValue, 0, zValue);
+        }
+        else
+        {
+            force = goal.position - transform.position;
+            force.y = 0f;
+            force = force.normalized;
+        }
+
         // if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
         //     &&
         //     (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
@@ -105,7 +117,6 @@ public class Walker : Agent
         //     xValue *= ratio;
         // }
         //
-        var force = new Vector3(xValue, 0, zValue);
         // force = transform.rotation * force;
         //
         // Debug.Log(force);
