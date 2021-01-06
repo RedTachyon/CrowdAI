@@ -1,15 +1,9 @@
 import time
-from typing import Dict
 import argparse
 
-import torch
-
 from agents import Agent
-from collectors import collect_crowd_data, collect_parallel_unity
-from environments import UnitySimpleCrowdEnv
-from models import BaseModel, MLPModel, FancyMLPModel
-from trainers import PPOCrowdTrainer
-
+from collectors import collect_crowd_data
+from envs.unity_envs import UnitySimpleCrowdEnv
 
 if __name__ == '__main__':
 

@@ -1,22 +1,9 @@
-import time
-from typing import Dict
-
-import torch
 from torch import nn, tensor, Tensor
-import torch.multiprocessing as mp
-import numpy as np
 
 from agents import Agent
-from collectors import collect_crowd_data, collect_parallel_unity, _collection_worker
-from environments import UnitySimpleCrowdEnv
-from models import MLPModel, FancyMLPModel
-from policy_optimization import CrowdPPOptimizer
-
-from utils import concat_crowd_batch, concat_batches, DataBatch, concat_metrics, discount_td_rewards
-
-from torch.distributions import Normal
-
-import matplotlib.pyplot as plt
+from collectors import collect_crowd_data
+from envs.unity_envs import UnitySimpleCrowdEnv
+from models import MLPModel
 
 from parallel import SubprocVecEnv
 

@@ -1,20 +1,15 @@
-import time
-from collections import OrderedDict
-from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Any, Union
+from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Union
 
-import gym
 import numpy as np
 import torch
-from torch import Tensor
 import torch.multiprocessing as mp
 from tqdm import trange
 
-from agents import BaseAgent, Agent, StillAgent, RandomAgent
+from agents import Agent
 from parallel import SubprocVecEnv
-from preprocessors import simple_padder
-from utils import DataBatch, with_default_config, np_float, transpose_batch, concat_batches, pack, unpack, \
+from utils import DataBatch, concat_batches, pack, unpack, \
     concat_crowd_batch, concat_metrics
-from environments import MultiAgentEnv, DEPRECATEDUnityCrowdEnv, UnitySimpleCrowdEnv
+from envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv
 
 T = TypeVar('T')
 
@@ -130,41 +125,20 @@ def collect_crowd_data(agent: Agent,
                        reset_start: bool = True
                        ) -> Tuple[DataBatch, Dict]:
     """
-            Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
+        Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
-            Args:
-                agent: Agent with which to collect the data
-                env: Environment in which the agent will act
-                num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
-                deterministic: whether each agent should use the greedy policy; False by default
-                disable_tqdm: whether a live progress bar should be (not) displayed
-                reset_start: whether the environment should be reset at the beginning of collection
+        Args:
+            agent: Agent with which to collect the data
+            env: Environment in which the agent will act
+            num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
+            deterministic: whether each agent should use the greedy policy; False by default
+            disable_tqdm: whether a live progress bar should be (not) displayed
+            reset_start: whether the environment should be reset at the beginning of collection
 
-            Returns: dictionary with the gathered data in the following format:
-
-            {
-                "observations":
-                    {
-                        "Agent0": tensor([obs1, obs2, ...]),
-
-                        "Agent1": tensor([obs1, obs2, ...])
-                    },
-                "actions":
-                    {
-                        "Agent0": tensor([act1, act2, ...]),
-
-                        "Agent1": tensor([act1, act2, ...])
-                    },
-                ...,
-
-                "states":
-                    {
-                        "Agent0": (tensor([h1, h2, ...]), tensor([c1, c2, ...])),
-
-                        "Agent1": (tensor([h1, h2, ...]), tensor([c1, c2, ...]))
-                    }
-            }
-            """
+        Returns:
+            data: a nested dictionary with the data
+            metrics: a dictionary of metrics passed by the environment
+    """
     memory = Memory(['observations', 'actions', 'rewards', 'logprobs', 'values', 'dones'])
 
     if reset_start:
@@ -216,10 +190,11 @@ def collect_crowd_data(agent: Agent,
         else:
             all_metrics = info_dict["metrics"]
 
-        mean_distance, mean_speed, mean_finish = all_metrics.T
+        mean_distance, mean_speed, mean_finish, mean_collision = all_metrics.T
         metrics["mean_distance"].append(mean_distance)
         metrics["mean_speed"].append(mean_speed)
         metrics["mean_finish"].append(mean_finish)
+        metrics["mean_collision"].append(mean_collision)
         # Saving to memory
         # breakpoint()
 
@@ -228,8 +203,6 @@ def collect_crowd_data(agent: Agent,
         # \/ Unused if the episode can't end by itself, interrupts vectorized env collection
         # Update the current obs and state - either reset, or keep going
         # if done_dict["__all__"]:  # episode is over
-        #     if include_last:  # record the last observation along with placeholder action/reward/logprob
-        #         memory.store(next_obs, action_dict, reward_dict, logprob_dict, values_dict, done_dict)
         #
         #     # Step mode with episode finish handling
         #     if end_flag:
@@ -241,15 +214,14 @@ def collect_crowd_data(agent: Agent,
         # else:  # keep going
         #     obs_dict = next_obs
         #     # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
-
-        obs_dict = next_obs
+        #
+        # obs_dict = next_obs
 
     memory.set_done(2)
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
     data = memory.get_torch_data()
 
-    # print("Process done")
     return data, metrics
 
 

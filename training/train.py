@@ -1,11 +1,10 @@
-from typing import Dict
 import argparse
 
 import torch
 
 from agents import Agent
-from environments import UnitySimpleCrowdEnv
-from models import BaseModel, MLPModel, FancyMLPModel
+from envs.unity_envs import UnitySimpleCrowdEnv
+from models import MLPModel
 from parallel import SubprocVecEnv
 from trainers import PPOCrowdTrainer
 import yaml

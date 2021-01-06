@@ -1,20 +1,11 @@
-import copy
 import os
-from collections import defaultdict
 from typing import List, Dict, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from scipy.stats import sem
 from torch import Tensor
-from tqdm import tqdm
 
 from agents import Agent
-from environments import MultiAgentEnv
-from models import BaseModel
-from collectors import CrowdCollector
-from utils import get_episode_lens
 
 
 def load_weights(base_path: str,

@@ -10,7 +10,7 @@ using Unity.MLAgents.Sensors;
 // -0.01 reward per decision step for collisions (-1 reward per 100 steps)
 // -0.01 reward per decision step
 
-public class AgentRandom : Walker
+public class AgentConst : Walker
 {
     // private Vector3 _startPosition;
     // private Quaternion _startRotation;
@@ -133,7 +133,7 @@ public class AgentRandom : Walker
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
             AddReward(0.03f);
-            GetComponentInParent<ManagerRandom>().ReachGoal(this);
+            GetComponentInParent<ManagerConst>().ReachGoal(this);
             _material.color = Color.blue;
             
             // Debug.Log("Collecting a reward");

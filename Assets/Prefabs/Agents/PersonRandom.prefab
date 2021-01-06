@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 5454719560782719032}
   - component: {fileID: 5454719560782719033}
   - component: {fileID: 5454719560782718982}
-  - component: {fileID: 5454719560782718983}
-  - component: {fileID: 5454719560782718980}
+  - component: {fileID: 8767953493816811681}
+  - component: {fileID: 7966424635699249050}
   - component: {fileID: 6468657103997608510}
   m_Layer: 0
   m_Name: PersonRandom
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_BehaviorName: Person1
   TeamId: 0
   m_UseChildSensors: 1
---- !u!114 &5454719560782718983
+--- !u!114 &8767953493816811681
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -151,19 +151,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 5454719560782718979}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6c8ec6f8671423893b1271e62b7ed4c, type: 3}
+  m_Script: {fileID: 11500000, guid: 1290ceddb6924021a371d162bbbde098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  moveSpeed: 35
+  moveSpeed: 25
   rotationSpeed: 3
-  dragFactor: 10
+  dragFactor: 5
   goal: {fileID: 0}
-  StartY: 0
---- !u!114 &5454719560782718980
+  startY: 0
+  startPosition: {x: 0, y: 0, z: 0}
+  startRotation: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7966424635699249050
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 1
+  DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
 --- !u!114 &6468657103997608510
 MonoBehaviour:

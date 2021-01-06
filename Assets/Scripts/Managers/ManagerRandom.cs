@@ -26,8 +26,8 @@ public class ManagerRandom : Statistician
 
     public override void OnEpisodeBegin()
     {
+        base.OnEpisodeBegin();
         // Debug.Log("Manager starting an episode");
-        _finished.Clear();
         // _done = false;
         // Debug.Log(UnityEngine.Random.state.GetHashCode());
         // UnityEngine.Random.InitState(DateTime.Now.Millisecond);
@@ -36,7 +36,6 @@ public class ManagerRandom : Statistician
         {
             if (agent.gameObject.activeSelf)
             {
-                _finished[agent] = false;
                 // agent.GetComponent<Controller>().Unfreeze();
                 
                 // agent.localPosition = new Vector3(
@@ -54,7 +53,7 @@ public class ManagerRandom : Statistician
                 agent.localPosition = MLUtils.NoncollidingPosition(
                     -9f,
                     9f,
-                    agent.GetComponent<Walker>().StartY,
+                    agent.GetComponent<Walker>().startY,
                     transform);
 
                 var goal = agent.GetComponent<AgentRandom>().goal;

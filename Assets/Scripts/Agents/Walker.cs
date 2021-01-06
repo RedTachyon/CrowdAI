@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using UnityEngine.Serialization;
 
 
 public class Walker : Agent
@@ -17,22 +18,27 @@ public class Walker : Agent
 
     protected int Unfrozen = 1;
 
+    internal int Collision = 0;
+
     public Transform goal;
 
-    [HideInInspector]
-    public float StartY;
+    [HideInInspector] public float startY;
 
+    [HideInInspector] public Vector3 startPosition;
+
+    [HideInInspector] public Quaternion startRotation;
 
     public override void Initialize()
     {
         Rigidbody = GetComponent<Rigidbody>();
-        StartY = transform.localPosition.y;
+        startY = transform.localPosition.y;
+        startPosition = transform.localPosition;
+        startRotation = transform.localRotation;
     }
     
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        
         // Forward velocity
         var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
         
@@ -158,4 +164,20 @@ public class Walker : Agent
     }
 
 
+    protected virtual void OnCollisionEnter(Collision other)
+    {
+        if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
+        {
+            Collision = 1;
+        }
+    }
+
+    protected virtual void OnCollisionStay(Collision other)
+    {
+        if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
+        {
+            Collision = 1;
+        }
+    }
+    
 }
