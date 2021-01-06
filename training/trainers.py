@@ -1,28 +1,19 @@
 import os
-import pickle
-import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, List, OrderedDict, Union
-import copy
+from typing import Dict, Any, Optional
 
-import gym
 import numpy as np
 import torch
 import yaml
-from torch import Tensor
-from torch.nn.utils import clip_grad_norm_
-from torch.optim import Adam
 
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 
 from agents import Agent
-from environments import MultiAgentEnv
 from parallel import SubprocVecEnv
-from utils import Timer, with_default_config, write_dict, transpose_batch, concat_batches, AgentDataBatch, DataBatch, \
-    np_float, get_episode_rewards, concat_crowd_batch, concat_metrics, concat_subproc_batch
-from collectors import collect_crowd_data, collect_parallel_unity
+from utils import Timer, with_default_config, write_dict, concat_subproc_batch
+from collectors import collect_crowd_data
 from policy_optimization import CrowdPPOptimizer
 
 class Trainer:
@@ -171,7 +162,8 @@ class PPOCrowdTrainer(Trainer):
                             f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
                             f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
                             f"crowd/mean_finish_l1": np.mean(collector_metrics["mean_finish"][-1]),
-                            f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:])}
+                            f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:]),
+                            f"crowd/collisions_per_capita": np.sum(collector_metrics["mean_collision"].mean(1))}
 
             write_dict(extra_metric, step, self.writer)
 

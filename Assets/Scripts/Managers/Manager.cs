@@ -34,14 +34,14 @@ public class Manager : Statistician
     public override void OnEpisodeBegin()
     {
         // Debug.Log("Manager starting an episode");
-        _finished.Clear();
+        Finished.Clear();
         // _done = false;
         
         foreach (Transform agent in transform)
         {
             if (agent.gameObject.activeSelf)
             {
-                _finished[agent] = false;
+                Finished[agent] = false;
                 // agent.GetComponent<Controller>().Unfreeze();
                 
                 agent.position = _startPos[agent];

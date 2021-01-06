@@ -11,13 +11,31 @@ using Unity.MLAgents.SideChannels;
 public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
-    protected Dictionary<Transform, bool> _finished;
+    protected Dictionary<Transform, bool> Finished;
 
     public override void Initialize()
     {
         base.Initialize();
         
-        _finished = new Dictionary<Transform, bool>();
+        Finished = new Dictionary<Transform, bool>();
+
+        foreach (Transform agent in transform)
+        {
+            Walker walker = agent.GetComponent<Walker>();
+            walker.startPosition = agent.localPosition;
+        }
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        base.OnEpisodeBegin();
+        Finished.Clear();
+
+        foreach (Transform agent in transform)
+        {
+            Finished[agent] = false;
+        }
+        
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -26,6 +44,7 @@ public class Statistician : Agent
         var distances = new List<float>();
         var speeds = new List<float>();
         var dones = new List<float>();
+        var collisions = new List<int>();
         
         foreach (Transform agent in transform)
         {
@@ -41,37 +60,38 @@ public class Statistician : Agent
             speeds.Add(speed);
 
             // Fraction of agents that finished already
-            dones.Add(_finished[agent] ? 1f : 0f);
+            dones.Add(Finished[agent] ? 1f : 0f);
             // Debug.Log(_finished[agent]);
+            
+            collisions.Add(agent.GetComponent<Walker>().Collision);
 
         }
         var meanDist = distances.Average();
         var meanSpeed = speeds.Average();
         var finished =  dones.Average();
+        var collision = (float) collisions.Average();
+        
+        // Debug.Log(collision);
 
         sensor.AddObservation(meanDist);
         sensor.AddObservation(meanSpeed);
         sensor.AddObservation(finished);
+        sensor.AddObservation(collision);
         
         // Debug.Log(finished);
     }
     
     public void ReachGoal(Walker agent)
     {
-        _finished[agent.transform] = true;
+        Finished[agent.transform] = true;
         // agent.EndEpisode();
         // agent.Freeze();
 
-        if (!_finished.Values.Contains(false))
+        if (!Finished.Values.Contains(false))
         {
             
             // _done = true;
         }
-    }
-
-    public void RecordCollision(Walker agent)
-    {
-        
     }
 
 }

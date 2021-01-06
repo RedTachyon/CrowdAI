@@ -27,8 +27,7 @@ class BaseAgent:
 
         raise NotImplementedError
 
-    def evaluate_actions(self, data_batch: AgentDataBatch,
-                         padded: bool = False):
+    def evaluate_actions(self, data_batch: AgentDataBatch):
         raise NotImplementedError
 
     def compute_single_action(self, obs: np.ndarray,
@@ -108,17 +107,11 @@ class Agent(BaseAgent):
         logprobs = action_distribution.log_prob(actions).sum(-1)
         values = extra_outputs['value']
 
-        # TODO: Just remove this?
-        if self.action_range:
-            a, b = self.action_range
-            out_actions = tanh_norm(actions, a, b)
-        else:
-            out_actions = actions
+        out_actions = actions
 
         return out_actions.detach().cpu().numpy(), logprobs.detach().cpu().numpy(), values.detach().cpu().numpy().squeeze(-1), states
 
-    def evaluate_actions(self, data_batch: AgentDataBatch,
-                         padded: bool = False) -> Tuple[Tensor, Tensor, Tensor]:
+    def evaluate_actions(self, data_batch: AgentDataBatch) -> Tuple[Tensor, Tensor, Tensor]:
         """
         Computes action logprobs, observation values and policy entropy for each of the (obs, action, hidden_state)
         transitions. Preserves all the necessary gradients.
@@ -137,42 +130,10 @@ class Agent(BaseAgent):
         action_batch = data_batch['actions'].to(self.model.device)
         # state_batch = data_batch['states']
 
-        if not padded:  # BP or non-recurrent
-            if self.action_range:
-                a, b = self.action_range
-                action_batch = atanh_unnorm(action_batch, a, b)
-            action_distribution, new_states, extra_outputs = self.model(obs_batch)
-            values = extra_outputs["value"].sum(-1)
-            action_logprobs = action_distribution.log_prob(action_batch).sum(-1)
-            entropies = action_distribution.entropy().sum(-1)
-
-        else:  # padded == True, BPTT
-            # TODO: Might not work, copied from DiscreteAgent; useful if I want BPTT, but slower, otherwise useless
-            return NotImplementedError
-            batch_size = obs_batch. size()[1]  # assume it's padded, so in [L, B, *] format
-            state: Tuple[Tensor, ...] = self.get_initial_state()
-            state = tuple(_state.repeat(batch_size, 1) for _state in state)
-            entropies = []
-            action_logprobs = []
-            values = []
-            # states_cache = [state]
-            # breakpoint()
-
-            for (obs, action) in zip(obs_batch, action_batch):
-                action_distribution, new_state, extra_outputs = self.model(obs, state)
-                value = extra_outputs["value"]
-                action_logprob = action_distribution.log_prob(action)
-                entropy = action_distribution.entropy()
-                action_logprobs.append(action_logprob)
-                values.append(value.T)
-                entropies.append(entropy)
-
-                state = new_state
-                # states_cache.append(state)
-
-            action_logprobs = torch.stack(action_logprobs)
-            values = torch.cat(values, dim=0)
-            entropies = torch.stack(entropies)
+        action_distribution, new_states, extra_outputs = self.model(obs_batch)
+        values = extra_outputs["value"].sum(-1)
+        action_logprobs = action_distribution.log_prob(action_batch).sum(-1)
+        entropies = action_distribution.entropy().sum(-1)
 
         return action_logprobs, values, entropies
 

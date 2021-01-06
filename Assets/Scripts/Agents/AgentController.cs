@@ -33,6 +33,8 @@ public class AgentController : Walker
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        Collision = 0;
+        
         // RayPerceptionSensor structure:
         // 0 - n_tags: one-hot encoding of what was hit
         // n_tags: whether *something* was hit
@@ -93,7 +95,7 @@ public class AgentController : Walker
     }
     
 
-    private void OnTriggerStay(Collider other)
+    protected void OnTriggerStay(Collider other)
     {
         // Debug.Log("Hitting a trigger");
         
@@ -108,8 +110,10 @@ public class AgentController : Walker
         }
     }
 
-    private void OnCollisionStay(Collision other)
+    protected override void OnCollisionStay(Collision other)
     {
+        base.OnCollisionStay(other);
+        
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             AddReward(-0.1f / _decisionPeriod);
