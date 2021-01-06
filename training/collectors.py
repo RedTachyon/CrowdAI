@@ -151,11 +151,12 @@ def collect_crowd_data(agent: Agent,
     # state = {
     #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
     # }
-
+    # TODO: refactor metrics, here
     metrics = {
         "mean_distance": [],  # [start_metrics[0]],
         "mean_speed": [],  # [start_metrics[1]],
-        "mean_finish": []  # [start_metrics[2]]
+        "mean_finish": [],  # [start_metrics[2]]
+        "mean_collision": []
     }
 
     end_flag = False
@@ -189,7 +190,7 @@ def collect_crowd_data(agent: Agent,
             all_metrics = np.concatenate([info["metrics"] for info in info_dict])
         else:
             all_metrics = info_dict["metrics"]
-
+        # TODO: refactor metrics especially here!
         mean_distance, mean_speed, mean_finish, mean_collision = all_metrics.T
         metrics["mean_distance"].append(mean_distance)
         metrics["mean_speed"].append(mean_speed)
