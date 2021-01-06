@@ -22,13 +22,13 @@ trainer:
 
     value_steps: 25
 
-    entropy_coeff: 0.1
+    entropy_coeff: 0.001
     entropy_decay_time: 100
-    min_entropy: 0.1
+    min_entropy: 0.001
     use_gpu: false
 
 model:
-  input_size: 72
+  input_size: 4
   num_activations: 2
   activation: tanh
 

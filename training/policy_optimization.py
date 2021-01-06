@@ -107,7 +107,6 @@ class CrowdPPOptimizer:
 
         # Compute discounted rewards to go
         # add the 'returns' and 'advantages' keys, and removes last position from other fields
-
         agent_batch = discount_td_rewards(agent_batch,
                                           gamma=self.gamma,
                                           lam=0.95)

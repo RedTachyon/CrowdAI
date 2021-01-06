@@ -146,7 +146,7 @@ public class AgentRandom : Walker
         
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-.5f);
+            AddReward(-.0f);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");

@@ -20,36 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84716c58-2191-4a6b-a084-ded402fa763a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentConst.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentConst.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerConst.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerConst.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/envs/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/envs/gridworld.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CrowdAI/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Agents/PersonRandom.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board 1 random.prefab.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Random/1 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Random/1 random.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Random/20 random.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Random/20 random.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board U.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Boards/Board U.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Board U.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Board U.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Agents/AgentRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Agents/Walker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Agents/Walker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Managers/Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/Manager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerRandom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerRandom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Managers/Statistician.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Managers/Statistician.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/.idea/Coltra-RL.iml" beforeDir="false" afterPath="$PROJECT_DIR$/training/.idea/Coltra-RL.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/collectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/collectors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/enjoy.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/enjoy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/environments.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/envs/unity_envs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/configs/base_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/training/configs/base_config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/policy_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/policy_optimization.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/training/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainers.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,41 +38,12 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/94/eb24392d/List`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9824E569-944E-4F06-AD7B-E39216D0553D/ce/70aa791b/ISensor.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/2a/704b55d8/Single.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/41255891-47EE-4C70-963F-E403C2B5C5B1/fa/701b3452/Quaternion.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/1d/c4b4c02e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/41255891-47EE-4C70-963F-E403C2B5C5B1/62/290c9462/Transform.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7C881E71-2F79-461D-96F9-95658A2D07FF/d2/6fedb0c4/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/99258562-0D64-4271-98DD-F3A0E1467733/5f/be69c1d2/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/72D32198-279B-4F3F-9846-A45D39F77FF6/eb/841bd18a/Physics.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Agents/AgentRandom.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/physics.md" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Controller.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensorComponent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Editor/MacOSBuilder.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentSensor.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Manager.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/ManagerRandom.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/AgentRandom.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Statistician.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Walker.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Utils.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/MLUtils.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Agents/AgentController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerRandom.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Managers/Statistician.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Agents/AgentRandom.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Agents/AgentConst.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Managers/ManagerConst.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Agents/Walker.cs" />
-      </list>
-    </option>
+    <changedPaths>
+      <option value="$PROJECT_DIR$/Assets/Scripts/Agents/AgentRandom.cs" />
+    </changedPaths>
   </component>
   <component name="ProjectId" id="1k5t3vdQQ4sIqTDXKShaprGwqFy" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -123,7 +72,7 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="selectedOptions">
-        <set />
+        <list />
       </option>
       <method v="2" />
     </configuration>
@@ -132,7 +81,7 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="selectedOptions">
-        <set />
+        <list />
       </option>
       <method v="2" />
     </configuration>
