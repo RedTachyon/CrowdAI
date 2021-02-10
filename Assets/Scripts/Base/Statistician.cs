@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
@@ -94,4 +95,10 @@ public class Statistician : Agent
         }
     }
 
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        // base.Heuristic(in actionsOut);
+        var contActionsOut = actionsOut.ContinuousActions;
+        contActionsOut[0] = 0f;
+    }
 }

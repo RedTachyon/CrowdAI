@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
@@ -55,8 +56,11 @@ public class Manager : Statistician
         }
     }
 
-    public override void Heuristic(float[] actionsOut)
-    {
-        actionsOut[0] = 0f;
-    }
+    // [Obsolete("The float[] version of Heuristic has been deprecated, please use the ActionBuffers version instead.")]
+    // public override void Heuristic(float[] actionsOut)
+    // {
+    //     actionsOut[0] = 0f;
+    // }
+
+
 }

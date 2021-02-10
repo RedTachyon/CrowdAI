@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 5454719560782719032}
   - component: {fileID: 5454719560782719033}
   - component: {fileID: 5454719560782718982}
-  - component: {fileID: 8767953493816811681}
-  - component: {fileID: 7966424635699249050}
   - component: {fileID: 6468657103997608510}
+  - component: {fileID: 3438509124583702454}
+  - component: {fileID: 4900647597283783005}
   m_Layer: 0
   m_Name: PersonRandom
   m_TagString: Agent
@@ -133,52 +133,21 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 4
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 2
+      BranchSizes: 
     VectorActionSize: 02000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
+    hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Person1
   TeamId: 0
   m_UseChildSensors: 1
---- !u!114 &8767953493816811681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5454719560782718979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1290ceddb6924021a371d162bbbde098, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  moveSpeed: 25
-  rotationSpeed: 3
-  dragFactor: 5
-  goal: {fileID: 0}
-  startY: 0
-  startPosition: {x: 0, y: 0, z: 0}
-  startRotation: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &7966424635699249050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5454719560782718979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &6468657103997608510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +176,43 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
+--- !u!114 &3438509124583702454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454719560782718979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6c8ec6f8671423893b1271e62b7ed4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  moveSpeed: 25
+  rotationSpeed: 3
+  dragFactor: 5
+  goal: {fileID: 0}
+  startY: 0
+  startPosition: {x: 0, y: 0, z: 0}
+  startRotation: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4900647597283783005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454719560782718979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 1
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &5454719561118733526
 GameObject:
   m_ObjectHideFlags: 0

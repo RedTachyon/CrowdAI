@@ -9,6 +9,8 @@ from parallel import SubprocVecEnv
 from trainers import PPOCrowdTrainer
 import yaml
 
+from typarse import BaseParser
+
 def get_env_creator(*args, **kwargs):
     def _inner():
         env = UnitySimpleCrowdEnv(*args, **kwargs)
@@ -16,26 +18,36 @@ def get_env_creator(*args, **kwargs):
         return env
     return _inner
 
+class Parser(BaseParser):
+    config: str = "./configs/base_config.yaml"
+    iters: int = 1000
+    env: str
+    name: str
+    start_dir: str
+    start_idx: int = -1
+
+    _help = {
+        "config": "Config file for the training",
+        "iters": "Number of training iterations",
+        "env": "Path to the Unity environment binary",
+        "name": "Name of the tb directory to store the logs",
+        "start_dir": "Name of the tb directory containing the run from which we want to (re)start the training",
+        "start_idx": "From which iteration we should start (only if start_dir is set)",
+    }
+
+    _abbrev = {
+        "config": "c",
+        "iters": "i",
+        "env": "e",
+        "name": "n",
+        "start_dir": "sd",
+        "start_idx": "si",
+    }
+
 if __name__ == '__main__':
     CUDA = torch.cuda.is_available()
 
-    parser = argparse.ArgumentParser(description='Read training arguments')
-    parser.add_argument("--config", "-c", action="store", type=str, default="./configs/base_config.yaml",
-                        help="Config file for the training")
-    parser.add_argument("--iters", "-i", action="store", type=int, default=1000,
-                        help="Number of training iterations")
-    parser.add_argument("--env", "-e", action="store", type=str, default=None,
-                        help="Path to the Unity environment binary")
-    parser.add_argument("--name", "-n", action="store", type=str, default=None,
-                        help="Name of the tb directory to store the logs")
-    parser.add_argument("--start_dir", "-sd", action="store", type=str, default=None,
-                        help="Name of the tb directory containing the run from which we want to (re)start the training")
-    parser.add_argument("--start_idx", "-si", action="store", type=int, default=-1,
-                        help="From which iteration we should start (only if start_dir is set)")
-
-    args = parser.parse_args()
-
-    print(args)
+    args = Parser()
 
     with open(args.config, "r") as f:
         config = yaml.load(f.read(), yaml.Loader)
@@ -56,13 +68,11 @@ if __name__ == '__main__':
         model = MLPModel(model_config)
         agent = Agent(model, action_range=action_range)
 
-    # agent.model.share_memory()
-
     if CUDA:
         agent.cuda()
 
     env = SubprocVecEnv([
-        get_env_creator(file_name=args.env, no_graphics=True, worker_id=10+i, seed=i)
+        get_env_creator(file_name=args.env, no_graphics=True, worker_id=i, seed=i)
         for i in range(workers)
     ])
 

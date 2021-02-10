@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine.Serialization;
 
@@ -35,10 +36,13 @@ public class Walker : Agent
         startPosition = transform.localPosition;
         startRotation = transform.localRotation;
     }
-    
 
-    public override void OnActionReceived(float[] vectorAction)
+
+    public override void OnActionReceived(ActionBuffers actions)
     {
+        base.OnActionReceived(actions);
+        var vectorAction = actions.ContinuousActions;
+
         // Forward velocity
         var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
         
@@ -88,8 +92,14 @@ public class Walker : Agent
         }
     }
 
-    public override void Heuristic(float[] actionsOut)
+
+
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
+        // base.Heuristic(in actionsOut);
+
+        var cActionsOut = actionsOut.ContinuousActions;
+
         var xValue = 0f;
         var zValue = 0f;
         Vector3 force;
@@ -127,8 +137,8 @@ public class Walker : Agent
         //
         // Debug.Log(force);
         
-        actionsOut[0] = force.x;
-        actionsOut[1] = force.z;
+        cActionsOut[0] = force.x;
+        cActionsOut[1] = force.z;
     }
 
     

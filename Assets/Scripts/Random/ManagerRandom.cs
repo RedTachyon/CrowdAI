@@ -36,20 +36,7 @@ public class ManagerRandom : Statistician
         {
             if (agent.gameObject.activeSelf)
             {
-                // agent.GetComponent<Controller>().Unfreeze();
                 
-                // agent.localPosition = new Vector3(
-                //     UnityEngine.Random.Range(-9f, 9f), 
-                //     agent.GetComponent<Walker>().StartY,
-                //     UnityEngine.Random.Range(-9f, 9f)
-                // );
-                
-                // agent.GetComponent<AgentRandom>().goal.localPosition = new Vector3(
-                //     UnityEngine.Random.Range(-9f, 9f),
-                //     0.25f,
-                //     UnityEngine.Random.Range(-9f, 9f)
-                // );
-
                 agent.localPosition = MLUtils.NoncollidingPosition(
                     -9f,
                     9f,
@@ -75,12 +62,7 @@ public class ManagerRandom : Statistician
             }
         }
     }
-
-    public override void Heuristic(float[] actionsOut)
-    {
-        actionsOut[0] = 0f;
-    }
-
+    
     public new void ReachGoal(Walker agent)
     {
         base.ReachGoal(agent);
