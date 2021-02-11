@@ -32,7 +32,7 @@ def get_env_creator(*args, **kwargs):
 if __name__ == '__main__':
 
     venv = SubprocVecEnv(
-        [get_env_creator(file_name="builds/1-random-16-mac.app", no_graphics=True, worker_id=i, seed=i)
+        [get_env_creator(file_name="builds/1-random-16-mac.app", no_graphics=False, worker_id=i, seed=i)
          for i in range(8)]
     )
 

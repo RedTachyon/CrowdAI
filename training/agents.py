@@ -66,7 +66,7 @@ class BaseAgent:
             self.model.cpu()
 
 
-class Agent(BaseAgent):
+class Agent(BaseAgent): # TODO: Rethink, refactor !!!
     """Agent variant for Continuous (Normal) action distributions"""
     model: BaseModel
 

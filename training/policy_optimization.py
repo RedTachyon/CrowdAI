@@ -1,10 +1,11 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
 from torch.optim.optimizer import Optimizer
 from torch.utils.tensorboard import SummaryWriter
+from typarse import BaseConfig
 
 from agents import Agent
 from preprocessors import simple_padder
@@ -13,7 +14,7 @@ from utils import with_default_config, get_optimizer, DataBatch, Timer, DataBatc
     discount_td_rewards
 
 
-class CrowdPPOptimizer:
+class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
     """
     An optimizer for a single homogeneous crowd agent. Estimates the gradient from the whole batch (no SGD).
     """
@@ -23,43 +24,69 @@ class CrowdPPOptimizer:
 
         self.agent = agent
 
-        default_config = {
-            # GD settings
-            "optimizer": "adam",
-            "optimizer_kwargs": {
-                "lr": 1e-3,
-                "betas": (0.9, 0.999),
-                "eps": 1e-7,
-                "weight_decay": 0,
-                "amsgrad": False
-            },
-            "gamma": 0.95,  # Discount factor
+        class Config(BaseConfig):
+            gamma: float = 0.95
+            ppo_steps: int = 5
+            eps: float = 0.1
+            target_kl: float = 0.01
 
-            # PPO settings
-            "ppo_steps": 5,
-            "eps": 0.1,  # PPO clip parameter
-            "target_kl": 0.01,  # KL divergence limit
+            value_steps: int = 10
 
-            # Value estimator settings
-            "value_steps": 10,
+            entropy_coeff: float = 0.1
+            entropy_decay_time: float = 100.
+            min_entropy: float = 0.0001
 
-            "entropy_coeff": 0.1,
-            "entropy_decay_time": 100,  # How many steps to decrease entropy to 0.1 of the original value
-            "min_entropy": 0.0001,  # Minimum value of the entropy bonus - use this to disable decay
+            use_gpu: bool = False
 
-            # GPU
-            "use_gpu": False,
-        }
-        self.config = with_default_config(config, default_config)
+            optimizer: str = "adam"
 
-        self.policy_optimizer = get_optimizer(self.config["optimizer"])(agent.model.parameters(),
-                                                                 **self.config["optimizer_kwargs"])
+            class OptimizerKwargs(BaseConfig):
+                lr: float = 1e-4
+                betas: Tuple[float, float] = (0.9, 0.999)
+                eps: float = 1e-7
+                weight_decay: float = 0.0
+                amsgrad: bool = False
 
-        self.value_optimizer = get_optimizer(self.config["optimizer"])(agent.model.parameters(),
-                                                                       **self.config["optimizer_kwargs"])
+        Config.update(config)
+        self.config = Config
 
-        self.gamma: float = self.config["gamma"]
-        self.eps: float = self.config["eps"]
+        # default_config = {
+        #     # GD settings
+        #     "optimizer": "adam",
+        #     "optimizer_kwargs": {
+        #         "lr": 1e-3,
+        #         "betas": (0.9, 0.999),
+        #         "eps": 1e-7,
+        #         "weight_decay": 0,
+        #         "amsgrad": False
+        #     },
+        #     "gamma": 0.95,  # Discount factor
+        #
+        #     # PPO settings
+        #     "ppo_steps": 5,
+        #     "eps": 0.1,  # PPO clip parameter
+        #     "target_kl": 0.01,  # KL divergence limit
+        #
+        #     # Value estimator settings
+        #     "value_steps": 10,
+        #
+        #     "entropy_coeff": 0.1,
+        #     "entropy_decay_time": 100,  # How many steps to decrease entropy to 0.1 of the original value
+        #     "min_entropy": 0.0001,  # Minimum value of the entropy bonus - use this to disable decay
+        #
+        #     # GPU
+        #     "use_gpu": False,
+        # }
+        # self.config = with_default_config(config, default_config)
+
+        self.policy_optimizer = get_optimizer(self.config.optimizer)(agent.model.parameters(),
+                                                                     **self.config.OptimizerKwargs.to_dict())
+
+        self.value_optimizer = get_optimizer(self.config.optimizer)(agent.model.parameters(),
+                                                                    **self.config.OptimizerKwargs.to_dict())
+
+        self.gamma: float = self.config.gamma
+        self.eps: float = self.config.eps
 
     def train_on_data(self, data_batch: DataBatch,
                       step: int = 0,
@@ -81,8 +108,8 @@ class CrowdPPOptimizer:
         # data_batch: DataBatchT = transpose_batch(data_batch)
 
         entropy_coeff = max(
-            self.config.get("entropy_coeff") * 0.1 ** (step / self.config.get("entropy_decay_time")),
-            self.config.get("min_entropy")
+            self.config.entropy_coeff * 0.1 ** (step / self.config.entropy_decay_time),
+            self.config.min_entropy
         )
 
         agent_id = "crowd"
@@ -92,7 +119,7 @@ class CrowdPPOptimizer:
         # agent_batch: AgentDataBatch = concat_crowd_batch(data_batch)
         agent_batch = data_batch
 
-        if self.config["use_gpu"]:
+        if self.config.use_gpu:
             agent_batch = batch_to_gpu(agent_batch)
             agent.cuda()
 
@@ -124,7 +151,7 @@ class CrowdPPOptimizer:
         # logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
 
         # Move data to GPU if applicable
-        if self.config["use_gpu"]:
+        if self.config.use_gpu:
             discounted_batch = discounted_batch.cuda()
 
         # breakpoint()
@@ -144,13 +171,13 @@ class CrowdPPOptimizer:
         # Start a timer
         timer.checkpoint()
 
-        for ppo_step in range(self.config["ppo_steps"]):
+        for ppo_step in range(self.config.ppo_steps):
             # Evaluate again after the PPO step, for new values and gradients
             logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
             # Compute the KL divergence for early stopping
             kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
             if np.isnan(kl_divergence): breakpoint()
-            if kl_divergence > self.config["target_kl"]:
+            if kl_divergence > self.config.target_kl:
                 break
 
             ######################################### Compute the loss #############################################
@@ -175,7 +202,7 @@ class CrowdPPOptimizer:
 
             self.policy_optimizer.step()
 
-        for value_step in range(self.config["value_steps"]):
+        for value_step in range(self.config.value_steps):
             _, value_batch, _ = agent.evaluate_actions(agent_batch)
 
             value_loss = (value_batch - discounted_batch) ** 2
@@ -185,7 +212,6 @@ class CrowdPPOptimizer:
             self.value_optimizer.zero_grad()
             loss.backward()
             self.value_optimizer.step()
-
 
         ############################################## Collect metrics #############################################
 

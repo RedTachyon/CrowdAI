@@ -122,8 +122,7 @@ def collect_crowd_data(agent: Agent,
                        num_steps: Optional[int] = None,
                        deterministic: bool = False,
                        disable_tqdm: bool = True,
-                       reset_start: bool = True
-                       ) -> Tuple[DataBatch, Dict]:
+                       reset_start: bool = True) -> Tuple[DataBatch, Dict]:
     """
         Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 

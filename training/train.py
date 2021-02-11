@@ -11,6 +11,7 @@ import yaml
 
 from typarse import BaseParser
 
+
 def get_env_creator(*args, **kwargs):
     def _inner():
         env = UnitySimpleCrowdEnv(*args, **kwargs)

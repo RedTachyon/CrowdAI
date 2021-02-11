@@ -1,9 +1,10 @@
-from typing import Dict, Tuple, Callable, Optional, Any
+from typing import Dict, Tuple, Callable, Optional, Any, List
 
 import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
 from torch.distributions import Distribution, Categorical, Normal
+from typarse import BaseConfig
 
 from utils import with_default_config, get_activation, get_initializer
 
@@ -49,35 +50,49 @@ class MLPModel(BaseModel):
     def __init__(self, config: Dict):
         super().__init__(config)
 
-        default_config = {
-            "input_size": 94,
-            "num_actions": 2,
-            "activation": "leaky_relu",
+        class Config(BaseConfig):
+            input_size: int = 94
+            num_actions: int = 2
+            activation: str = "leaky_relu"
 
-            "hidden_sizes": (64, 64),
-            "separate_value": False,
+            hidden_sizes: List[int] = [64, 64]
+            separate_value: bool = False
 
-            "sigma0": 0.3,
+            sigma0: float = 0.3
 
-            "initializer": "kaiming_uniform",
-        }
-        self.config = with_default_config(config, default_config)
+            initializer: str = "kaiming_uniform"
 
-        input_size: int = self.config.get("input_size")
-        num_actions: int = self.config.get("num_actions")
-        hidden_sizes: Tuple[int] = self.config.get("hidden_sizes")
-        self.activation: Callable = get_activation(self.config.get("activation"))
+        Config.update(config)
+        self.config = Config
+        # default_config = {
+        #     "input_size": 94,
+        #     "num_actions": 2,
+        #     "activation": "leaky_relu",
+        #
+        #     "hidden_sizes": (64, 64),
+        #     "separate_value": False,
+        #
+        #     "sigma0": 0.3,
+        #
+        #     "initializer": "kaiming_uniform",
+        # }
+        # self.config = with_default_config(config, default_config)
 
-        layer_sizes = (input_size,) + hidden_sizes
+        # input_size: int = self.config.get("input_size")
+        # num_actions: int = self.config.get("num_actions")
+        # hidden_sizes: Tuple[int] = self.config.get("hidden_sizes")
+        self.activation: Callable = get_activation(self.config.activation)
+
+        layer_sizes = [self.config.input_size] + self.config.hidden_sizes
 
         self.hidden_layers = nn.ModuleList([
             nn.Linear(in_size, out_size)
             for in_size, out_size in zip(layer_sizes, layer_sizes[1:])
         ])
 
-        self.policy_head = nn.Linear(layer_sizes[-1], num_actions)
+        self.policy_head = nn.Linear(layer_sizes[-1], self.config.num_actions)
 
-        if self.config["separate_value"]:
+        if self.config.separate_value:
             self.value_layers = nn.ModuleList([
                 nn.Linear(in_size, out_size)
                 for in_size, out_size in zip(layer_sizes, layer_sizes[1:])
@@ -85,17 +100,17 @@ class MLPModel(BaseModel):
 
         self.value_head = nn.Linear(layer_sizes[-1], 1)
 
-        self.std = nn.Parameter(torch.ones(1, num_actions) * self.config["sigma0"])
+        self.std = nn.Parameter(torch.ones(1, self.config.num_actions) * self.config.sigma0)
 
-        if self.config["initializer"]:
+        if self.config.initializer:
             # If given an initializer, initialize all weights using it, and all biases with 0's
-            initializer_ = get_initializer(self.config["initializer"])
+            initializer_ = get_initializer(self.config.initializer)
 
             for layer in self.hidden_layers:
                 initializer_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
-            if self.config["separate_value"]:
+            if self.config.separate_value:
                 for layer in self.value_layers:
                     initializer_(layer.weight)
                     nn.init.zeros_(layer.bias)
@@ -123,7 +138,7 @@ class MLPModel(BaseModel):
         }
 
         if get_value:
-            if self.config["separate_value"]:
+            if self.config.separate_value:
                 x = inp
                 for layer in self.value_layers:
                     x = layer(x)
@@ -142,35 +157,47 @@ class FancyMLPModel(BaseModel):
     def __init__(self, config: Dict):
         super().__init__(config)
 
-        default_config = {
-            "input_size": 90,
-            "num_actions": 2,
-            "activation": "leaky_relu",
+        class Config(BaseConfig):
+            input_size: int = 94
+            num_actions: int = 2
+            activation: str = "leaky_relu"
 
-            "pi_hidden_sizes": (64, 64),
+            hidden_sizes: List[int] = [64, 64]
 
-            "initializer": "kaiming_uniform",
-        }
-        self.config = with_default_config(config, default_config)
+            initializer: str = "kaiming_uniform"
 
-        input_size: int = self.config.get("input_size")
-        num_actions: int = self.config.get("num_actions")
-        pi_hidden_sizes: Tuple[int] = self.config.get("pi_hidden_sizes")
-        v_hidden_sizes: Tuple[int] = self.config.get("pi_hidden_sizes")  # Identical policy and value networks
-        self.activation: Callable = get_activation(self.config.get("activation"))
+        Config.update(config)
+        self.config = Config
 
-        pi_layer_sizes = (input_size,) + pi_hidden_sizes
+        # default_config = {
+        #     "input_size": 90,
+        #     "num_actions": 2,
+        #     "activation": "leaky_relu",
+        #
+        #     "pi_hidden_sizes": (64, 64),
+        #
+        #     "initializer": "kaiming_uniform",
+        # }
+        # self.config = with_default_config(config, default_config)
+
+        # input_size: int = self.config.input_size
+        # num_actions: int = self.config.num_actions
+        # pi_hidden_sizes: List[int] = self.config.hidden_sizes
+        # v_hidden_sizes: List[int] = self.config.hidden_sizes  # Identical policy and value networks
+        self.activation: Callable = get_activation(self.config.activation)
+
+        pi_layer_sizes = [self.config.input_size] + self.config.hidden_sizes
 
         self.pi_hidden_layers = nn.ModuleList([
             nn.Linear(in_size, out_size)
             for in_size, out_size in zip(pi_layer_sizes, pi_layer_sizes[1:])
         ])
 
-        self.policy_head = nn.Linear(pi_layer_sizes[-1], num_actions)
+        self.policy_head = nn.Linear(pi_layer_sizes[-1], self.config.num_actions)
 
-        self.std_head = nn.Linear(pi_layer_sizes[-1], num_actions)
+        self.std_head = nn.Linear(pi_layer_sizes[-1], self.config.num_actions)
 
-        v_layer_sizes = (input_size,) + v_hidden_sizes
+        v_layer_sizes = [self.config.input_size] + self.config.hidden_sizes  # Use identical policy/value networks
 
         self.v_hidden_layers = nn.ModuleList([
             nn.Linear(in_size, out_size)
@@ -179,9 +206,9 @@ class FancyMLPModel(BaseModel):
 
         self.value_head = nn.Linear(v_layer_sizes[-1], 1)
 
-        if self.config["initializer"]:
+        if self.config.initializer:
             # If given an initializer, initialize all weights using it, and all biases with 0's
-            initializer_ = get_initializer(self.config["initializer"])
+            initializer_ = get_initializer(self.config.initializer)
 
             for layer in self.pi_hidden_layers:
                 initializer_(layer.weight)

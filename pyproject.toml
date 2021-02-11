@@ -1,32 +1,31 @@
 [tool.poetry]
 name = "crowdai"
 version = "0.1.0"
-description = "Training code for my PhD project"
+description = "PhD project"
 authors = ["redtachyon <ariel.j.kwiatkowski@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.5"
+typarse = "^3.1.1"
+numpy = "^1.18"
 jax = "^0.2.9"
 chex = "^0.0.3"
 flax = "^0.3.0"
-numpy = "^1.18.0"
 gym = "^0.18.0"
-typarse = "^3.0"
 jupyter = "^1.0.0"
 jupyterlab = "^3.0.7"
 mlagents = "^0.23.0"
 mlagents-envs = "^0.23.0"
-pandas = "^1.2.1"
+pandas = "^1.2.2"
 PyYAML = "^5.4.1"
-requests = "^2.25.1"
 scipy = "^1.6.0"
 seaborn = "^0.11.1"
 tensorboard = "^2.4.1"
-#tensorflow = "^2.4.1"
 torch = "^1.7.1"
-tqdm = "^4.56.0"
-dm-haiku = {git = "https://github.com/deepmind/dm-haiku"}
+tqdm = "^4.56.2"
 ipykernel = "^5.4.3"
+dm-haiku = {git = "https://github.com/deepmind/dm-haiku"}
+
 
 [tool.poetry.dev-dependencies]
 
