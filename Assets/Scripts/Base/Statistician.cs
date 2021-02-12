@@ -7,12 +7,27 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Unity.MLAgents.SideChannels;
+using Random = System.Random;
 
 
 public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
     protected Dictionary<Transform, bool> Finished;
+    private StatsSideChannel statsChannel;
+    private void Awake()
+    {
+        statsChannel = new StatsSideChannel();
+        SideChannelManager.RegisterSideChannel(statsChannel);
+    }
+
+    private void OnDestroy()
+    {
+        if (Academy.IsInitialized)
+        {
+            SideChannelManager.UnregisterSideChannel(statsChannel);
+        }
+    }
 
     public override void Initialize()
     {
@@ -42,6 +57,10 @@ public class Statistician : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         // Collect summary statistics
+
+        // statsChannel.SendMessage($"{random}");
+        
+        
         var distances = new List<float>();
         var speeds = new List<float>();
         var dones = new List<float>();
@@ -74,10 +93,13 @@ public class Statistician : Agent
         
         // Debug.Log(collision);
 
-        sensor.AddObservation(meanDist);
-        sensor.AddObservation(meanSpeed);
-        sensor.AddObservation(finished);
-        sensor.AddObservation(collision);
+        var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
+        statsChannel.SendMessage(message);
+
+        // sensor.AddObservation(meanDist);
+        // sensor.AddObservation(meanSpeed);
+        // sensor.AddObservation(finished);
+        // sensor.AddObservation(collision);
         
         // Debug.Log(finished);
     }

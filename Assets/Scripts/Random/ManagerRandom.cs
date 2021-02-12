@@ -40,7 +40,7 @@ public class ManagerRandom : Statistician
                 agent.localPosition = MLUtils.NoncollidingPosition(
                     -9f,
                     9f,
-                    agent.GetComponent<Walker>().startY,
+                    agent.GetComponent<Walker>().startPosition.y,
                     transform);
 
                 var goal = agent.GetComponent<AgentRandom>().goal;

@@ -12,8 +12,7 @@ using Unity.MLAgents.Sensors;
 
 public class AgentRandom : Walker
 {
-    // private Vector3 _startPosition;
-    // private Quaternion _startRotation;
+
 
     private Material _material;
     private Color _originalColor;
@@ -146,7 +145,7 @@ public class AgentRandom : Walker
         
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-.0f);
+            AddReward(-.01f);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");

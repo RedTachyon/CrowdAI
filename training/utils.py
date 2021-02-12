@@ -29,6 +29,13 @@ AgentDataBatch = Dict[str, Union[Tensor, Tuple]]
 Array = Union[Tensor, np.ndarray]
 
 
+def parse_side_message(msg: str) -> Dict[str, np.ndarray]:
+    """Parses a message from StatsChannel"""
+    if msg == "": return {}
+    lines = msg.split('\n')
+    out = {line.split(' ')[0]: np_float(float(line.split(' ')[1])) for line in lines}
+    return out
+
 def np_float(x: float) -> np.ndarray:
     """Convenience function to create a one-element float32 numpy array"""
     return np.array([x], dtype=np.float32)

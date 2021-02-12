@@ -2,10 +2,11 @@ import numpy as np
 import gym
 from typing import Dict, Any, Tuple, Callable, List
 
-from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-
+from envs.side_channels import StatsChannel
+from utils import parse_side_message
 
 StateDict = Dict[str, np.ndarray]
 ActionDict = Dict[str, Any]
@@ -64,10 +65,12 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         super().__init__()
         self.engine_channel = EngineConfigurationChannel()
+        self.stats_channel = StatsChannel()
 
         self.active_agents: List[str] = []
 
         kwargs.setdefault("side_channels", []).append(self.engine_channel)
+        kwargs["side_channels"].append(self.stats_channel)
 
         self.unity = UnityEnvironment(*args, **kwargs)
         self.behaviors = {}
@@ -103,11 +106,15 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         done_dict["__all__"] = len(self.active_agents) == 0
 
-        m_decisions, _ = self.unity.get_steps(self.manager)
-        m_obs = m_decisions.obs[0]
+        # m_decisions, _ = self.unity.get_steps(self.manager)
+        # m_obs = m_decisions.obs[0]
 
         # info_dict["has_decision"] = has_decision
-        info_dict["metrics"] = m_obs
+        # info_dict["metrics"] = m_obs
+
+        stats = parse_side_message(self.stats_channel.last_msg)
+        for key in stats:
+            info_dict["m_" + key] = stats[key]
 
         return obs_dict, reward_dict, done_dict, info_dict
 
@@ -122,12 +129,13 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
             if len(all_actions) == 0:
                 all_actions = np.zeros((0, action_shape))
-            self.unity.set_actions(name, all_actions)
+            self.unity.set_actions(name, ActionTuple(continuous=all_actions))
 
         # The terminal step handling has been removed as episodes are only reset from here
 
         self.unity.step()
         obs_dict, reward_dict, done_dict, info_dict = self._get_step_info()
+
 
         return obs_dict, reward_dict, done_dict, info_dict
 

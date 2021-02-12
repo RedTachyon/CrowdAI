@@ -152,10 +152,10 @@ def collect_crowd_data(agent: Agent,
     # }
     # TODO: refactor metrics, here
     metrics = {
-        "mean_distance": [],  # [start_metrics[0]],
-        "mean_speed": [],  # [start_metrics[1]],
-        "mean_finish": [],  # [start_metrics[2]]
-        "mean_collision": []
+        # "mean_distance": [],  # [start_metrics[0]],
+        # "mean_speed": [],  # [start_metrics[1]],
+        # "mean_finish": [],  # [start_metrics[2]]
+        # "mean_collision": []
     }
 
     end_flag = False
@@ -183,18 +183,29 @@ def collect_crowd_data(agent: Agent,
 
         # Actual step in the environment
         next_obs, reward_dict, done_dict, info_dict = env.step(action_dict)
+        # breakpoint()
 
         # Collect the metrics passed by the environment
         if isinstance(info_dict, tuple):
-            all_metrics = np.concatenate([info["metrics"] for info in info_dict])
+            # all_metrics = np.concatenate([info["metrics"] for info in info_dict])
+            all_metrics = {}
+            for key in info_dict[0].keys():
+                if key.startswith("m_"):
+                    all_metrics[key] = np.concatenate([val[key] for val in info_dict])
         else:
-            all_metrics = info_dict["metrics"]
+            # all_metrics = info_dict["metrics"]
+            all_metrics = {k: v for k, v in info_dict if k.startswith("m_")}
+
         # TODO: refactor metrics especially here!
-        mean_distance, mean_speed, mean_finish, mean_collision = all_metrics.T
-        metrics["mean_distance"].append(mean_distance)
-        metrics["mean_speed"].append(mean_speed)
-        metrics["mean_finish"].append(mean_finish)
-        metrics["mean_collision"].append(mean_collision)
+        # mean_distance, mean_speed, mean_finish, mean_collision = all_metrics.T
+
+        for key in all_metrics:
+            metrics.setdefault(key[2:], []).append(all_metrics[key])
+
+        # metrics["mean_distance"].append(mean_distance)
+        # metrics["mean_speed"].append(mean_speed)
+        # metrics["mean_finish"].append(mean_finish)
+        # metrics["mean_collision"].append(mean_collision)
         # Saving to memory
         # breakpoint()
 
@@ -221,7 +232,6 @@ def collect_crowd_data(agent: Agent,
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
     data = memory.get_torch_data()
-
     return data, metrics
 
 

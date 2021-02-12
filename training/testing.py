@@ -31,8 +31,10 @@ def get_env_creator(*args, **kwargs):
 
 if __name__ == '__main__':
 
+    file_name = "builds/1-random-20-mac.app"
+    # file_name = None
     venv = SubprocVecEnv(
-        [get_env_creator(file_name="builds/1-random-16-mac.app", no_graphics=False, worker_id=i, seed=i)
+        [get_env_creator(file_name=file_name, no_graphics=False, worker_id=i, seed=i)
          for i in range(8)]
     )
 
@@ -41,3 +43,4 @@ if __name__ == '__main__':
     }))
 
     data, metrics = collect_crowd_data(agent, venv, 500, disable_tqdm=False)
+    breakpoint()

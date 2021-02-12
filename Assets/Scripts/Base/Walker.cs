@@ -23,7 +23,7 @@ public class Walker : Agent
 
     public Transform goal;
 
-    [HideInInspector] public float startY;
+    // [HideInInspector] public float startY;
 
     [HideInInspector] public Vector3 startPosition;
 
@@ -32,7 +32,7 @@ public class Walker : Agent
     public override void Initialize()
     {
         Rigidbody = GetComponent<Rigidbody>();
-        startY = transform.localPosition.y;
+        // startY = transform.localPosition.y;
         startPosition = transform.localPosition;
         startRotation = transform.localRotation;
     }
