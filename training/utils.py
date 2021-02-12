@@ -1,9 +1,8 @@
-from typing import Dict, List, Union, Tuple, Any, Callable, Type, Optional, Iterator, Sequence
+from typing import Dict, List, Union, Tuple, Any, Callable, Optional, Iterator
 
 import numpy as np
 
 import torch
-from mlagents_envs.environment import UnityEnvironment
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
@@ -102,43 +101,6 @@ def discount_rewards_to_go(rewards: Tensor,
             current_reward = reward + gamma * current_reward
             discounted_rewards.insert(0, current_reward)
         return torch.tensor(discounted_rewards).view(-1)
-
-
-def discount_td_rewards(data_batch: AgentDataBatch,
-                        gamma: float = 0.99,
-                        lam: float = 0.95) -> AgentDataBatch:
-    """An alternative TD-based method of return-to-go and advantage estimation via GAE"""
-
-    rewards_batch = data_batch['rewards']  # (T, E)
-    values_batch = data_batch['values']  # (T, E)
-
-    returns_batch = []
-    advantages_batch = []
-    returns = values_batch[-1]
-    advantages = 0
-
-    for i in reversed(range(len(rewards_batch) - 1)):
-        rewards = rewards_batch[i]
-
-
-        returns = rewards + gamma * returns  # v(s) = r + y*v(s+1)
-        returns_batch.insert(0, returns)
-
-        value = values_batch[i]
-        next_value = values_batch[i + 1]
-        
-        # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
-        delta = rewards + gamma * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
-        advantages = advantages * lam * gamma + delta
-        advantages_batch.insert(0, advantages)
-
-    for key in data_batch:
-        data_batch[key] = data_batch[key][:-1]
-
-    data_batch['advantages'] = torch.stack(advantages_batch)
-    data_batch['returns'] = torch.stack(returns_batch)
-
-    return data_batch
 
 
 def get_optimizer(opt_name: str) -> Callable[..., Optimizer]:

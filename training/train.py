@@ -1,8 +1,9 @@
 import argparse
+from typing import Optional
 
 import torch
 
-from agents import Agent
+from agents import Agent, CAgent
 from envs.unity_envs import UnitySimpleCrowdEnv
 from models import MLPModel
 from parallel import SubprocVecEnv
@@ -24,8 +25,8 @@ class Parser(BaseParser):
     iters: int = 1000
     env: str
     name: str
-    start_dir: str
-    start_idx: int = -1
+    start_dir: Optional[str]
+    start_idx: Optional[int] = -1
 
     _help = {
         "config": "Config file for the training",
@@ -61,13 +62,11 @@ if __name__ == '__main__':
 
     workers = trainer_config.get("workers") or 8  # default value
 
-    action_range = None
-
     if args.start_dir:
-        agent = Agent.load_agent(args.start_dir, action_range=action_range, weight_idx=args.start_idx)
+        agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
     else:
         model = MLPModel(model_config)
-        agent = Agent(model, action_range=action_range)
+        agent = CAgent(model)
 
     if CUDA:
         agent.cuda()

@@ -155,7 +155,6 @@ class PPOCrowdTrainer(Trainer):
                                                                num_steps=self.config.steps)
             # breakpoint()
             full_batch = concat_subproc_batch(full_batch)
-            # collector_metrics = concat_metrics(collector_metrics)
 
             # full_batch, collector_metrics = collect_parallel_unity(num_workers=self.config["workers"],
             #                                                        num_runs=self.config["workers"],
@@ -189,15 +188,6 @@ class PPOCrowdTrainer(Trainer):
                 extra_metric[f"stats/{key}_100"] = np.mean(collector_metrics[key][:100])
                 extra_metric[f"stats/{key}_l100"] = np.mean(collector_metrics[key][-100:])
                 extra_metric[f"stats/{key}_l1"] = np.mean(collector_metrics[key][-1:])
-
-                            # f"crowd/mean_distance": np.mean(collector_metrics["mean_distance"]),
-                            # f"crowd/mean_speed": np.mean(collector_metrics["mean_speed"]),
-                            # f"crowd/mean_speed_100": np.mean(collector_metrics["mean_speed"][:100]),
-                            # f"crowd/mean_speed_l100": np.mean(collector_metrics["mean_speed"][-100:]),
-                            # f"crowd/mean_finish": np.mean(collector_metrics["mean_finish"]),
-                            # f"crowd/mean_finish_l1": np.mean(collector_metrics["mean_finish"][-1]),
-                            # f"crowd/mean_distance_l100": np.mean(collector_metrics["mean_distance"][-100:]),
-                            # f"crowd/collisions_per_capita": np.sum(collector_metrics["mean_collision"].mean(1))}
 
             write_dict(extra_metric, step, self.writer)
 

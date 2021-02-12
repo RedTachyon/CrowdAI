@@ -1,6 +1,6 @@
 from torch import nn, tensor, Tensor
 
-from agents import Agent
+from agents import Agent, CAgent
 from collectors import collect_crowd_data
 from envs.unity_envs import UnitySimpleCrowdEnv
 from models import MLPModel
@@ -28,7 +28,6 @@ def get_env_creator(*args, **kwargs):
     return _inner
 
 
-
 if __name__ == '__main__':
 
     file_name = "builds/1-random-20-mac.app"
@@ -38,7 +37,7 @@ if __name__ == '__main__':
          for i in range(8)]
     )
 
-    agent = Agent(MLPModel({
+    agent = CAgent(MLPModel({
         "input_size": 72,
     }))
 

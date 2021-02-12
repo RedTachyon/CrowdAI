@@ -30,6 +30,10 @@ class BaseModel(nn.Module):
         # Output: action_dist, state, {value, whatever else}
         raise NotImplementedError
 
+    def value(self, x: Tensor,
+              state: Tuple) -> Tensor:
+        raise NotImplementedError
+
     def get_initial_state(self, requires_grad=True) -> Tuple:
         raise NotImplementedError
 
@@ -64,24 +68,9 @@ class MLPModel(BaseModel):
 
         Config.update(config)
         self.config = Config
-        # default_config = {
-        #     "input_size": 94,
-        #     "num_actions": 2,
-        #     "activation": "leaky_relu",
-        #
-        #     "hidden_sizes": (64, 64),
-        #     "separate_value": False,
-        #
-        #     "sigma0": 0.3,
-        #
-        #     "initializer": "kaiming_uniform",
-        # }
-        # self.config = with_default_config(config, default_config)
 
-        # input_size: int = self.config.get("input_size")
-        # num_actions: int = self.config.get("num_actions")
-        # hidden_sizes: Tuple[int] = self.config.get("hidden_sizes")
         self.activation: Callable = get_activation(self.config.activation)
+        self.separate_value = self.config.separate_value
 
         layer_sizes = [self.config.input_size] + self.config.hidden_sizes
 
@@ -92,7 +81,7 @@ class MLPModel(BaseModel):
 
         self.policy_head = nn.Linear(layer_sizes[-1], self.config.num_actions)
 
-        if self.config.separate_value:
+        if self.separate_value:
             self.value_layers = nn.ModuleList([
                 nn.Linear(in_size, out_size)
                 for in_size, out_size in zip(layer_sizes, layer_sizes[1:])
@@ -100,7 +89,7 @@ class MLPModel(BaseModel):
 
         self.value_head = nn.Linear(layer_sizes[-1], 1)
 
-        self.std = nn.Parameter(torch.ones(1, self.config.num_actions) * self.config.sigma0)
+        self.std = nn.Parameter(torch.tensor(self.config.sigma0) * torch.ones(1, self.config.num_actions))
 
         if self.config.initializer:
             # If given an initializer, initialize all weights using it, and all biases with 0's
@@ -110,7 +99,7 @@ class MLPModel(BaseModel):
                 initializer_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
-            if self.config.separate_value:
+            if self.separate_value:
                 for layer in self.value_layers:
                     initializer_(layer.weight)
                     nn.init.zeros_(layer.bias)
@@ -121,6 +110,8 @@ class MLPModel(BaseModel):
 
             nn.init.zeros_(self.policy_head.bias)
             nn.init.zeros_(self.value_head.bias)
+
+        self.config = self.config.to_dict()  # Convert to a dictionary for pickling
 
     def forward(self, x: Tensor,
                 state: Tuple = (),
@@ -138,7 +129,7 @@ class MLPModel(BaseModel):
         }
 
         if get_value:
-            if self.config.separate_value:
+            if self.separate_value:
                 x = inp
                 for layer in self.value_layers:
                     x = layer(x)
@@ -148,6 +139,21 @@ class MLPModel(BaseModel):
             extra_outputs["value"] = value
 
         return action_distribution, state, extra_outputs
+
+    def value(self, x: Tensor,
+              state: Tuple) -> Tensor:
+        if self.separate_value:
+            layers = self.value_layers
+        else:
+            layers = self.hidden_layers
+
+        for layer in layers:
+            x = layer(x)
+            x = self.activation(x)
+
+        value = self.value_head(x)
+
+        return value
 
     def get_initial_state(self, requires_grad=True):
         return ()
@@ -169,21 +175,6 @@ class FancyMLPModel(BaseModel):
         Config.update(config)
         self.config = Config
 
-        # default_config = {
-        #     "input_size": 90,
-        #     "num_actions": 2,
-        #     "activation": "leaky_relu",
-        #
-        #     "pi_hidden_sizes": (64, 64),
-        #
-        #     "initializer": "kaiming_uniform",
-        # }
-        # self.config = with_default_config(config, default_config)
-
-        # input_size: int = self.config.input_size
-        # num_actions: int = self.config.num_actions
-        # pi_hidden_sizes: List[int] = self.config.hidden_sizes
-        # v_hidden_sizes: List[int] = self.config.hidden_sizes  # Identical policy and value networks
         self.activation: Callable = get_activation(self.config.activation)
 
         pi_layer_sizes = [self.config.input_size] + self.config.hidden_sizes
@@ -228,6 +219,9 @@ class FancyMLPModel(BaseModel):
             nn.init.zeros_(self.value_head.bias)
             nn.init.zeros_(self.std_head.bias)
 
+        self.config = self.config.to_dict()  # Convert to a dictionary for pickling
+
+
     def forward(self, x: Tensor,
                 state: Tuple = (),
                 get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
@@ -257,6 +251,17 @@ class FancyMLPModel(BaseModel):
             extra_outputs["value"] = value
 
         return action_distribution, state, extra_outputs
+
+    def value(self, x: Tensor,
+              state: Tuple) -> Tensor:
+
+        for layer in self.v_hidden_layers:
+            x = layer(x)
+            x = self.activation(x)
+
+        value = self.value_head(x)
+
+        return value
 
     def get_initial_state(self, requires_grad=True):
         return ()

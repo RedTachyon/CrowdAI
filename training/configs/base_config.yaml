@@ -15,7 +15,8 @@ trainer:
       weight_decay: 0
       amsgrad: false
 
-    gamma: 0.5
+    gamma: 0.9
+    gae_lambda: 0.95
     ppo_steps: 25
     eps: 0.25
     target_kl: 0.01
@@ -28,11 +29,11 @@ trainer:
     use_gpu: false
 
 model:
-  input_size: 4
+  input_size: 72
   num_activations: 2
   activation: tanh
 
-  hidden_sizes: !!python/tuple [32, 32]
+  hidden_sizes: [32, 32]
   separate_value: true
 
   sigma0: 0.7

@@ -108,7 +108,7 @@ class Memory:
         assert 'dones' in self.data, "Must collect dones in the memory"
         for data in self.data['dones'].values():
             for i in range(1, n + 1):
-               data[-i] = np.logical_not(data[-1])
+                data[-i] = np.logical_not(data[-1])
 
     def __getitem__(self, item):
         return self.data[item]
@@ -138,27 +138,20 @@ def collect_crowd_data(agent: Agent,
             data: a nested dictionary with the data
             metrics: a dictionary of metrics passed by the environment
     """
-    memory = Memory(['observations', 'actions', 'rewards', 'logprobs', 'values', 'dones'])
+    memory = Memory(['observations', 'actions', 'rewards', 'values', 'dones'])
 
     if reset_start:
         obs_dict = env.reset()
     else:
         obs_dict = env.current_obs
 
-    # start_metrics = self.env.current_info['metrics']
-
     # state = {
     #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
     # }
-    # TODO: refactor metrics, here
     metrics = {
-        # "mean_distance": [],  # [start_metrics[0]],
-        # "mean_speed": [],  # [start_metrics[1]],
-        # "mean_finish": [],  # [start_metrics[2]]
-        # "mean_collision": []
+
     }
 
-    end_flag = False
     for step in trange(num_steps + 1, disable=disable_tqdm):
         # Compute the action for each agent
         # action_info = {  # action, logprob, entropy, state, sm
@@ -172,13 +165,15 @@ def collect_crowd_data(agent: Agent,
         # TODO: reintroduce recurrent state management
 
         obs_array, agent_keys = pack(obs_dict)
-        obs_tensor = torch.tensor(obs_array)
 
         # Centralize the action computation for better parallelization
-        actions, logprobs, values, _ = agent.compute_actions(obs_tensor, (), deterministic)
+        actions, states, extra = agent.act(obs_array, (), deterministic, get_value=True)
+        # actions, logprobs, values, _ = agent.compute_actions(obs_tensor, (), deterministic)
 
-        action_dict = unpack(actions, agent_keys)
-        logprob_dict = unpack(logprobs, agent_keys)
+        values = extra["value"]
+
+        action_dict = unpack(actions, agent_keys)  # Convert an array to a agent-indexed dictionary
+        # logprob_dict = unpack(logprobs, agent_keys)
         values_dict = unpack(values, agent_keys)
 
         # Actual step in the environment
@@ -202,14 +197,7 @@ def collect_crowd_data(agent: Agent,
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
 
-        # metrics["mean_distance"].append(mean_distance)
-        # metrics["mean_speed"].append(mean_speed)
-        # metrics["mean_finish"].append(mean_finish)
-        # metrics["mean_collision"].append(mean_collision)
-        # Saving to memory
-        # breakpoint()
-
-        memory.store(obs_dict, action_dict, reward_dict, logprob_dict, values_dict, done_dict)
+        memory.store(obs_dict, action_dict, reward_dict, values_dict, done_dict)
 
         # \/ Unused if the episode can't end by itself, interrupts vectorized env collection
         # Update the current obs and state - either reset, or keep going

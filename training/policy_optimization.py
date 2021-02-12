@@ -10,9 +10,43 @@ from typarse import BaseConfig
 from agents import Agent
 from preprocessors import simple_padder
 from utils import with_default_config, get_optimizer, DataBatch, Timer, DataBatchT, transpose_batch, AgentDataBatch, \
-    discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch, \
-    discount_td_rewards
+    discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch
 
+
+def discount_td_rewards(data_batch: AgentDataBatch,
+                        gamma: float = 0.99,
+                        lam: float = 0.95) -> AgentDataBatch:
+    """An alternative TD-based method of return-to-go and advantage estimation via GAE"""
+
+    rewards_batch = data_batch['rewards']  # (T, E)
+    values_batch = data_batch['values']  # (T, E)
+
+    returns_batch = []
+    advantages_batch = []
+    returns = values_batch[-1]
+    advantages = 0
+
+    for i in reversed(range(len(rewards_batch) - 1)):
+        rewards = rewards_batch[i]
+
+        returns = rewards + gamma * returns  # v(s) = r + y*v(s+1)
+        returns_batch.insert(0, returns)
+
+        value = values_batch[i]
+        next_value = values_batch[i + 1]
+
+        # calc. of discounted advantage = A(s,a) + y^1*A(s+1,a+1) + ...
+        delta = rewards + gamma * next_value.detach() - value.detach()  # td_err=q(s,a) - v(s)
+        advantages = advantages * lam * gamma + delta
+        advantages_batch.insert(0, advantages)
+
+    for key in data_batch:
+        data_batch[key] = data_batch[key][:-1]
+
+    data_batch['advantages'] = torch.stack(advantages_batch)
+    data_batch['returns'] = torch.stack(returns_batch)
+
+    return data_batch
 
 class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
     """
@@ -25,7 +59,8 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         self.agent = agent
 
         class Config(BaseConfig):
-            gamma: float = 0.95
+            gamma: float = 0.99
+            gae_lambda: float = 0.95
             ppo_steps: int = 5
             eps: float = 0.1
             target_kl: float = 0.01
@@ -50,35 +85,6 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         Config.update(config)
         self.config = Config
 
-        # default_config = {
-        #     # GD settings
-        #     "optimizer": "adam",
-        #     "optimizer_kwargs": {
-        #         "lr": 1e-3,
-        #         "betas": (0.9, 0.999),
-        #         "eps": 1e-7,
-        #         "weight_decay": 0,
-        #         "amsgrad": False
-        #     },
-        #     "gamma": 0.95,  # Discount factor
-        #
-        #     # PPO settings
-        #     "ppo_steps": 5,
-        #     "eps": 0.1,  # PPO clip parameter
-        #     "target_kl": 0.01,  # KL divergence limit
-        #
-        #     # Value estimator settings
-        #     "value_steps": 10,
-        #
-        #     "entropy_coeff": 0.1,
-        #     "entropy_decay_time": 100,  # How many steps to decrease entropy to 0.1 of the original value
-        #     "min_entropy": 0.0001,  # Minimum value of the entropy bonus - use this to disable decay
-        #
-        #     # GPU
-        #     "use_gpu": False,
-        # }
-        # self.config = with_default_config(config, default_config)
-
         self.policy_optimizer = get_optimizer(self.config.optimizer)(agent.model.parameters(),
                                                                      **self.config.OptimizerKwargs.to_dict())
 
@@ -87,6 +93,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
 
         self.gamma: float = self.config.gamma
         self.eps: float = self.config.eps
+        self.gae_lambda: float = self.config.gae_lambda
 
     def train_on_data(self, data_batch: DataBatch,
                       step: int = 0,
@@ -136,19 +143,20 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         # add the 'returns' and 'advantages' keys, and removes last position from other fields
         agent_batch = discount_td_rewards(agent_batch,
                                           gamma=self.gamma,
-                                          lam=0.95)
+                                          lam=self.gae_lambda)
 
-        # obs_batch = agent_batch['observations']
-        # action_batch = agent_batch['actions']  # actions taken
+        obs_batch = agent_batch['observations']
+        action_batch = agent_batch['actions']  # actions taken
         reward_batch = agent_batch['rewards']  # rewards obtained
-        old_logprobs_batch = agent_batch['logprobs']  # logprobs of taken actions
+        # old_logprobs_batch = agent_batch['logprobs']  # logprobs of taken actions
         done_batch = agent_batch['dones']  # whether the step is the end of an episode
         # state_batch = agent_batch['states']  # hidden LSTM state
         discounted_batch = agent_batch['returns']
         advantages_batch = agent_batch['advantages']
 
         # Evaluate actions to have values that require gradients
-        # logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
+        logprobs_batch, _, _ = agent.evaluate(obs_batch, action_batch)
+        old_logprobs_batch = logprobs_batch.detach()
 
         # Move data to GPU if applicable
         if self.config.use_gpu:
@@ -173,7 +181,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
 
         for ppo_step in range(self.config.ppo_steps):
             # Evaluate again after the PPO step, for new values and gradients
-            logprob_batch, value_batch, entropy_batch = agent.evaluate_actions(agent_batch)
+            logprob_batch, value_batch, entropy_batch = agent.evaluate(obs_batch, action_batch)
             # Compute the KL divergence for early stopping
             kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
             if np.isnan(kl_divergence): breakpoint()
@@ -203,7 +211,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
             self.policy_optimizer.step()
 
         for value_step in range(self.config.value_steps):
-            _, value_batch, _ = agent.evaluate_actions(agent_batch)
+            _, value_batch, _ = agent.evaluate(obs_batch, action_batch)
 
             value_loss = (value_batch - discounted_batch) ** 2
 
@@ -262,3 +270,4 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         write_dict(metrics, step, writer)
 
         return metrics
+
