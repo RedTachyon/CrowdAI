@@ -455,11 +455,11 @@ def unpack(values: Array, keys: List[str]) -> Dict[str, Array]:
     return value_dict
 
 
-def tanh_norm(x: Tensor, a: Tensor, b: Tensor):
-    """Transforms the input via tanh to be in the [a, b] range"""
-    return (b - a) * (1 + torch.tanh(x)) / 2 + a
-
-
-def atanh_unnorm(y: Tensor, a: Tensor, b: Tensor):
-    """Inverse to the above function w.r.t. the first input, with parameters a,b unchanged"""
-    return torch.atanh(2 / (b - a) * (y - a) - 1)
+# def tanh_norm(x: Tensor, a: Tensor, b: Tensor):
+#     """Transforms the input via tanh to be in the [a, b] range"""
+#     return (b - a) * (1 + torch.tanh(x)) / 2 + a
+#
+#
+# def atanh_unnorm(y: Tensor, a: Tensor, b: Tensor):
+#     """Inverse to the above function w.r.t. the first input, with parameters a,b unchanged"""
+#     return torch.atanh(2 / (b - a) * (y - a) - 1)

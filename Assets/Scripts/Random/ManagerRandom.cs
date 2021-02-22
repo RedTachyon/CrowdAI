@@ -20,7 +20,7 @@ public class ManagerRandom : Statistician
             
             newAgent.GetComponent<AgentRandom>().goal = newGoal;
             newAgent.name = agent.name + $" ({i})";
-            newGoal.name = goal.name + $"({i})";
+            newGoal.name = goal.name + $" ({i})";
         }
     }
 

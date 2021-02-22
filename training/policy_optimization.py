@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Optional, Tuple
 
 import numpy as np
 import torch
-from torch import nn
+from torch import nn, Tensor
 from torch.optim.optimizer import Optimizer
 from torch.utils.tensorboard import SummaryWriter
 from typarse import BaseConfig
@@ -13,9 +13,9 @@ from utils import with_default_config, get_optimizer, DataBatch, Timer, DataBatc
     discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch
 
 
-def discount_td_rewards(data_batch: AgentDataBatch,
+def discount_td_rewards(data_batch: AgentDataBatch,  # TODO: replace with bGAE
                         gamma: float = 0.99,
-                        lam: float = 0.95) -> AgentDataBatch:
+                        lam: float = 0.95) -> Tuple[Tensor, Tensor]:
     """An alternative TD-based method of return-to-go and advantage estimation via GAE"""
 
     rewards_batch = data_batch['rewards']  # (T, E)
@@ -43,10 +43,27 @@ def discount_td_rewards(data_batch: AgentDataBatch,
     for key in data_batch:
         data_batch[key] = data_batch[key][:-1]
 
-    data_batch['advantages'] = torch.stack(advantages_batch)
-    data_batch['returns'] = torch.stack(returns_batch)
+    advantages_batch = torch.stack(advantages_batch)
+    returns_batch = torch.stack(returns_batch)
 
-    return data_batch
+    return advantages_batch, returns_batch
+
+
+def minibatches(*tensors: Tensor, batch_size: int = 32, shuffle: bool = True):
+    full_size = tensors[0].shape[0]
+    for tensor in tensors:
+        assert tensor.shape[0] == full_size, "One of the tensors has a different batch size"
+
+    if shuffle:
+        indices = np.random.permutation(full_size)
+    else:
+        indices = np.arange(full_size)
+
+    for i in range(0, full_size, batch_size):
+        idx = indices[slice(i, i + batch_size)]
+
+        yield [tensor[idx, ...] for tensor in tensors]
+
 
 class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
     """
@@ -65,7 +82,8 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
             eps: float = 0.1
             target_kl: float = 0.01
 
-            value_steps: int = 10
+            # value_steps: int = 10
+            value_coeff: float = 1.0
 
             entropy_coeff: float = 0.1
             entropy_decay_time: float = 100.
@@ -112,8 +130,6 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         metrics = {}
         timer = Timer()
 
-        # data_batch: DataBatchT = transpose_batch(data_batch)
-
         entropy_coeff = max(
             self.config.entropy_coeff * 0.1 ** (step / self.config.entropy_decay_time),
             self.config.min_entropy
@@ -123,50 +139,39 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         agent = self.agent
 
         ####################################### Unpack and prepare the data #######################################
-        # agent_batch: AgentDataBatch = concat_crowd_batch(data_batch)
         agent_batch = data_batch
 
         if self.config.use_gpu:
             agent_batch = batch_to_gpu(agent_batch)
             agent.cuda()
 
-        # if self.config["pad_sequences"]:
-        #     agent_batch, mask = simple_padder(agent_batch)
-        #     ep_lens = tuple(mask.sum(0).cpu().numpy())
-        # else:
-        # mask = torch.ones_like(agent_batch['rewards'])
-        # ep_lens = None
-
         # Unpacking the data for convenience
 
         # Compute discounted rewards to go
         # add the 'returns' and 'advantages' keys, and removes last position from other fields
-        agent_batch = discount_td_rewards(agent_batch,
-                                          gamma=self.gamma,
-                                          lam=self.gae_lambda)
+        # advantages_batch, returns_batch = discount_td_rewards(agent_batch, gamma=self.gamma, lam=self.gae_lambda)
 
-        obs_batch = agent_batch['observations']
-        action_batch = agent_batch['actions']  # actions taken
-        reward_batch = agent_batch['rewards']  # rewards obtained
-        # old_logprobs_batch = agent_batch['logprobs']  # logprobs of taken actions
-        done_batch = agent_batch['dones']  # whether the step is the end of an episode
+        obs_batch: Tensor = agent_batch['observations']
+        action_batch: Tensor = agent_batch['actions']  # actions taken
+        reward_batch: Tensor = agent_batch['rewards']  # rewards obtained
+        done_batch: Tensor = agent_batch['dones']  # whether the step is the end of an episode
         # state_batch = agent_batch['states']  # hidden LSTM state
-        discounted_batch = agent_batch['returns']
-        advantages_batch = agent_batch['advantages']
+        # discounted_batch: Tensor = agent_batch['returns']
+        # advantages_batch: Tensor = agent_batch['advantages']
 
         # Evaluate actions to have values that require gradients
         logprobs_batch, _, _ = agent.evaluate(obs_batch, action_batch)
         old_logprobs_batch = logprobs_batch.detach()
 
         # Move data to GPU if applicable
-        if self.config.use_gpu:
-            discounted_batch = discounted_batch.cuda()
+        # if self.config.use_gpu:
+        #     returns_batch = returns_batch.cuda()
 
         # breakpoint()
         # Compute the normalized advantage
         # advantages_batch = (discounted_batch - value_batch).detach()
-        advantages_batch = (advantages_batch - advantages_batch.mean())
-        advantages_batch = advantages_batch / (torch.sqrt(torch.mean(advantages_batch ** 2) + 1e-8))
+        # advantages_batch = (advantages_batch - advantages_batch.mean())
+        # advantages_batch = advantages_batch / (torch.sqrt(torch.mean(advantages_batch ** 2) + 1e-8))
 
         # Initialize metrics
         kl_divergence = 0.
@@ -180,58 +185,69 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         timer.checkpoint()
 
         for ppo_step in range(self.config.ppo_steps):
-            # Evaluate again after the PPO step, for new values and gradients
-            logprob_batch, value_batch, entropy_batch = agent.evaluate(obs_batch, action_batch)
-            # Compute the KL divergence for early stopping
-            kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
-            if np.isnan(kl_divergence): breakpoint()
-            if kl_divergence > self.config.target_kl:
-                break
+            advantages_batch, returns_batch = discount_td_rewards(agent_batch, gamma=self.gamma, lam=self.gae_lambda)
 
-            ######################################### Compute the loss #############################################
-            # Surrogate loss
-            prob_ratio = torch.exp(logprob_batch - old_logprobs_batch)
-            surr1 = prob_ratio * advantages_batch
-            # surr2 = torch.clamp(prob_ratio, 1. - self.eps, 1 + self.eps) * advantages_batch
-            surr2 = torch.where(advantages_batch > 0,
-                                (1 + self.eps) * advantages_batch,
-                                (1 - self.eps) * advantages_batch)
+            for obs_mini, action_mini, old_logprob_mini, advantage_mini, return_mini in minibatches(obs_batch,
+                                                                                                    action_batch,
+                                                                                                    old_logprobs_batch,
+                                                                                                    advantages_batch,
+                                                                                                    returns_batch,
+                                                                                                    batch_size=32,
+                                                                                                    shuffle=True):
+                # TODO: complete converting this into minibatches
+                # Evaluate again after the PPO step, for new values and gradients
+                logprob_batch, value_batch, entropy_batch = agent.evaluate(obs_batch, action_batch)
+                # Compute the KL divergence for early stopping
+                kl_divergence = torch.mean(old_logprobs_batch - logprob_batch).item()
+                if np.isnan(kl_divergence): breakpoint()
+                if kl_divergence > self.config.target_kl:
+                    break
 
-            policy_loss = -torch.min(surr1, surr2)
+                ######################################### Compute the loss #############################################
+                # Surrogate loss
+                prob_ratio = torch.exp(logprob_batch - old_logprobs_batch)
+                surr1 = prob_ratio * advantages_batch
 
-            loss = (
-                    policy_loss.mean()
-                    - (entropy_coeff * entropy_batch.mean())
-            )
+                surr2 = torch.where(torch.gt(advantages_batch, 0),
+                                    (1 + self.eps) * advantages_batch,
+                                    (1 - self.eps) * advantages_batch)
 
-            ############################################# Update step ##############################################
-            self.policy_optimizer.zero_grad()
-            loss.backward()
+                policy_loss = -torch.min(surr1, surr2)
 
-            self.policy_optimizer.step()
+                value_loss = (value_batch - returns_batch) ** 2
 
-        for value_step in range(self.config.value_steps):
-            _, value_batch, _ = agent.evaluate(obs_batch, action_batch)
+                loss = (
+                        policy_loss.mean()
+                        + value_loss.mean()
+                        - (entropy_coeff * entropy_batch.mean())
+                )
 
-            value_loss = (value_batch - discounted_batch) ** 2
+                ############################################# Update step ##############################################
+                self.policy_optimizer.zero_grad()
+                loss.backward()
 
-            loss = value_loss.mean()
+                self.policy_optimizer.step()
 
-            self.value_optimizer.zero_grad()
-            loss.backward()
-            self.value_optimizer.step()
+        # for value_step in range(self.config.value_steps):
+        #     _, value_batch, _ = agent.evaluate(obs_batch, action_batch)
+        #
+        #     value_loss = (value_batch - discounted_batch) ** 2
+        #
+        #     loss = value_loss.mean()
+        #
+        #     self.value_optimizer.zero_grad()
+        #     loss.backward()
+        #     self.value_optimizer.step()
 
         ############################################## Collect metrics #############################################
 
-        agent.cpu()
-
         # Training-related metrics
-        metrics[f"{agent_id}/kl_divergence"] = kl_divergence
-        metrics[f"{agent_id}/ppo_steps_made"] = ppo_step + 1
-        metrics[f"{agent_id}/policy_loss"] = policy_loss.mean().cpu().item()
-        metrics[f"{agent_id}/value_loss"] = value_loss.mean().cpu().item()
+        metrics[f"meta/kl_divergence"] = kl_divergence
+        metrics[f"meta/ppo_steps_made"] = ppo_step + 1
+        metrics[f"meta/policy_loss"] = policy_loss.mean().cpu().item()
+        metrics[f"meta/value_loss"] = value_loss.mean().cpu().item()
         # metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
-        metrics[f"{agent_id}/total_steps"] = len(reward_batch.view(-1))
+        metrics[f"meta/total_steps"] = len(reward_batch.view(-1))
 
         # ep_lens = ep_lens if self.config["pad_sequences"] else get_episode_lens(done_batch.cpu())
         # ep_lens = get_episode_lens(done_batch.cpu())
@@ -259,15 +275,14 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         metrics[f"{agent_id}/episode_reward_std"] = torch.std(ep_rewards).item()
 
         # Other metrics
-        metrics[f"{agent_id}/episodes_this_iter"] = done_batch.shape[1]
-        metrics[f"{agent_id}/mean_entropy"] = torch.mean(entropy_batch).item()
+        metrics[f"meta/episodes_this_iter"] = done_batch.shape[1]
+        metrics[f"meta/mean_entropy"] = torch.mean(entropy_batch).item()
 
-        metrics[f"{agent_id}/entropy_bonus"] = entropy_coeff
+        metrics[f"meta/entropy_bonus"] = entropy_coeff
 
-        metrics[f"{agent_id}/time_update"] = timer.checkpoint()
+        metrics[f"meta/time_update"] = timer.checkpoint()
 
         # Write the metrics to tensorboard
         write_dict(metrics, step, writer)
 
         return metrics
-

@@ -654,7 +654,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 500
   numAgents: 20
 --- !u!114 &6036236078767862522
 MonoBehaviour:

@@ -191,9 +191,6 @@ def collect_crowd_data(agent: Agent,
             # all_metrics = info_dict["metrics"]
             all_metrics = {k: v for k, v in info_dict if k.startswith("m_")}
 
-        # TODO: refactor metrics especially here!
-        # mean_distance, mean_speed, mean_finish, mean_collision = all_metrics.T
-
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
 
@@ -223,14 +220,14 @@ def collect_crowd_data(agent: Agent,
     return data, metrics
 
 
-def _collection_worker(agent: Agent, i: int, env_path: str, num_steps: int, base_seed: int) -> Tuple[DataBatch, Dict]:
-    # seed = round(time.time() % 100000) + i  # Ensure it's different every time
-    seed = base_seed * 100 + i
-    env = UnitySimpleCrowdEnv(file_name=env_path, no_graphics=True, worker_id=i, timeout_wait=5, seed=seed)
-    env.engine_channel.set_configuration_parameters(time_scale=100)
-    data, metrics = collect_crowd_data(agent, env, num_steps)
-    env.close()
-    return data, metrics
+# def _collection_worker(agent: Agent, i: int, env_path: str, num_steps: int, base_seed: int) -> Tuple[DataBatch, Dict]:
+#     # seed = round(time.time() % 100000) + i  # Ensure it's different every time
+#     seed = base_seed * 100 + i
+#     env = UnitySimpleCrowdEnv(file_name=env_path, no_graphics=True, worker_id=i, timeout_wait=5, seed=seed)
+#     env.engine_channel.set_configuration_parameters(time_scale=100)
+#     data, metrics = collect_crowd_data(agent, env, num_steps)
+#     env.close()
+#     return data, metrics
 
 
 

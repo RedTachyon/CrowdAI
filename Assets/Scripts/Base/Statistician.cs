@@ -14,18 +14,23 @@ public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
     protected Dictionary<Transform, bool> Finished;
-    private StatsSideChannel statsChannel;
+    private StatsSideChannel _statsChannel;
+    private int _time;
+
+    private bool _end = false;
+    private bool _stats = false;
+    
     private void Awake()
     {
-        statsChannel = new StatsSideChannel();
-        SideChannelManager.RegisterSideChannel(statsChannel);
+        _statsChannel = new StatsSideChannel();
+        SideChannelManager.RegisterSideChannel(_statsChannel);
     }
 
     private void OnDestroy()
     {
         if (Academy.IsInitialized)
         {
-            SideChannelManager.UnregisterSideChannel(statsChannel);
+            SideChannelManager.UnregisterSideChannel(_statsChannel);
         }
     }
 
@@ -34,18 +39,14 @@ public class Statistician : Agent
         base.Initialize();
         
         Finished = new Dictionary<Transform, bool>();
-
-        foreach (Transform agent in transform)
-        {
-            Walker walker = agent.GetComponent<Walker>();
-            walker.startPosition = agent.localPosition;
-        }
     }
 
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
         Finished.Clear();
+
+        _time = 0;
 
         foreach (Transform agent in transform)
         {
@@ -56,11 +57,15 @@ public class Statistician : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Collect summary statistics
+        // Collect summary statistic
 
-        // statsChannel.SendMessage($"{random}");
-        
-        
+        _stats = true;
+
+        _time++;
+    }
+
+    private void CollectStats()
+    {
         var distances = new List<float>();
         var speeds = new List<float>();
         var dones = new List<float>();
@@ -94,27 +99,12 @@ public class Statistician : Agent
         // Debug.Log(collision);
 
         var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
-        statsChannel.SendMessage(message);
-
-        // sensor.AddObservation(meanDist);
-        // sensor.AddObservation(meanSpeed);
-        // sensor.AddObservation(finished);
-        // sensor.AddObservation(collision);
-        
-        // Debug.Log(finished);
+        _statsChannel.SendMessage(message);
     }
     
     public void ReachGoal(Walker agent)
     {
         Finished[agent.transform] = true;
-        // agent.EndEpisode();
-        // agent.Freeze();
-
-        if (!Finished.Values.Contains(false))
-        {
-            
-            // _done = true;
-        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -122,5 +112,31 @@ public class Statistician : Agent
         // base.Heuristic(in actionsOut);
         var contActionsOut = actionsOut.ContinuousActions;
         contActionsOut[0] = 0f;
+    }
+
+    private void LateUpdate()
+    {
+        if (_end)
+        {
+            Finish();
+        }
+        _end = false;
+
+        if (_stats)
+        {
+            CollectStats();
+        }
+
+        _stats = false;
+    }
+
+    public void Finish()
+    {
+        foreach (Transform agent in transform)
+        {
+            agent.GetComponent<Agent>().EndEpisode();
+        }
+
+        EndEpisode();
     }
 }

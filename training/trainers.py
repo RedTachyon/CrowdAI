@@ -48,12 +48,19 @@ class PPOCrowdTrainer(Trainer):
             save_freq: int = 10
 
             class PPOConfig(BaseConfig):
-                gamma: float = 1.0
-                ppo_steps: int = 25
+                gamma: float = 0.99
+                gae_lambda: float = 0.95
+                ppo_steps: int = 5
                 eps: float = 0.1
                 target_kl: float = 0.01
+
+                # value_steps: int = 10
+                value_coeff: float = 1.0
+
                 entropy_coeff: float = 0.1
-                max_grad_norm: float = 0.5
+                entropy_decay_time: float = 100.
+                min_entropy: float = 0.0001
+
                 use_gpu: bool = False
 
                 optimizer: str = "adam"
@@ -66,41 +73,6 @@ class PPOCrowdTrainer(Trainer):
                     amsgrad: bool = False
 
         Config.update(config["trainer"])
-
-        # default_config = {
-        #     "steps": 500,  # number of steps we want in one episode
-        #     "workers": 8,
-        #
-        #     # Tensorboard settings
-        #     "tensorboard_name": None,  # str, set explicitly
-        #
-        #     "save_freq": 10,
-        #
-        #     # PPO
-        #     "ppo_config": {
-        #         # GD settings
-        #         "optimizer": "adam",
-        #         "optimizer_kwargs": {
-        #             "lr": 1e-4,
-        #             "betas": (0.9, 0.999),
-        #             "eps": 1e-7,
-        #             "weight_decay": 0,
-        #             "amsgrad": False
-        #         },
-        #         "gamma": 1.,  # Discount factor
-        #
-        #         # PPO settings
-        #         "ppo_steps": 25,  # How many max. gradient updates in one iterations
-        #         "eps": 0.1,  # PPO clip parameter
-        #         "target_kl": 0.01,  # KL divergence limit
-        #         "value_loss_coeff": 0.1,
-        #         "entropy_coeff": 0.1,
-        #         "max_grad_norm": 0.5,
-        #
-        #         # Backpropagation settings
-        #         "use_gpu": False,
-        #     }
-        # }
 
         self.agent = agent
 

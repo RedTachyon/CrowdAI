@@ -83,17 +83,12 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         done_dict: DoneDict = {}
         info_dict: InfoDict = {}
 
+        ter_obs_dict = {}
+        ter_reward_dict = {}
         # has_decision = False
 
         for name in names:
             decisions, terminals = self.unity.get_steps(name)
-
-            ter_obs, ter_ids = terminals.obs, list(terminals.agent_id)
-            for idx in terminals.agent_id:
-                agent_name = f"{name}&id={idx}"
-                obs_dict[agent_name] = np.concatenate([o[ter_ids.index(idx)] for o in ter_obs])
-                reward_dict[agent_name] = terminals.reward[ter_ids.index(idx)]
-                done_dict[agent_name] = True
 
             dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
             for idx in dec_ids:
@@ -102,15 +97,20 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
                 obs_dict[agent_name] = obs
                 reward_dict[agent_name] = decisions.reward[dec_ids.index(idx)]
                 done_dict[agent_name] = False
-                # has_decision = True
+
+            ter_obs, ter_ids = terminals.obs, list(terminals.agent_id)
+
+            for idx in terminals.agent_id:
+                # FIXME: Refactor this to better support different obs
+                agent_name = f"{name}&id={idx}"
+                ter_obs_dict[agent_name] = np.concatenate([o[ter_ids.index(idx)] for o in ter_obs])
+                ter_reward_dict[agent_name] = terminals.reward[ter_ids.index(idx)]
+                done_dict[agent_name] = True
 
         done_dict["__all__"] = len(self.active_agents) == 0
 
-        # m_decisions, _ = self.unity.get_steps(self.manager)
-        # m_obs = m_decisions.obs[0]
-
-        # info_dict["has_decision"] = has_decision
-        # info_dict["metrics"] = m_obs
+        info_dict["final_obs"] = ter_obs_dict
+        info_dict["final_rewards"] = ter_reward_dict
 
         stats = parse_side_message(self.stats_channel.last_msg)
         for key in stats:

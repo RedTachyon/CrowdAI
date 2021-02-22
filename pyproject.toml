@@ -5,7 +5,7 @@ description = "PhD project"
 authors = ["redtachyon <ariel.j.kwiatkowski@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8.5"
+python = "^3.8.5,<3.9"
 typarse = "^3.3.0"
 numpy = "^1.18"
 jax = "^0.2.9"
@@ -25,6 +25,8 @@ torch = "^1.7.1"
 tqdm = "^4.56.2"
 ipykernel = "^5.4.3"
 dm-haiku = {git = "https://github.com/deepmind/dm-haiku"}
+PettingZoo = {extras = ["sisl"], version = "^1.5.2"}
+numba = "^0.52.0"
 
 
 [tool.poetry.dev-dependencies]

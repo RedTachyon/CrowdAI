@@ -10,7 +10,7 @@ from models import BaseModel
 
 from typing import Tuple, Optional, Dict
 
-from utils import AgentDataBatch, tanh_norm, atanh_unnorm
+from utils import AgentDataBatch
 
 
 

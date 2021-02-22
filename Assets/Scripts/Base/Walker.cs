@@ -21,13 +21,14 @@ public class Walker : Agent
 
     internal int Collision = 0;
 
+
     public Transform goal;
 
-    // [HideInInspector] public float startY;
 
     [HideInInspector] public Vector3 startPosition;
 
     [HideInInspector] public Quaternion startRotation;
+
 
     public override void Initialize()
     {
@@ -35,6 +36,8 @@ public class Walker : Agent
         // startY = transform.localPosition.y;
         startPosition = transform.localPosition;
         startRotation = transform.localRotation;
+
+        
     }
 
 
@@ -92,7 +95,12 @@ public class Walker : Agent
         }
     }
 
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        base.CollectObservations(sensor);
+        Collision = 0;
 
+    }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
@@ -141,39 +149,6 @@ public class Walker : Agent
         cActionsOut[1] = force.z;
     }
 
-    
-    public void Freeze()
-    {
-        Unfrozen = 0;
-        Rigidbody.constraints = Rigidbody.constraints |
-                                 RigidbodyConstraints.FreezePositionX | 
-                                 RigidbodyConstraints.FreezePositionZ | 
-                                 RigidbodyConstraints.FreezeRotationY;
-        
-        Debug.Log("Freezing agent");
-
-        enabled = false;
-        // GetComponent<DecisionRequester>().enabled = false;
-        // GetComponent<DecisionRequester>().DecisionPeriod = Int32.MaxValue;
-
-    }
-
-    public void Unfreeze()
-    {
-        enabled = true;
-        // GetComponent<DecisionRequester>().enabled = true;
-        // GetComponent<DecisionRequester>().DecisionPeriod = 5;
-
-        Debug.Log("Unfreezing agent");
-
-        
-        Unfrozen = 1;
-        Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionX;
-        Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionZ;
-        Rigidbody.constraints &= ~RigidbodyConstraints.FreezeRotationY;
-    }
-
-
     protected virtual void OnCollisionEnter(Collision other)
     {
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
@@ -189,5 +164,36 @@ public class Walker : Agent
             Collision = 1;
         }
     }
-    
+
+    // public void Freeze()
+    // {
+    //     Unfrozen = 0;
+    //     Rigidbody.constraints = Rigidbody.constraints |
+    //                             RigidbodyConstraints.FreezePositionX | 
+    //                             RigidbodyConstraints.FreezePositionZ | 
+    //                             RigidbodyConstraints.FreezeRotationY;
+    //     
+    //     Debug.Log("Freezing agent");
+    //
+    //     enabled = false;
+    //     // GetComponent<DecisionRequester>().enabled = false;
+    //     // GetComponent<DecisionRequester>().DecisionPeriod = Int32.MaxValue;
+    //
+    // }
+    //
+    // public void Unfreeze()
+    // {
+    //     enabled = true;
+    //     // GetComponent<DecisionRequester>().enabled = true;
+    //     // GetComponent<DecisionRequester>().DecisionPeriod = 5;
+    //
+    //     Debug.Log("Unfreezing agent");
+    //
+    //     
+    //     Unfrozen = 1;
+    //     Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionX;
+    //     Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionZ;
+    //     Rigidbody.constraints &= ~RigidbodyConstraints.FreezeRotationY;
+    // }
+
 }

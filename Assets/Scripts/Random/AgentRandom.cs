@@ -16,22 +16,29 @@ public class AgentRandom : Walker
 
     private Material _material;
     private Color _originalColor;
-    
+
     // public Transform goal;
-    
+
 
     public override void Initialize()
     {
         base.Initialize();
         _material = GetComponent<Renderer>().material;
         _originalColor = _material.color;
-        
+
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        base.OnEpisodeBegin();
+
+
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
-        Collision = 0;
+        base.CollectObservations(sensor);
+        
         
         // RayPerceptionSensor structure:
         // 0 - n_tags: one-hot encoding of what was hit
@@ -88,7 +95,6 @@ public class AgentRandom : Walker
         // Compute the distance-based reward
         var prevDistance = Vector3.Distance(PreviousPosition, goalPosition);
         var currentDistance = Vector3.Distance(position, goalPosition);
-        // Debug.Log(currentDistance);
         // Up to ~0.1
         var diff = prevDistance - currentDistance;
         
@@ -99,29 +105,17 @@ public class AgentRandom : Walker
         // Maximum distance: 20; this puts it in the range [0, 0.1]
         // AddReward(-currentDistance / 200f);
         
-        // AddReward(-0.01f);  // Small penalty at each step
         // Debug.Log($"Distance {currentDistance}");
         // Debug.Log($"Distance difference {diff}");
 
         PreviousPosition = position;
 
-        _material.color = _originalColor;
+        _material.color = _originalColor; // TODO: Fix colors?
         
-        // Debug.Log(GetCumulativeReward());
         
         // Debug.Log($"Total reward: {GetCumulativeReward()}");
 
     }
-
-    // public override void OnActionReceived(float[] vectorAction)
-    // {
-    //     base.OnActionReceived(vectorAction);
-    //     // var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
-    //     // if (Mathf.Abs(angularSpeed) > 0.7f)
-    //     // {
-    //     //     AddReward(-0.1f * Mathf.Abs(angularSpeed));
-    //     // }
-    // }
 
 
     private void OnTriggerStay(Collider other)
