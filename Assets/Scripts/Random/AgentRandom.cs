@@ -38,7 +38,8 @@ public class AgentRandom : Walker
     public override void CollectObservations(VectorSensor sensor)
     {
         base.CollectObservations(sensor);
-        
+        // Debug.Log($"{name} CollectObs at step {GetComponentInParent<Statistician>().Time}");
+
         
         // RayPerceptionSensor structure:
         // 0 - n_tags: one-hot encoding of what was hit
@@ -110,7 +111,7 @@ public class AgentRandom : Walker
 
         PreviousPosition = position;
 
-        _material.color = _originalColor; // TODO: Fix colors?
+        _material.color = _originalColor;
         
         
         // Debug.Log($"Total reward: {GetCumulativeReward()}");

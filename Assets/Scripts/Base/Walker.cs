@@ -44,6 +44,10 @@ public class Walker : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         base.OnActionReceived(actions);
+        // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
+        
+        Collision = 0;
+        
         var vectorAction = actions.ContinuousActions;
 
         // Forward velocity
@@ -94,14 +98,7 @@ public class Walker : Agent
             Rigidbody.rotation = Quaternion.LookRotation(direction);
         }
     }
-
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        base.CollectObservations(sensor);
-        Collision = 0;
-
-    }
-
+    
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         // base.Heuristic(in actionsOut);
@@ -151,6 +148,7 @@ public class Walker : Agent
 
     protected virtual void OnCollisionEnter(Collision other)
     {
+        // Debug.Log($"{name} in collision at step {GetComponentInParent<Statistician>().Time}");
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             Collision = 1;
@@ -159,6 +157,7 @@ public class Walker : Agent
 
     protected virtual void OnCollisionStay(Collision other)
     {
+        // Debug.Log($"{name} in collision at step {GetComponentInParent<Statistician>().Time}");
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             Collision = 1;

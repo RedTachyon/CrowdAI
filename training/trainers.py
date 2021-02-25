@@ -6,16 +6,16 @@ from typing import Dict, Any, Optional, Tuple
 import numpy as np
 import torch
 import yaml
-
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 from typarse import BaseConfig
 
 from agents import Agent
-from parallel import SubprocVecEnv
-from utils import Timer, with_default_config, write_dict, concat_subproc_batch
 from collectors import collect_crowd_data
+from parallel import SubprocVecEnv
 from policy_optimization import CrowdPPOptimizer
+from utils import Timer, write_dict, concat_subproc_batch
+
 
 class Trainer:
     def __init__(self,

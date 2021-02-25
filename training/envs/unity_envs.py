@@ -5,8 +5,7 @@ from typing import Dict, Any, Tuple, Callable, List
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-from envs.side_channels import StatsChannel
-from utils import parse_side_message
+from envs.side_channels import StatsChannel, parse_side_message
 
 StateDict = Dict[str, np.ndarray]
 ActionDict = Dict[str, Any]
@@ -76,7 +75,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.behaviors = {}
         self.manager = ""
 
-    def _get_step_info(self) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
+    def _get_step_info(self, step: bool = False) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
         names = self.behaviors.keys()
         obs_dict: StateDict = {}
         reward_dict: RewardDict = {}
@@ -112,7 +111,8 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         info_dict["final_obs"] = ter_obs_dict
         info_dict["final_rewards"] = ter_reward_dict
 
-        stats = parse_side_message(self.stats_channel.last_msg)
+        stats = self.stats_channel.parse_info(clear=step)
+        # stats = parse_side_message(self.stats_channel.last_msg)  # FIXME: broken with multiple boards in scene
         for key in stats:
             info_dict["m_" + key] = stats[key]
 
@@ -134,8 +134,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         # The terminal step handling has been removed as episodes are only reset from here
 
         self.unity.step()
-        obs_dict, reward_dict, done_dict, info_dict = self._get_step_info()
-
+        obs_dict, reward_dict, done_dict, info_dict = self._get_step_info(step=True)
 
         return obs_dict, reward_dict, done_dict, info_dict
 
@@ -149,7 +148,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         # ...but manager is used to collect stats
         self.manager = [key for key in behaviors if key.startswith("Manager")][0]
 
-        obs_dict, _, _, _ = self._get_step_info()
+        obs_dict, _, _, _ = self._get_step_info(step=True)
 
         self.active_agents = list(obs_dict.keys())
 

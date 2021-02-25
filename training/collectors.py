@@ -152,7 +152,7 @@ def collect_crowd_data(agent: Agent,
 
     }
 
-    for step in trange(num_steps + 1, disable=disable_tqdm):
+    for step in trange(num_steps, disable=disable_tqdm):
         # Compute the action for each agent
         # action_info = {  # action, logprob, entropy, state, sm
         #     agent_id: self.agents[agent_id].compute_single_action(obs[agent_id],
@@ -189,14 +189,21 @@ def collect_crowd_data(agent: Agent,
                     all_metrics[key] = np.concatenate([val[key] for val in info_dict])
         else:
             # all_metrics = info_dict["metrics"]
-            all_metrics = {k: v for k, v in info_dict if k.startswith("m_")}
+            all_metrics = {k: v for k, v in info_dict.items() if k.startswith("m_")}
+
+        if not all_metrics:
+            breakpoint()
 
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
 
         memory.store(obs_dict, action_dict, reward_dict, values_dict, done_dict)
 
+        obs_dict = next_obs
+
+
         # \/ Unused if the episode can't end by itself, interrupts vectorized env collection
+        # If I want to reintroduce it, probably move it back one line
         # Update the current obs and state - either reset, or keep going
         # if done_dict["__all__"]:  # episode is over
         #
@@ -211,9 +218,8 @@ def collect_crowd_data(agent: Agent,
         #     obs_dict = next_obs
         #     # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
         #
-        # obs_dict = next_obs
 
-    memory.set_done(2)
+    # memory.set_done(2)
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
     data = memory.get_torch_data()

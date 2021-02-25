@@ -1,16 +1,14 @@
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple
 
 import numpy as np
 import torch
-from torch import nn, Tensor
-from torch.optim.optimizer import Optimizer
+from torch import Tensor
 from torch.utils.tensorboard import SummaryWriter
 from typarse import BaseConfig
 
 from agents import Agent
-from preprocessors import simple_padder
-from utils import with_default_config, get_optimizer, DataBatch, Timer, DataBatchT, transpose_batch, AgentDataBatch, \
-    discount_rewards_to_go, masked_mean, get_episode_lens, write_dict, batch_to_gpu, concat_crowd_batch
+from utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
+    write_dict, batch_to_gpu
 
 
 def discount_td_rewards(data_batch: AgentDataBatch,  # TODO: replace with bGAE

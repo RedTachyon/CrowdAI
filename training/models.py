@@ -1,12 +1,12 @@
-from typing import Dict, Tuple, Callable, Optional, Any, List
+from typing import Dict, Tuple, Callable, List
 
 import torch
-from torch import nn, Tensor
 import torch.nn.functional as F
-from torch.distributions import Distribution, Categorical, Normal
+from torch import nn, Tensor
+from torch.distributions import Distribution, Normal
 from typarse import BaseConfig
 
-from utils import with_default_config, get_activation, get_initializer
+from utils import get_activation, get_initializer
 
 
 class BaseModel(nn.Module):

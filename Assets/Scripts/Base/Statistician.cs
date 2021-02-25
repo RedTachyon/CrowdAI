@@ -14,31 +14,16 @@ public class Statistician : Agent
 // Abstract class that only implements the statistics collection behavior for the manager - will be useful for other scenarios
 {
     protected Dictionary<Transform, bool> Finished;
-    private StatsSideChannel _statsChannel;
-    private int _time;
+    internal int Time;
+    public StatsCommunicator statsCommunicator;
 
-    private bool _end = false;
-    private bool _stats = false;
-    
-    private void Awake()
-    {
-        _statsChannel = new StatsSideChannel();
-        SideChannelManager.RegisterSideChannel(_statsChannel);
-    }
-
-    private void OnDestroy()
-    {
-        if (Academy.IsInitialized)
-        {
-            SideChannelManager.UnregisterSideChannel(_statsChannel);
-        }
-    }
-
+    private bool _stats;
     public override void Initialize()
     {
         base.Initialize();
         
         Finished = new Dictionary<Transform, bool>();
+        
     }
 
     public override void OnEpisodeBegin()
@@ -46,7 +31,8 @@ public class Statistician : Agent
         base.OnEpisodeBegin();
         Finished.Clear();
 
-        _time = 0;
+        Time = 0;
+        _stats = false;
 
         foreach (Transform agent in transform)
         {
@@ -58,12 +44,22 @@ public class Statistician : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         // Collect summary statistic
+        
+        // Debug.Log($"{name} CollectObs");
+
+        Time++;
+
+        sensor.AddObservation(0f);
+        
+        if (_stats) // Trick to avoid logging redundant stats when the episode starts?
+        {
+            CollectStats();
+        }
 
         _stats = true;
 
-        _time++;
     }
-
+    
     private void CollectStats()
     {
         var distances = new List<float>();
@@ -98,13 +94,15 @@ public class Statistician : Agent
         
         // Debug.Log(collision);
 
+        
         var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
-        _statsChannel.SendMessage(message);
+        statsCommunicator.StatsChannel.SendMessage(message);
+        // Debug.Log("Message allegedly sent");
     }
     
     public void ReachGoal(Walker agent)
     {
-        Finished[agent.transform] = true;
+        Finished[agent.GetComponent<Transform>()] = true;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -113,22 +111,7 @@ public class Statistician : Agent
         var contActionsOut = actionsOut.ContinuousActions;
         contActionsOut[0] = 0f;
     }
-
-    private void LateUpdate()
-    {
-        if (_end)
-        {
-            Finish();
-        }
-        _end = false;
-
-        if (_stats)
-        {
-            CollectStats();
-        }
-
-        _stats = false;
-    }
+    
 
     public void Finish()
     {

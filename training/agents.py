@@ -70,9 +70,10 @@ class CAgent(Agent):  # Continuous Agent
             else:
                 actions = action_distribution.rsample()
 
+        extra = {}
         if get_value:
             value = extra_outputs["value"]
-            extra = {"value": value.squeeze(-1).cpu().numpy()}
+            extra["value"] = value.squeeze(-1).cpu().numpy()
 
         return actions.cpu().numpy(), states, extra
 
@@ -123,3 +124,22 @@ class CAgent(Agent):  # Continuous Agent
             model.load_state_dict(weights)
 
         return CAgent(model)
+
+
+class ConstantAgent(Agent):
+
+    def __init__(self, action: np.ndarray):
+        self.action = action
+
+    def act(self, obs_batch: np.ndarray,
+            state_batch: Tuple = (),
+            deterministic: bool = False,
+            get_value: bool = False) -> Tuple[np.ndarray, Tuple, Dict]:
+
+        batch_size = obs_batch.shape[0]
+
+        return np.tile(self.action, (batch_size, 1)), (), {"value": np.zeros((batch_size,))}
+
+    def evaluate(self, obs_batch: Tensor, action_batch: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+        zero = torch.zeros_like(action_batch)
+        return zero, zero, zero

@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Tuple, Any, Callable, Optional, Iterator
+from typing import Dict, List, Union, Tuple, Any, Callable, Optional, Iterator, Iterable, Sequence, Container
 
 import numpy as np
 
@@ -28,41 +28,49 @@ AgentDataBatch = Dict[str, Union[Tensor, Tuple]]
 Array = Union[Tensor, np.ndarray]
 
 
-def parse_side_message(msg: str) -> Dict[str, np.ndarray]:
-    """Parses a message from StatsChannel"""
-    if msg == "": return {}
-    lines = msg.split('\n')
-    out = {line.split(' ')[0]: np_float(float(line.split(' ')[1])) for line in lines}
-    return out
+def concat_dicts(dicts: Sequence[Dict[str, float]]) -> Dict[str, np.ndarray]:
+    """
+    Turns a list of dictionaries, to a dictionary of arrays
+    """
+    result = {}
+    for d in dicts:
+        for k in d:
+            result.setdefault(k, []).append(d[k])
+
+    array_dict = {}
+    for k, v in result.items():
+        array_dict[k] = np.array(v).ravel()
+    return array_dict
+
 
 def np_float(x: float) -> np.ndarray:
     """Convenience function to create a one-element float32 numpy array"""
     return np.array([x], dtype=np.float32)
 
-
-def with_default_config(config: Dict, default: Dict) -> Dict:
-    """
-    Adds keys from default to the config, if they don't exist there yet.
-    Serves to ensure that all necessary keys are always present.
-    Now also recursive.
-
-    Args:
-        config: config dictionary
-        default: config dictionary with default values
-
-    Returns:
-        config with the defaults added
-    """
-    if config is None:
-        config = {}
-    else:
-        config = config.copy()
-    for key in default.keys():
-        if isinstance(default[key], dict):
-            config[key] = with_default_config(config.get(key), default.get(key))
-        else:
-            config.setdefault(key, default[key])
-    return config
+# DEPRECATED: replaced by typarse
+# def with_default_config(config: Dict, default: Dict) -> Dict:
+#     """
+#     Adds keys from default to the config, if they don't exist there yet.
+#     Serves to ensure that all necessary keys are always present.
+#     Now also recursive.
+#
+#     Args:
+#         config: config dictionary
+#         default: config dictionary with default values
+#
+#     Returns:
+#         config with the defaults added
+#     """
+#     if config is None:
+#         config = {}
+#     else:
+#         config = config.copy()
+#     for key in default.keys():
+#         if isinstance(default[key], dict):
+#             config[key] = with_default_config(config.get(key), default.get(key))
+#         else:
+#             config.setdefault(key, default[key])
+#     return config
 
 
 def discount_rewards_to_go(rewards: Tensor,
