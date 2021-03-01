@@ -4,7 +4,7 @@ import torch
 from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
 
-from utils import get_episode_lens, AgentDataBatch
+from coltra.utils import get_episode_lens, AgentDataBatch
 
 
 def simple_padder(data_batch: AgentDataBatch) -> Tuple[AgentDataBatch, Tensor]:

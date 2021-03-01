@@ -6,8 +6,8 @@ from torch import nn, Tensor
 from torch.distributions import Distribution, Normal
 from typarse import BaseConfig
 
-from buffers import Observation
-from utils import get_activation, get_initializer
+from coltra.buffers import Observation
+from coltra.utils import get_activation, get_initializer
 
 
 class BaseModel(nn.Module):

@@ -5,8 +5,6 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from agents import Agent
-
 
 def load_weights(base_path: str,
                  base_name: str = 'weights',

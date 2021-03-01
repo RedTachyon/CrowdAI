@@ -6,8 +6,8 @@ from torch import Tensor
 from torch.utils.tensorboard import SummaryWriter
 from typarse import BaseConfig
 
-from agents import Agent
-from utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
+from coltra.agents import Agent
+from coltra.utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
     write_dict, batch_to_gpu
 
 

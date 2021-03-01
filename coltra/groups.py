@@ -1,7 +1,7 @@
 from typing import Dict
 
-from agents import Agent
-from buffers import Observation
+from coltra.agents import Agent
+from coltra.buffers import Observation
 
 
 class GroupAgent:

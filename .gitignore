@@ -71,8 +71,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 /[Aa]ssets/ML-Agents/Timers/*
-/training/builds/*
-/training/.DS_Store
+/coltra/builds/*
+/coltra/.DS_Store
 */.idea/
 */.idea/*
 

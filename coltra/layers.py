@@ -4,7 +4,7 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from utils import get_activation_module, get_initializer
+from coltra.utils import get_activation_module, get_initializer
 
 #
 # class RelationLayer(nn.Module):

@@ -6,13 +6,12 @@ import torch
 import torch.multiprocessing as mp
 from tqdm import trange
 
-from agents import Agent
-from parallel import SubprocVecEnv
-from utils import DataBatch, concat_batches, \
-    concat_crowd_batch, concat_metrics
-from envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv
+from coltra.agents import Agent
+from coltra.parallel import SubprocVecEnv
 
-from buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
+from coltra.envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv
+
+from coltra.buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
 
 
 def collect_crowd_data(agent: Agent,

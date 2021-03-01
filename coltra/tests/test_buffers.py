@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import torch
 
-from training.buffers import Observation, Action, TensorArray, Reward, LogProb, Value, Done, MemoryRecord, MemoryBuffer, \
+from coltra.buffers import Observation, Action, TensorArray, Reward, LogProb, Value, Done, MemoryRecord, MemoryBuffer, \
     AgentMemoryBuffer
 
 

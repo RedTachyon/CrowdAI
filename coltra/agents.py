@@ -1,4 +1,5 @@
 import os
+from typing import Tuple, Optional, Dict
 
 import numpy as np
 
@@ -6,11 +7,8 @@ import torch
 from torch import nn, Tensor
 from torch.distributions import Categorical, Normal
 
-from models import BaseModel
-
-from typing import Tuple, Optional, Dict
-
-from buffers import Observation, Action
+from coltra.models import BaseModel
+from coltra.buffers import Observation, Action
 
 
 class Agent:

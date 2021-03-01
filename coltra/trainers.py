@@ -10,11 +10,11 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 from typarse import BaseConfig
 
-from agents import Agent
-from collectors import collect_crowd_data
-from parallel import SubprocVecEnv
-from policy_optimization import CrowdPPOptimizer
-from utils import Timer, write_dict, concat_subproc_batch
+from coltra.agents import Agent
+from coltra.collectors import collect_crowd_data
+from coltra.parallel import SubprocVecEnv
+from coltra.policy_optimization import CrowdPPOptimizer
+from coltra.utils import Timer, write_dict, concat_subproc_batch
 
 
 class Trainer:
@@ -32,7 +32,7 @@ class Trainer:
 
 
 class PPOCrowdTrainer(Trainer):
-    """This performs training in a basic paradigm, with homogeneous agents"""
+    """This performs coltra in a basic paradigm, with homogeneous agents"""
 
     def __init__(self,
                  agent: Agent,
@@ -111,7 +111,7 @@ class PPOCrowdTrainer(Trainer):
         if save_path is None:
             save_path = self.path  # Can still be None
 
-        print(f"Begin training, logged in {self.path}")
+        print(f"Begin coltra, logged in {self.path}")
         timer = Timer()
         step_timer = Timer()
 

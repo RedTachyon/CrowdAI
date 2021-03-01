@@ -2,15 +2,15 @@ import argparse
 from typing import Optional
 
 import torch
-
-from agents import Agent, CAgent
-from envs.unity_envs import UnitySimpleCrowdEnv
-from models import MLPModel
-from parallel import SubprocVecEnv
-from trainers import PPOCrowdTrainer
 import yaml
-
 from typarse import BaseParser
+
+from coltra.agents import Agent, CAgent
+from coltra.envs.unity_envs import UnitySimpleCrowdEnv
+from coltra.models import MLPModel
+from coltra.parallel import SubprocVecEnv
+from coltra.trainers import PPOCrowdTrainer
+
 
 
 def get_env_creator(*args, **kwargs):
@@ -29,11 +29,11 @@ class Parser(BaseParser):
     start_idx: Optional[int] = -1
 
     _help = {
-        "config": "Config file for the training",
-        "iters": "Number of training iterations",
+        "config": "Config file for the coltra",
+        "iters": "Number of coltra iterations",
         "env": "Path to the Unity environment binary",
         "name": "Name of the tb directory to store the logs",
-        "start_dir": "Name of the tb directory containing the run from which we want to (re)start the training",
+        "start_dir": "Name of the tb directory containing the run from which we want to (re)start the coltra",
         "start_idx": "From which iteration we should start (only if start_dir is set)",
     }
 
