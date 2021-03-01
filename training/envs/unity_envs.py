@@ -2,15 +2,18 @@ import numpy as np
 import gym
 from typing import Dict, Any, Tuple, Callable, List
 
+import torch
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from envs.side_channels import StatsChannel, parse_side_message
 
-StateDict = Dict[str, np.ndarray]
-ActionDict = Dict[str, Any]
-RewardDict = Dict[str, float]
-DoneDict = Dict[str, bool]
+from buffers import Observation, Action, Reward, Done, TensorArray
+
+StateDict = Dict[str, Observation]
+ActionDict = Dict[str, Action]
+RewardDict = Dict[str, Reward]
+DoneDict = Dict[str, Done]
 InfoDict = Dict[str, Any]
 
 
@@ -19,6 +22,7 @@ class MultiAgentEnv(gym.Env):
     Base class for a gym-like environment for multiple agents. An agent is identified with its id (string),
     and most interactions are communicated through that API (actions, states, etc)
     """
+
     def __init__(self):
         self.config = {}
         self.active_agents: List = []
@@ -57,6 +61,14 @@ class MultiAgentEnv(gym.Env):
     def current_info(self) -> InfoDict:
         raise NotImplementedError
 
+    @staticmethod
+    def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
+        raise NotImplementedError
+
+    @staticmethod
+    def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
+        raise NotImplementedError
+
 
 class UnitySimpleCrowdEnv(MultiAgentEnv):
 
@@ -85,24 +97,39 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         ter_obs_dict = {}
         ter_reward_dict = {}
         # has_decision = False
-
+        # FIXME: Agents creation is weird in Unity
         for name in names:
             decisions, terminals = self.unity.get_steps(name)
 
             dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
             for idx in dec_ids:
                 agent_name = f"{name}&id={idx}"
-                obs = np.concatenate([o[dec_ids.index(idx)] for o in dec_obs])
+                if len(dec_obs) == 1:
+                    obs = Observation(vector=dec_obs[0][dec_ids.index(idx)])
+                elif len(dec_obs) == 2:
+                    obs = Observation(vector=dec_obs[1][dec_ids.index(idx)],
+                                      buffer=dec_obs[0][dec_ids.index(idx)])
+                else:
+                    raise ValueError("Too many observations (vector, buffer and what else?")
+
                 obs_dict[agent_name] = obs
+                # obs_dict[agent_name] = np.concatenate([o[dec_ids.index(idx)] for o in dec_obs])
                 reward_dict[agent_name] = decisions.reward[dec_ids.index(idx)]
                 done_dict[agent_name] = False
 
             ter_obs, ter_ids = terminals.obs, list(terminals.agent_id)
 
             for idx in terminals.agent_id:
-                # FIXME: Refactor this to better support different obs
                 agent_name = f"{name}&id={idx}"
-                ter_obs_dict[agent_name] = np.concatenate([o[ter_ids.index(idx)] for o in ter_obs])
+                if len(dec_obs) == 1:
+                    obs = Observation(vector=ter_obs[0][ter_ids.index(idx)])
+                elif len(dec_obs) == 2:
+                    obs = Observation(vector=ter_obs[1][ter_ids.index(idx)],
+                                      buffer=ter_obs[0][ter_ids.index(idx)])
+                else:
+                    raise ValueError("Too many observations (vector, buffer and what else?")
+
+                ter_obs_dict[agent_name] = obs
                 ter_reward_dict[agent_name] = terminals.reward[ter_ids.index(idx)]
                 done_dict[agent_name] = True
 
@@ -112,7 +139,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         info_dict["final_rewards"] = ter_reward_dict
 
         stats = self.stats_channel.parse_info(clear=step)
-        # stats = parse_side_message(self.stats_channel.last_msg)  # FIXME: broken with multiple boards in scene
+        # stats = parse_side_message(self.stats_channel.last_msg)
         for key in stats:
             info_dict["m_" + key] = stats[key]
 
@@ -123,12 +150,26 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         for name in self.behaviors.keys():
             decisions, terminals = self.unity.get_steps(name)
             action_shape = self.behaviors[name].action_spec.continuous_size
-            dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
-            all_actions = np.array([action.get(f"{name}&id={id_}", np.zeros(action_shape)).ravel()
-                                    for id_ in dec_ids])
+            dec_ids = list(decisions.agent_id)
 
+            all_actions = []
+            for id_ in dec_ids:
+                single_action = action.get(f"{name}&id={id_}",  # Get the appropriate action
+                                           Action(continuous=np.zeros(action_shape))  # Default value
+                                           )
+
+                cont_action = single_action.apply(np.asarray).continuous.ravel()
+
+                all_actions.append(cont_action)
+
+            # all_actions = np.array([action.get(f"{name}&id={id_}", np.zeros(action_shape)).ravel()
+            #                         for id_ in dec_ids])
+            #
             if len(all_actions) == 0:
                 all_actions = np.zeros((0, action_shape))
+            else:
+                all_actions = np.array(all_actions)
+
             self.unity.set_actions(name, ActionTuple(continuous=all_actions))
 
         # The terminal step handling has been removed as episodes are only reset from here
@@ -166,6 +207,18 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def close(self):
         self.unity.close()
+
+    @staticmethod
+    def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
+        keys = list(dict_.keys())
+        values = Observation.stack_tensor([dict_[key] for key in keys])
+
+        return values, keys
+
+    @staticmethod
+    def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
+        value_dict = {key: arrays[i] for i, key in enumerate(keys)}
+        return value_dict
 
     def render(self, mode='human'):
         raise NotImplementedError

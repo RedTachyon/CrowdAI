@@ -22,7 +22,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 # TODO: clean this up probably
 
-# TODO: make this into a better data structure?
 DataBatch = DataBatchT = Dict[str, Dict[str, Any]]
 AgentDataBatch = Dict[str, Union[Tensor, Tuple]]
 Array = Union[Tensor, np.ndarray]
@@ -328,6 +327,7 @@ def concat_subproc_batch(batches: DataBatch, exclude: List[str] = None) -> Agent
 
     return merged
 
+
 def write_dict(metrics: Dict[str, Union[int, float]],
                step: int,
                writer: Optional[SummaryWriter] = None):
@@ -379,15 +379,15 @@ def batch_to_gpu(data_batch: AgentDataBatch) -> AgentDataBatch:
     return new_batch
 
 
-def matrix_diag(diagonal: Tensor):
-    N = diagonal.shape[-1]
-    shape = diagonal.shape[:-1] + (N, N)
-    device, dtype = diagonal.device, diagonal.dtype
-    result = torch.zeros(shape, dtype=dtype, device=device)
-    indices = torch.arange(result.numel(), device=device).reshape(shape)
-    indices = indices.diagonal(dim1=-2, dim2=-1)
-    result.view(-1)[indices] = diagonal
-    return result
+# def matrix_diag(diagonal: Tensor):
+#     N = diagonal.shape[-1]
+#     shape = diagonal.shape[:-1] + (N, N)
+#     device, dtype = diagonal.device, diagonal.dtype
+#     result = torch.zeros(shape, dtype=dtype, device=device)
+#     indices = torch.arange(result.numel(), device=device).reshape(shape)
+#     indices = indices.diagonal(dim1=-2, dim2=-1)
+#     result.view(-1)[indices] = diagonal
+#     return result
 
 
 def minibatches(data: Dict[str, Tensor], batch_size: int, shuffle: bool = True) -> Tuple[Tensor, Dict[str, Tensor]]:
@@ -409,65 +409,3 @@ def minibatches(data: Dict[str, Tensor], batch_size: int, shuffle: bool = True) 
 
         yield indices[batch_start:batch_end], batch
 
-
-class Batcher:
-
-    def __init__(self, batch_size, data):
-        self.batch_size = batch_size  # 2
-        self.data = data  # [array[0,1,2,...65]]
-        self.num_entries = len(data[0])  # 66
-
-        self.batch_start = 0
-        self.batch_end = 0
-
-        self.reset()
-
-    def reset(self):
-        self.batch_start = 0
-        self.batch_end = self.batch_start + self.batch_size
-
-    def end(self):
-        return self.batch_start >= self.num_entries
-
-    def next_batch(self):
-        batch = []
-        for d in self.data:
-            batch.append(d[self.batch_start: self.batch_end])
-        self.batch_start = self.batch_end
-        self.batch_end = min(self.batch_start + self.batch_size, self.num_entries)
-        return batch
-
-    def shuffle(self):
-        indices = np.arange(self.num_entries)
-        np.random.shuffle(indices)
-        self.data = [d[indices] for d in self.data]
-        # print (self.data)
-
-
-def index_data(data: DataBatch, indices: Tensor) -> DataBatch:
-    return {k: val[indices] for k, val in data.items()}
-
-
-def pack(value_dict: Dict[str, Array]) -> Tuple[Array, List[str]]:
-    keys = list(value_dict.keys())
-    if isinstance(value_dict[keys[0]], np.ndarray):
-        values = np.array([value_dict[key] for key in keys])
-    else:
-        values = torch.tensor([value_dict[key] for key in keys])
-
-    return values, keys
-
-
-def unpack(values: Array, keys: List[str]) -> Dict[str, Array]:
-    value_dict = {key: values[i] for i, key in enumerate(keys)}
-    return value_dict
-
-
-# def tanh_norm(x: Tensor, a: Tensor, b: Tensor):
-#     """Transforms the input via tanh to be in the [a, b] range"""
-#     return (b - a) * (1 + torch.tanh(x)) / 2 + a
-#
-#
-# def atanh_unnorm(y: Tensor, a: Tensor, b: Tensor):
-#     """Inverse to the above function w.r.t. the first input, with parameters a,b unchanged"""
-#     return torch.atanh(2 / (b - a) * (y - a) - 1)

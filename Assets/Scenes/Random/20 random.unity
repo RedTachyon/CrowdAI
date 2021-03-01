@@ -624,8 +624,33 @@ PrefabInstance:
       propertyPath: statsCommunicator
       value: 
       objectReference: {fileID: 2113393393}
+    - target: {fileID: 6668392871564006303, guid: 7ddeb3e92bc9b4adf8df8eb1011c8c0d,
+        type: 3}
+      propertyPath: bufferSensor
+      value: 
+      objectReference: {fileID: 1724240514}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ddeb3e92bc9b4adf8df8eb1011c8c0d, type: 3}
+--- !u!1 &1724240513 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4071786924875301930, guid: 7ddeb3e92bc9b4adf8df8eb1011c8c0d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1724240512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1724240514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724240513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c236f53ce986479794782845f2bb1264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservableSize: 4
+  MaxNumObservables: 5
 --- !u!1 &1875459256
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,8 +680,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a05e3967f3714ae19c196ef9b47b8721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boards: 8
   distance: 25
+  boards: 4
 --- !u!4 &1875459258
 Transform:
   m_ObjectHideFlags: 0

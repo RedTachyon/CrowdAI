@@ -6,6 +6,7 @@ from torch import nn, Tensor
 from torch.distributions import Distribution, Normal
 from typarse import BaseConfig
 
+from buffers import Observation
 from utils import get_activation, get_initializer
 
 
@@ -24,13 +25,13 @@ class BaseModel(nn.Module):
         self.config = config
         self.device = 'cpu'
 
-    def forward(self, x: Tensor,
+    def forward(self, x: Observation,
                 state: Tuple,
                 get_value: bool) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
         # Output: action_dist, state, {value, whatever else}
         raise NotImplementedError
 
-    def value(self, x: Tensor,
+    def value(self, x: Observation,
               state: Tuple) -> Tensor:
         raise NotImplementedError
 
@@ -113,9 +114,10 @@ class MLPModel(BaseModel):
 
         self.config = self.config.to_dict()  # Convert to a dictionary for pickling
 
-    def forward(self, x: Tensor,
+    def forward(self, x: Observation,
                 state: Tuple = (),
                 get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
+        x = x.vector  # Discard buffers etc.
         inp = x
         for layer in self.hidden_layers:
             x = layer(x)
@@ -125,8 +127,7 @@ class MLPModel(BaseModel):
 
         action_distribution = Normal(loc=action_mu, scale=self.std)
 
-        extra_outputs = {
-        }
+        extra_outputs = {}
 
         if get_value:
             if self.separate_value:
@@ -140,8 +141,9 @@ class MLPModel(BaseModel):
 
         return action_distribution, state, extra_outputs
 
-    def value(self, x: Tensor,
+    def value(self, x: Observation,
               state: Tuple) -> Tensor:
+        x = x.vector
         if self.separate_value:
             layers = self.value_layers
         else:
@@ -221,11 +223,10 @@ class FancyMLPModel(BaseModel):
 
         self.config = self.config.to_dict()  # Convert to a dictionary for pickling
 
-
-    def forward(self, x: Tensor,
+    def forward(self, x: Observation,
                 state: Tuple = (),
                 get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
-
+        x = x.vector
         input_ = x
 
         for layer in self.pi_hidden_layers:
@@ -252,9 +253,9 @@ class FancyMLPModel(BaseModel):
 
         return action_distribution, state, extra_outputs
 
-    def value(self, x: Tensor,
+    def value(self, x: Observation,
               state: Tuple) -> Tensor:
-
+        x = x.vector
         for layer in self.v_hidden_layers:
             x = layer(x)
             x = self.activation(x)

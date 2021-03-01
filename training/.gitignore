@@ -130,5 +130,5 @@ dmypy.json
 
 poetry.lock
 builds
-/.idea/
-/.idea/*
+.idea/
+.idea/*

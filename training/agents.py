@@ -10,20 +10,19 @@ from models import BaseModel
 
 from typing import Tuple, Optional, Dict
 
-from utils import AgentDataBatch
-
+from buffers import Observation, Action
 
 
 class Agent:
     model: BaseModel
 
-    def act(self, obs_batch: np.ndarray,
+    def act(self, obs_batch: Observation,
             state_batch: Tuple = (),
             deterministic: bool = False,
-            get_value: bool = False) -> Tuple[np.ndarray, Tuple, Dict]:
+            get_value: bool = False) -> Tuple[Action, Tuple, Dict]:
         raise NotImplementedError
 
-    def evaluate(self, obs_batch: Tensor, action_batch: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+    def evaluate(self, obs_batch: Observation, action_batch: Action) -> Tuple[Tensor, Tensor, Tensor]:
         raise NotImplementedError
 
     def cuda(self):
@@ -48,19 +47,18 @@ class CAgent(Agent):  # Continuous Agent
         self.model = model
         self.stateful = model.stateful
 
-    def act(self, obs_batch: np.ndarray,  # [B, obs_size]
+    def act(self, obs_batch: Observation,  # [B, ...]
             state_batch: Tuple = (),
             deterministic: bool = False,
-            get_value: bool = False) -> Tuple[np.ndarray, Tuple, Dict]:
+            get_value: bool = False) -> Tuple[Action, Tuple, Dict]:
         """Computes the action for an observation,
         passes along the state for recurrent models, and optionally the value"""
-        obs_batch = torch.tensor(obs_batch)
-        obs_batch.to(self.model.device)
+        obs_batch = obs_batch.tensor(self.model.device)
         state_batch = tuple(s.to(self.model.device) for s in state_batch)
 
         action_distribution: Normal
         states: Tuple
-        action: Tensor
+        actions: Tensor
 
         with torch.no_grad():
             action_distribution, states, extra_outputs = self.model(obs_batch, state_batch, get_value=get_value)
@@ -75,10 +73,10 @@ class CAgent(Agent):  # Continuous Agent
             value = extra_outputs["value"]
             extra["value"] = value.squeeze(-1).cpu().numpy()
 
-        return actions.cpu().numpy(), states, extra
+        return Action(continuous=actions.cpu().numpy()), states, extra
 
-    def evaluate(self, obs_batch: Tensor,
-                 action_batch: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+    def evaluate(self, obs_batch: Observation,
+                 action_batch: Action) -> Tuple[Tensor, Tensor, Tensor]:
         """
         Computes action logprobs, observation values and policy entropy for each of the (obs, action, hidden_state)
         transitions. Preserves all the necessary gradients.
@@ -92,13 +90,14 @@ class CAgent(Agent):  # Continuous Agent
             values: tensor of observation values (batch_size, )
             entropies: tensor of entropy values (batch_size, )
         """
-        obs_batch = obs_batch.to(self.model.device)
-        action_batch = action_batch.to(self.model.device)
+        obs_batch = obs_batch.tensor(self.model.device)
+        action_batch = action_batch.tensor(self.model.device)
         # state_batch = data_batch['states']
 
         action_distribution, _, extra_outputs = self.model(obs_batch, get_value=True)
         values = extra_outputs["value"].sum(-1)
-        action_logprobs = action_distribution.log_prob(action_batch).sum(-1)  # Sum across dimensions of the action
+        # Sum across dimensions of the action
+        action_logprobs = action_distribution.log_prob(action_batch.continuous).sum(-1)
         entropies = action_distribution.entropy().sum(-1)
 
         return action_logprobs, values, entropies
@@ -128,17 +127,17 @@ class CAgent(Agent):  # Continuous Agent
 
 class ConstantAgent(Agent):
 
-    def __init__(self, action: np.ndarray):
+    def __init__(self, action: np.array):
         self.action = action
 
-    def act(self, obs_batch: np.ndarray,
+    def act(self, obs_batch: Observation,
             state_batch: Tuple = (),
             deterministic: bool = False,
-            get_value: bool = False) -> Tuple[np.ndarray, Tuple, Dict]:
+            get_value: bool = False) -> Tuple[Action, Tuple, Dict]:
 
-        batch_size = obs_batch.shape[0]
+        batch_size = obs_batch.batch_size
 
-        return np.tile(self.action, (batch_size, 1)), (), {"value": np.zeros((batch_size,))}
+        return Action(continuous=np.tile(self.action, (batch_size, 1))), (), {"value": np.zeros((batch_size,))}
 
     def evaluate(self, obs_batch: Tensor, action_batch: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         zero = torch.zeros_like(action_batch)

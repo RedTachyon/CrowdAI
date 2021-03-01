@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Dict, Callable, List, Tuple, Optional, TypeVar, Union
 
 import numpy as np
@@ -7,114 +8,11 @@ from tqdm import trange
 
 from agents import Agent
 from parallel import SubprocVecEnv
-from utils import DataBatch, concat_batches, pack, unpack, \
+from utils import DataBatch, concat_batches, \
     concat_crowd_batch, concat_metrics
 from envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv
 
-T = TypeVar('T')
-
-
-def append_dict(var: Dict[str, T], data_dict: Dict[str, List[T]]):
-    """
-    Works like append, but operates on dictionaries of lists and dictionaries of values (as opposed to lists and values)
-
-    Args:
-        var: values to be appended
-        data_dict: lists to be appended to
-    """
-    for key, value in var.items():
-        data_dict.setdefault(key, []).append(value)  # variant to allow for new agents to be created in real time
-        # data_dict[key].append(value)
-
-
-class Memory:
-    """
-    Holds the rollout data in a nested dictionary structure as follows:
-    {
-        "observations":
-            {
-                "Agent0": [obs1, obs2, ...],
-                "Agent1": [obs1, obs2, ...]
-            },
-        "actions":
-            {
-                "Agent0": [act1, act2, ...],
-                "Agent1": [act1, act2, ...]
-            },
-        ...,
-        "states":
-            {
-                "Agent0": [(h1, c1), (h2, c2), ...]
-                "Agent1": [(h1, c1), (h2, c2), ...]
-            }
-    }
-    """
-
-    def __init__(self, fields: List[str] = None):
-        """
-        Creates the memory container. The only argument is a list of agent names to set up the dictionaries.
-
-        Args:
-            fields: names of fields to store in memory
-        """
-        if fields is None:
-            self.fields = ['observations', 'actions', 'rewards', 'logprobs', 'values', 'dones']
-        else:
-            self.fields = fields
-
-        self.data = {  # TODO: Optimize by allocating some memory beforehand?
-            field: {}
-            for field in self.fields
-        }
-
-    def store(self, *args):
-        update = args
-        for key, var in zip(self.data, update):
-            append_dict(var, self.data[key])
-            # append_dict(var, self.data.setdefault(key, {}))
-
-    def reset(self):
-        for key in self.data:
-            self.data[key] = {}
-
-    def apply_to_dict(self, func: Callable, d: Dict):
-        return {
-            key: func(key) for key in d
-        }
-
-    def get_torch_data(self) -> DataBatch:
-        """
-        Gather all the recorded data into torch tensors (still keeping the dictionary structure)
-        """
-
-        # The first version is old and worked, the second one is shorter and should work too
-        # torch_data = {
-        #     # field_name: self.apply_to_dict(lambda agent: torch.tensor(self.data[field_name][agent]), field)
-        #     field_name: {agent: torch.tensor(field[agent]) for agent in field}
-        #     for field_name, field in self.data.items()
-        # }
-
-        # Unrolled version of the above for debugging
-        torch_data = {}
-        for field_name, field in self.data.items():
-            torch_data[field_name] = {}
-            for agent in field:
-                # print(f"Currently in field {field_name}, agent {agent}")
-                torch_data[field_name][agent] = torch.tensor(field[agent])
-
-        return torch_data
-
-    def set_done(self, n: int = 1):
-        assert 'dones' in self.data, "Must collect dones in the memory"
-        for data in self.data['dones'].values():
-            for i in range(1, n + 1):
-                data[-i] = np.logical_not(data[-1])
-
-    def __getitem__(self, item):
-        return self.data[item]
-
-    def __str__(self):
-        return self.data.__str__()
+from buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
 
 
 def collect_crowd_data(agent: Agent,
@@ -122,7 +20,7 @@ def collect_crowd_data(agent: Agent,
                        num_steps: Optional[int] = None,
                        deterministic: bool = False,
                        disable_tqdm: bool = True,
-                       reset_start: bool = True) -> Tuple[DataBatch, Dict]:
+                       reset_start: bool = True) -> Tuple[MemoryRecord, Dict]:
     """
         Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
@@ -138,7 +36,7 @@ def collect_crowd_data(agent: Agent,
             data: a nested dictionary with the data
             metrics: a dictionary of metrics passed by the environment
     """
-    memory = Memory(['observations', 'actions', 'rewards', 'values', 'dones'])
+    memory = MemoryBuffer()
 
     if reset_start:
         obs_dict = env.reset()
@@ -148,9 +46,7 @@ def collect_crowd_data(agent: Agent,
     # state = {
     #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
     # }
-    metrics = {
-
-    }
+    metrics = {}
 
     for step in trange(num_steps, disable=disable_tqdm):
         # Compute the action for each agent
@@ -161,10 +57,9 @@ def collect_crowd_data(agent: Agent,
         #     for agent_id in obs
         # }
 
-        # TODO: have a separate agent for each behavior in the environment
-        # TODO: reintroduce recurrent state management
-
-        obs_array, agent_keys = pack(obs_dict)
+        # Converts a dict to a compact array which will be fed to the network - needs rethinking
+        # TODO: Change this to use a GroupAgent instead?
+        obs_array, agent_keys = env.pack(obs_dict)
 
         # Centralize the action computation for better parallelization
         actions, states, extra = agent.act(obs_array, (), deterministic, get_value=True)
@@ -172,9 +67,9 @@ def collect_crowd_data(agent: Agent,
 
         values = extra["value"]
 
-        action_dict = unpack(actions, agent_keys)  # Convert an array to a agent-indexed dictionary
-        # logprob_dict = unpack(logprobs, agent_keys)
-        values_dict = unpack(values, agent_keys)
+        action_dict = env.unpack(actions, agent_keys)  # Convert an array to a agent-indexed dictionary
+        # logprob_dict = env.unpack(logprobs, agent_keys)
+        values_dict = env.unpack(values, agent_keys)
 
         # Actual step in the environment
         next_obs, reward_dict, done_dict, info_dict = env.step(action_dict)
@@ -197,10 +92,9 @@ def collect_crowd_data(agent: Agent,
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
 
-        memory.store(obs_dict, action_dict, reward_dict, values_dict, done_dict)
+        memory.append(obs_dict, action_dict, reward_dict, values_dict, done_dict)
 
         obs_dict = next_obs
-
 
         # \/ Unused if the episode can't end by itself, interrupts vectorized env collection
         # If I want to reintroduce it, probably move it back one line
@@ -219,10 +113,9 @@ def collect_crowd_data(agent: Agent,
         #     # obs_dict = {key: obs for key, obs in next_obs.items() if key in env.active_agents}
         #
 
-    # memory.set_done(2)
     metrics = {key: np.array(value) for key, value in metrics.items()}
 
-    data = memory.get_torch_data()
+    data = memory.crowd_tensorify()
     return data, metrics
 
 
@@ -234,7 +127,6 @@ def collect_crowd_data(agent: Agent,
 #     data, metrics = collect_crowd_data(agent, env, num_steps)
 #     env.close()
 #     return data, metrics
-
 
 
 if __name__ == '__main__':

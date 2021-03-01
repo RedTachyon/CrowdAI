@@ -12,11 +12,11 @@ using Unity.MLAgents.Sensors;
 
 public class AgentRandom : Walker
 {
-
-
+    
     private Material _material;
     private Color _originalColor;
 
+    public CBufferSensorComponent bufferSensor;
     // public Transform goal;
 
 
@@ -28,12 +28,6 @@ public class AgentRandom : Walker
 
     }
 
-    public override void OnEpisodeBegin()
-    {
-        base.OnEpisodeBegin();
-
-
-    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -82,7 +76,7 @@ public class AgentRandom : Walker
         // Debug.Log(distance);
         
         // Debug.Log(relPosition);
-        Debug.DrawLine(transform.position, transform.position + relPosition, Color.red, 0.02f);
+        Debug.DrawLine(transform.position, transform.position + relPosition, Color.red, Time.fixedDeltaTime);
 
         // Velocity: 2, up to ~5
         sensor.AddObservation(velocity.x / 5f);
@@ -112,6 +106,11 @@ public class AgentRandom : Walker
         PreviousPosition = position;
 
         _material.color = _originalColor;
+
+        for (var i = 0; i < 4; i++)
+        {
+            bufferSensor.AppendObservation(new float[] {1,2,3,4});
+        }
         
         
         // Debug.Log($"Total reward: {GetCumulativeReward()}");

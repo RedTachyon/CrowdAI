@@ -12,7 +12,7 @@ public class ManagerRandom : Statistician
         var agent = GetComponentInChildren<AgentRandom>();
         var goal = agent.goal;
         
-    
+        Debug.Log("Cloning agents");
         for (var i = 1; i < numAgents; i++)
         {
             var newAgent = Instantiate(agent, transform);

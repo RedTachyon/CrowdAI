@@ -14,8 +14,8 @@ flax = "^0.3.0"
 gym = "^0.18.0"
 jupyter = "^1.0.0"
 jupyterlab = "^3.0.7"
-mlagents = "^0.23.0"
-mlagents-envs = "^0.23.0"
+mlagents = "^0.24"
+mlagents-envs = "^0.24"
 pandas = "^1.2.2"
 PyYAML = "^5.4.1"
 scipy = "^1.6.0"
@@ -24,9 +24,10 @@ tensorboard = "^2.4.1"
 torch = "^1.7.1"
 tqdm = "^4.56.2"
 ipykernel = "^5.4.3"
-dm-haiku = {git = "https://github.com/deepmind/dm-haiku"}
 PettingZoo = {extras = ["sisl"], version = "^1.5.2"}
 numba = "^0.52.0"
+gym-unity = "^0.24"
+pytest = "^6.2.2"
 
 
 [tool.poetry.dev-dependencies]
