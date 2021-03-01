@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import torch
 
-from buffers import Observation, Action, TensorArray, Reward, LogProb, Value, Done, MemoryRecord, MemoryBuffer, \
+from training.buffers import Observation, Action, TensorArray, Reward, LogProb, Value, Done, MemoryRecord, MemoryBuffer, \
     AgentMemoryBuffer
 
 
@@ -43,6 +43,28 @@ def test_obs_get():
     assert part_obs.buffer.shape == (2, 10, 4)
 
 
+def test_obs_stack():
+    obs_list = [Observation(vector=np.random.randn(81), buffer=np.random.randn(10, 4))
+                for _ in range(7)]
+
+    obs = Observation.stack_tensor(obs_list, dim=0)
+
+    assert obs.batch_size == 7
+    assert obs.vector.shape == (7, 81)
+    assert obs.buffer.shape == (7, 10, 4)
+
+
+def test_obs_cat():
+    obs_list = [Observation(vector=np.random.randn(5, 81), buffer=np.random.randn(5, 10, 4))
+                for _ in range(5)]
+
+    obs = Observation.cat_tensor(obs_list, dim=0)
+
+    assert obs.batch_size == 25
+    assert obs.vector.shape == (25, 81)
+    assert obs.buffer.shape == (25, 10, 4)
+
+
 def test_action_array():
     obs = Action(continuous=np.random.randn(5, 81), discrete=np.random.randn(5, 4))
     assert obs.batch_size == 5
@@ -74,8 +96,9 @@ def test_apply():
 def test_memory_buffer():
     memory = MemoryBuffer()
     agents = ["Agent1", "Agent2", "Agent3"]
+    batch_size = 100
 
-    for _ in range(10000):
+    for _ in range(batch_size):
         obs = {agent_id: Observation(vector=np.random.randn(81).astype(np.float32),
                                      buffer=np.random.randn(10, 4).astype(np.float32)) for agent_id in agents}
         action = {agent_id: Action(continuous=np.random.randn(2).astype(np.float32)) for agent_id in agents}
@@ -88,14 +111,14 @@ def test_memory_buffer():
     data = memory.tensorify()
     assert isinstance(data, dict)
     assert isinstance(data["Agent1"], MemoryRecord)
-    assert data["Agent1"].obs.vector.shape == (10000, 81)
-    assert data["Agent1"].obs.buffer.shape == (10000, 10, 4)
-    assert data["Agent1"].obs.batch_size == 10000
+    assert data["Agent1"].obs.vector.shape == (batch_size, 81)
+    assert data["Agent1"].obs.buffer.shape == (batch_size, 10, 4)
+    assert data["Agent1"].obs.batch_size == batch_size
 
     crowd_data = memory.crowd_tensorify()
     assert isinstance(crowd_data, MemoryRecord)
-    assert crowd_data.obs.vector.shape == (30000, 81)
-    assert crowd_data.obs.buffer.shape == (30000, 10, 4)
-    assert crowd_data.obs.batch_size == 30000
+    assert crowd_data.obs.vector.shape == (3*batch_size, 81)
+    assert crowd_data.obs.buffer.shape == (3*batch_size, 10, 4)
+    assert crowd_data.obs.batch_size == 3*batch_size
 
 

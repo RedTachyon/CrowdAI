@@ -1,3 +1,3 @@
-from agents import ConstantAgent, CAgent
-from models import MLPModel, FancyMLPModel
+from training.agents import ConstantAgent, CAgent
+from training.models import MLPModel, FancyMLPModel
 

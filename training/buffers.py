@@ -101,27 +101,24 @@ class MemoryRecord:
     obs: Observation
     action: Action
     reward: Reward
-    # logprob: LogProb
     value: Value
     done: Done
 
 
 @dataclass
 class AgentMemoryBuffer:  # TODO: change to a list of records?
-    observations: List[Observation] = field(default_factory=list)
-    actions: List[Action] = field(default_factory=list)
-    rewards: List[Reward] = field(default_factory=list)
-    # logprobs: List[LogProb] = field(default_factory=list)
-    values: List[Value] = field(default_factory=list)
-    dones: List[Done] = field(default_factory=list)
+    obs: List[Observation] = field(default_factory=list)
+    action: List[Action] = field(default_factory=list)
+    reward: List[Reward] = field(default_factory=list)
+    value: List[Value] = field(default_factory=list)
+    done: List[Done] = field(default_factory=list)
 
     def append(self, record):
-        self.observations.append(record.obs)
-        self.actions.append(record.action)
-        self.rewards.append(record.reward)
-        # self.logprobs.append(record.logprob)
-        self.values.append(record.value)
-        self.dones.append(record.done)
+        for field_ in fields(record):
+            name = field_.name
+            record_value = getattr(record, name)
+            getattr(self, name).append(record_value)
+
 
 
 @dataclass
@@ -132,7 +129,6 @@ class MemoryBuffer:
                obs: Dict[str, Observation],
                action: Dict[str, Action],
                reward: Dict[str, Reward],
-               # logprobs: Dict[str, LogProb],
                value: Dict[str, Value],
                done: Dict[str, Done]):
 
@@ -140,22 +136,27 @@ class MemoryBuffer:
             record = MemoryRecord(obs[agent_id],
                                   action[agent_id],
                                   reward[agent_id],
-                                  # logprobs[agent_id],
                                   value[agent_id],
                                   done[agent_id])
 
             self.data.setdefault(agent_id, AgentMemoryBuffer()).append(record)
 
+    # def append(self, *args):
+    #
+    #     for agent_id in args[0]:  # Assume the keys are identical
+    #         record = MemoryRecord(*args)
+    #
+    #         self.data.setdefault(agent_id, AgentMemoryBuffer()).append(record)
+
     def tensorify(self) -> Dict[str, MemoryRecord]:
         result = {}
         for agent_id, agent_buffer in self.data.items():  # str -> AgentMemoryBuffer
             result[agent_id] = MemoryRecord(
-                obs=Observation.stack_tensor(agent_buffer.observations),
-                action=Action.stack_tensor(agent_buffer.actions),
-                reward=torch.tensor(agent_buffer.rewards),
-                # logprob=torch.tensor(agent_buffer.logprobs),
-                value=torch.tensor(agent_buffer.values),
-                done=torch.tensor(agent_buffer.dones)
+                obs=Observation.stack_tensor(agent_buffer.obs),
+                action=Action.stack_tensor(agent_buffer.action),
+                reward=torch.tensor(agent_buffer.reward),
+                value=torch.tensor(agent_buffer.value),
+                done=torch.tensor(agent_buffer.done)
             )
         return result
 
@@ -165,7 +166,6 @@ class MemoryBuffer:
             obs=Observation.cat_tensor([agent_buffer.obs for agent_buffer in tensor_data]),
             action=Action.cat_tensor([agent_buffer.action for agent_buffer in tensor_data]),
             reward=torch.cat([agent_buffer.reward for agent_buffer in tensor_data]),
-            # logprob=torch.cat([agent_buffer.logprob for agent_buffer in tensor_data]),
             value=torch.cat([agent_buffer.value for agent_buffer in tensor_data]),
             done=torch.cat([agent_buffer.done for agent_buffer in tensor_data])
         )
