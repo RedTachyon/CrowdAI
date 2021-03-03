@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Tuple, Any, Callable, Optional, Iterator, Iterable, Sequence, Container
+from typing import Dict, List, Union, Tuple, Any, Callable, Optional, Iterator, Type
 
 import numpy as np
 
@@ -20,94 +20,25 @@ from collections import defaultdict
 
 from torch.utils.tensorboard import SummaryWriter
 
-# TODO: clean this up probably
 
 DataBatch = DataBatchT = Dict[str, Dict[str, Any]]
 AgentDataBatch = Dict[str, Union[Tensor, Tuple]]
 Array = Union[Tensor, np.ndarray]
 
 
-def concat_dicts(dicts: Sequence[Dict[str, float]]) -> Dict[str, np.ndarray]:
-    """
-    Turns a list of dictionaries, to a dictionary of arrays
-    """
-    result = {}
-    for d in dicts:
-        for k in d:
-            result.setdefault(k, []).append(d[k])
-
-    array_dict = {}
-    for k, v in result.items():
-        array_dict[k] = np.array(v).ravel()
-    return array_dict
+def write_dict(metrics: Dict[str, Union[int, float]],
+               step: int,
+               writer: Optional[SummaryWriter] = None):
+    """Writes a dictionary to a tensorboard SummaryWriter"""
+    if writer is not None:
+        writer: SummaryWriter
+        for key, value in metrics.items():
+            writer.add_scalar(tag=key, scalar_value=value, global_step=step)
 
 
 def np_float(x: float) -> np.ndarray:
     """Convenience function to create a one-element float32 numpy array"""
     return np.array([x], dtype=np.float32)
-
-# DEPRECATED: replaced by typarse
-# def with_default_config(config: Dict, default: Dict) -> Dict:
-#     """
-#     Adds keys from default to the config, if they don't exist there yet.
-#     Serves to ensure that all necessary keys are always present.
-#     Now also recursive.
-#
-#     Args:
-#         config: config dictionary
-#         default: config dictionary with default values
-#
-#     Returns:
-#         config with the defaults added
-#     """
-#     if config is None:
-#         config = {}
-#     else:
-#         config = config.copy()
-#     for key in default.keys():
-#         if isinstance(default[key], dict):
-#             config[key] = with_default_config(config.get(key), default.get(key))
-#         else:
-#             config.setdefault(key, default[key])
-#     return config
-
-
-def discount_rewards_to_go(rewards: Tensor,
-                           dones: Tensor,
-                           gamma: float = 1.,
-                           batch_mode: bool = False,
-                           ep_len: int = 0) -> Tensor:
-    """
-    Computes the discounted rewards to go, handling episode endings. Nothing unusual.
-    """
-    if ep_len:
-        rewards = rewards.view(-1, ep_len)
-
-        current_reward = 0
-        discounted_rewards = []
-        for reward in rewards.T.flip(0):
-            current_reward = reward + gamma * current_reward
-            discounted_rewards.insert(0, current_reward)
-        result = torch.stack(discounted_rewards).T.reshape(-1)
-        return result
-
-    if batch_mode or ep_len:  # for the RNN-compatible case
-        current_reward = 0
-        discounted_rewards = []
-        for reward in rewards.flip(0):
-            current_reward = reward + gamma * current_reward
-            discounted_rewards.insert(0, current_reward)
-        return torch.stack(discounted_rewards).view(-1)
-
-    else:
-        current_reward = 0
-        discounted_rewards = []
-        for reward, done in zip(rewards.flip(0), dones.flip(0)):
-            if done:
-                current_reward = 0
-            current_reward = reward + gamma * current_reward
-            discounted_rewards.insert(0, current_reward)
-        return torch.tensor(discounted_rewards).view(-1)
 
 
 def get_optimizer(opt_name: str) -> Callable[..., Optimizer]:
@@ -154,10 +85,9 @@ class GELU(nn.Module):
         return x * F.sigmoid(1.702 * x)
 
 
-def get_activation_module(act_name: str) -> nn.Module:
+def get_activation_module(act_name: str) -> Type[nn.Module]:
     """Gets an activation module by name"""
-    # noinspection PyTypeChecker
-    activations: Dict[str, nn.Module] = {
+    activations: Dict[str, Type[nn.Module]] = {
         "relu": nn.ReLU,
         "relu6": nn.ReLU6,
         "elu": nn.ELU,
@@ -205,24 +135,6 @@ class Timer:
         return diff
 
 
-def get_episode_lens(done_batch: Tensor) -> Tuple[int]:
-    """
-    Based on the recorded done values, returns the length of each episode in a batch.
-    Args:
-        done_batch: boolean tensor which values indicate terminal episodes
-
-    Returns:
-        tuple of episode lengths
-    """
-    episode_indices = done_batch.cpu().cumsum(dim=0)[:-1]
-    episode_indices = torch.cat([torch.tensor([0]), episode_indices])  # [0, 0, 0, ..., 1, 1, ..., 2, ..., ...]
-
-    ep_ids, ep_lens_tensor = torch.unique(episode_indices, return_counts=True)
-    ep_lens = tuple(ep_lens_tensor.cpu().numpy())
-
-    return ep_lens
-
-
 def transpose_batch(data_batch: Union[DataBatch, DataBatchT]) -> Union[DataBatchT, DataBatch]:
     """
     In a 2-nested dictionary, swap the key levels. So it turns
@@ -246,69 +158,32 @@ def transpose_batch(data_batch: Union[DataBatch, DataBatchT]) -> Union[DataBatch
     return dict(d)
 
 
-def masked_mean(input_: Tensor, mask: Tensor) -> Tensor:
-    """Mean of elements not covered by the mask"""
-    return torch.sum(input_ * mask) / torch.sum(mask)
+class Masked:
+    @staticmethod
+    def mean(input_: Tensor, mask: Tensor) -> Tensor:
+        """Mean of elements not covered by the mask"""
+        return torch.sum(input_ * mask) / torch.sum(mask)
 
+    @staticmethod
+    def accuracy(preds: Tensor, labels: Tensor, mask: Tensor) -> float:
+        preds_thresholded = (preds > .5).to(torch.int)
+        correct_preds = (preds_thresholded == labels).to(torch.float)
+        accuracy = Masked.mean(correct_preds.mean(-1), mask).item()
 
-def masked_accuracy(preds: Tensor, labels: Tensor, mask: Tensor) -> float:
-    preds_thresholded = (preds > .5).to(torch.int)
-    correct_preds = (preds_thresholded == labels).to(torch.float)
-    accuracy = masked_mean(correct_preds.mean(-1), mask).item()
+        return accuracy
 
-    return accuracy
+    @staticmethod
+    def logloss(preds: Tensor, labels: Tensor, mask: Tensor) -> Tensor:
+        logloss: Tensor = - labels * torch.log(preds) - (1 - labels) * torch.log(1 - preds)
+        return Masked.mean(logloss.mean(-1), mask)
 
+    @staticmethod
+    def accuracy(preds: Tensor, labels: Tensor) -> float:
+        preds_thresholded = (preds > .5).to(torch.int)
+        correct_preds = (preds_thresholded == labels).to(torch.float)
+        accuracy = correct_preds.mean().item()
 
-def masked_logloss(preds: Tensor, labels: Tensor, mask: Tensor) -> Tensor:
-    logloss: Tensor = - labels * torch.log(preds) - (1 - labels) * torch.log(1 - preds)
-    return masked_mean(logloss.mean(-1), mask)
-
-
-def mean_accuracy(preds: Tensor, labels: Tensor) -> float:
-    preds_thresholded = (preds > .5).to(torch.int)
-    correct_preds = (preds_thresholded == labels).to(torch.float)
-    accuracy = correct_preds.mean().item()
-
-    return accuracy
-
-
-def concat_batches(batches: List[AgentDataBatch]) -> AgentDataBatch:
-    """Concatenate multiple batches of data"""
-    merged = {}
-    if len(batches) == 1:
-        return batches[0]
-    for key in batches[0]:
-        if key == 'states':
-            merged[key] = tuple(
-                torch.cat([batch[key][i] for batch in batches], dim=0) for i in range(len(batches[0][key])))
-        else:
-            merged[key] = torch.cat([batch[key] for batch in batches], dim=1)
-
-    return merged
-
-
-def concat_metrics(metrics: List[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:
-    merged = {}
-    for key in metrics[0]:
-        merged[key] = np.concatenate([metric[key] for metric in metrics], axis=1)
-    return merged
-
-
-def concat_crowd_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDataBatch:
-    """Concatenate multiple sets of data in a single batch"""
-    if exclude is None:
-        exclude = ["__all__"]
-
-    batches = transpose_batch(batches)
-
-    batches = {key: value for key, value in batches.items() if key not in exclude}
-    agents = list(batches.keys())
-
-    merged = {}
-    for key in batches[agents[0]]:
-        merged[key] = torch.stack([batch[key] for batch in batches.values()], dim=1)
-
-    return merged
+        return accuracy
 
 
 def concat_subproc_batch(batches: DataBatch, exclude: List[str] = None) -> AgentDataBatch:
@@ -328,14 +203,22 @@ def concat_subproc_batch(batches: DataBatch, exclude: List[str] = None) -> Agent
     return merged
 
 
-def write_dict(metrics: Dict[str, Union[int, float]],
-               step: int,
-               writer: Optional[SummaryWriter] = None):
-    """Writes a dictionary to a tensorboard SummaryWriter"""
-    if writer is not None:
-        writer: SummaryWriter
-        for key, value in metrics.items():
-            writer.add_scalar(tag=key, scalar_value=value, global_step=step)
+def get_episode_lens(done_batch: Tensor) -> Tuple[int]:
+    """
+    Based on the recorded done values, returns the length of each episode in a batch.
+    Args:
+        done_batch: boolean tensor which values indicate terminal episodes
+
+    Returns:
+        tuple of episode lengths
+    """
+    episode_indices = done_batch.cpu().cumsum(dim=0)[:-1]
+    episode_indices = torch.cat([torch.tensor([0]), episode_indices])  # [0, 0, 0, ..., 1, 1, ..., 2, ..., ...]
+
+    ep_ids, ep_lens_tensor = torch.unique(episode_indices, return_counts=True)
+    ep_lens = tuple(ep_lens_tensor.cpu().numpy())
+
+    return ep_lens
 
 
 def get_episode_rewards(batch: DataBatch) -> np.ndarray:
@@ -348,27 +231,6 @@ def get_episode_rewards(batch: DataBatch) -> np.ndarray:
     return ep_rewards
 
 
-def state_iterator(state: Tuple[Tensor, ...]) -> Iterator[Tuple[Tensor, ...]]:
-    if len(state) == 0:
-        while True:
-            yield ()
-    for i in range(state[0].shape[0]):
-        yield tuple((s[i] for s in state))
-
-
-def entropy(p: np.ndarray) -> float:
-    """Computes the entropy of a discrete distribution"""
-    return float(np.sum(-p * np.log(p)))
-
-
-def entropy_center(p: float, n: int) -> float:
-    """Computes the entropy of a distribution with a single main value p, and n-1 uniformly distributed options"""
-    assert 0 < p < 1
-    q = (1 - p) / (n - 1)
-    probs = np.array([p] + [q for _ in range(n - 1)])
-    return entropy(probs)
-
-
 def batch_to_gpu(data_batch: AgentDataBatch) -> AgentDataBatch:
     new_batch = {}
     for key in data_batch:
@@ -377,17 +239,6 @@ def batch_to_gpu(data_batch: AgentDataBatch) -> AgentDataBatch:
         else:
             new_batch[key] = data_batch[key].cuda()
     return new_batch
-
-
-# def matrix_diag(diagonal: Tensor):
-#     N = diagonal.shape[-1]
-#     shape = diagonal.shape[:-1] + (N, N)
-#     device, dtype = diagonal.device, diagonal.dtype
-#     result = torch.zeros(shape, dtype=dtype, device=device)
-#     indices = torch.arange(result.numel(), device=device).reshape(shape)
-#     indices = indices.diagonal(dim1=-2, dim2=-1)
-#     result.view(-1)[indices] = diagonal
-#     return result
 
 
 def minibatches(data: Dict[str, Tensor], batch_size: int, shuffle: bool = True) -> Tuple[Tensor, Dict[str, Tensor]]:
@@ -408,4 +259,3 @@ def minibatches(data: Dict[str, Tensor], batch_size: int, shuffle: bool = True) 
         batch_end = min(batch_start + batch_size, data_size)
 
         yield indices[batch_start:batch_end], batch
-

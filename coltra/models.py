@@ -142,7 +142,7 @@ class MLPModel(BaseModel):
         return action_distribution, state, extra_outputs
 
     def value(self, x: Observation,
-              state: Tuple) -> Tensor:
+              state: Tuple = ()) -> Tensor:
         x = x.vector
         if self.separate_value:
             layers = self.value_layers
@@ -254,7 +254,7 @@ class FancyMLPModel(BaseModel):
         return action_distribution, state, extra_outputs
 
     def value(self, x: Observation,
-              state: Tuple) -> Tensor:
+              state: Tuple = ()) -> Tensor:
         x = x.vector
         for layer in self.v_hidden_layers:
             x = layer(x)

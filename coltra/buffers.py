@@ -6,8 +6,16 @@ from typing import List, Dict, Union, get_type_hints, Callable
 import numpy as np
 
 import torch
+from torch import Tensor
 
 TensorArray = Union[np.array, torch.Tensor]
+
+
+def get_batch_size(tensor: Union[Tensor, Multitype]) -> int:
+    if isinstance(tensor, Tensor):
+        return tensor.shape[0]
+    else:
+        return tensor.batch_size
 
 
 @dataclass
@@ -68,12 +76,19 @@ class Multitype:
         return res
 
     def apply(self, func: Callable[[TensorArray], TensorArray]):
+        """Applies a function to each field, returns a new object"""
         res = type(self)()
         for field_ in fields(self):
             value = getattr(self, field_.name)
             new_field = func(value) if value is not None else None
             setattr(res, field_.name, new_field)
         return res
+
+    def cuda(self, *args, **kwargs):
+        return self.apply(lambda x: x.cuda(*args, **kwargs))
+
+    def cpu(self):
+        return self.apply(lambda x: x.cpu())
 
 
 @dataclass
@@ -90,10 +105,10 @@ class Action(Multitype):
     discrete: TensorArray = None
 
 
-Reward = TensorArray
-LogProb = TensorArray
-Value = TensorArray
-Done = TensorArray
+Reward = TensorArray   # float32
+LogProb = TensorArray  # float32
+Value = TensorArray    # float32
+Done = TensorArray     # bool
 
 
 @dataclass
@@ -104,9 +119,24 @@ class MemoryRecord:
     value: Value
     done: Done
 
+    def apply(self, func: Callable[[TensorArray], TensorArray]):
+        """Applies a function to each field, returns a new object"""
+        res = type(self)()
+        for field_ in fields(self):
+            value = getattr(self, field_.name)
+            new_field = func(value) if value is not None else None
+            setattr(res, field_.name, new_field)
+        return res
+
+    def cuda(self, *args, **kwargs):
+        return self.apply(lambda x: x.cuda(*args, **kwargs))
+
+    def cpu(self):
+        return self.apply(lambda x: x.cpu())
+
 
 @dataclass
-class AgentMemoryBuffer:  # TODO: change to a list of records?
+class AgentMemoryBuffer:
     obs: List[Observation] = field(default_factory=list)
     action: List[Action] = field(default_factory=list)
     reward: List[Reward] = field(default_factory=list)
@@ -160,6 +190,7 @@ class MemoryBuffer:
             )
         return result
 
+    # TODO: reconsider whether different agents' experiences should be concatenated or stacked?
     def crowd_tensorify(self) -> MemoryRecord:
         tensor_data = self.tensorify().values()
         return MemoryRecord(

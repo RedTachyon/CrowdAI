@@ -23,6 +23,9 @@ class MultiAgentEnv(gym.Env):
     and most interactions are communicated through that API (actions, states, etc)
     """
 
+    obs_vector_size: int
+    action_vector_size: int
+
     def __init__(self):
         self.config = {}
         self.active_agents: List = []
@@ -53,21 +56,17 @@ class MultiAgentEnv(gym.Env):
     def render(self, mode='human'):
         raise NotImplementedError
 
-    @property
-    def current_obs(self) -> StateDict:
-        raise NotImplementedError
-
-    @property
-    def current_info(self) -> InfoDict:
-        raise NotImplementedError
-
     @staticmethod
     def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
-        raise NotImplementedError
+        keys = list(dict_.keys())
+        values = Observation.stack_tensor([dict_[key] for key in keys])
+
+        return values, keys
 
     @staticmethod
     def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
-        raise NotImplementedError
+        value_dict = {key: arrays[i] for i, key in enumerate(keys)}
+        return value_dict
 
 
 class UnitySimpleCrowdEnv(MultiAgentEnv):
@@ -87,6 +86,10 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.behaviors = {}
         self.manager = ""
 
+        # semi-hardcoded computation of osb/action spaces, slightly different api than gym
+        self.obs_vector_size = next(iter(self.reset().values())).vector.shape[0]
+        self.action_vector_size = 2
+
     def _get_step_info(self, step: bool = False) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
         names = self.behaviors.keys()
         obs_dict: StateDict = {}
@@ -97,7 +100,6 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         ter_obs_dict = {}
         ter_reward_dict = {}
         # has_decision = False
-        # FIXME: Agents creation is weird in Unity
         for name in names:
             decisions, terminals = self.unity.get_steps(name)
 
@@ -207,18 +209,6 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def close(self):
         self.unity.close()
-
-    @staticmethod
-    def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
-        keys = list(dict_.keys())
-        values = Observation.stack_tensor([dict_[key] for key in keys])
-
-        return values, keys
-
-    @staticmethod
-    def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
-        value_dict = {key: arrays[i] for i, key in enumerate(keys)}
-        return value_dict
 
     def render(self, mode='human'):
         raise NotImplementedError

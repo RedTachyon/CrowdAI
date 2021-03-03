@@ -8,7 +8,22 @@ from mlagents_envs.side_channel.side_channel import (
 )
 import numpy as np
 import uuid
-from utils import np_float, concat_dicts
+from utils import np_float
+
+
+def concat_dicts(dicts: Sequence[Dict[str, float]]) -> Dict[str, np.ndarray]:
+    """
+    Turns a list of dictionaries, to a dictionary of arrays
+    """
+    result = {}
+    for d in dicts:
+        for k in d:
+            result.setdefault(k, []).append(d[k])
+
+    array_dict = {}
+    for k, v in result.items():
+        array_dict[k] = np.array(v).ravel()
+    return array_dict
 
 
 def parse_side_message(msg: str) -> Dict[str, np.ndarray]:
@@ -17,6 +32,7 @@ def parse_side_message(msg: str) -> Dict[str, np.ndarray]:
     lines = msg.split('\n')
     out = {line.split(' ')[0]: np_float(float(line.split(' ')[1])) for line in lines}
     return out
+
 
 class StatsChannel(SideChannel):
 
@@ -50,3 +66,4 @@ class StatsChannel(SideChannel):
         if clear:
             self.msg_buffer = []
         return result
+

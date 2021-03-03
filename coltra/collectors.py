@@ -18,8 +18,7 @@ def collect_crowd_data(agent: Agent,
                        env: Union[MultiAgentEnv, SubprocVecEnv],
                        num_steps: Optional[int] = None,
                        deterministic: bool = False,
-                       disable_tqdm: bool = True,
-                       reset_start: bool = True) -> Tuple[MemoryRecord, Dict]:
+                       disable_tqdm: bool = True) -> Tuple[MemoryRecord, Dict]:
     """
         Performs a rollout of the agents in the environment, for an indicated number of steps or episodes.
 
@@ -29,7 +28,6 @@ def collect_crowd_data(agent: Agent,
             num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
             deterministic: whether each agent should use the greedy policy; False by default
             disable_tqdm: whether a live progress bar should be (not) displayed
-            reset_start: whether the environment should be reset at the beginning of collection
 
         Returns:
             data: a nested dictionary with the data
@@ -37,10 +35,8 @@ def collect_crowd_data(agent: Agent,
     """
     memory = MemoryBuffer()
 
-    if reset_start:
-        obs_dict = env.reset()
-    else:
-        obs_dict = env.current_obs
+    # reset_start: change here in case I ever need to not reset
+    obs_dict = env.reset()
 
     # state = {
     #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids
@@ -57,7 +53,6 @@ def collect_crowd_data(agent: Agent,
         # }
 
         # Converts a dict to a compact array which will be fed to the network - needs rethinking
-        # TODO: Change this to use a GroupAgent instead?
         obs_array, agent_keys = env.pack(obs_dict)
 
         # Centralize the action computation for better parallelization
@@ -75,7 +70,7 @@ def collect_crowd_data(agent: Agent,
         # breakpoint()
 
         # Collect the metrics passed by the environment
-        if isinstance(info_dict, tuple):
+        if isinstance(info_dict, tuple):  # SubProcVecEnv
             # all_metrics = np.concatenate([info["metrics"] for info in info_dict])
             all_metrics = {}
             for key in info_dict[0].keys():
@@ -84,9 +79,6 @@ def collect_crowd_data(agent: Agent,
         else:
             # all_metrics = info_dict["metrics"]
             all_metrics = {k: v for k, v in info_dict.items() if k.startswith("m_")}
-
-        if not all_metrics:
-            breakpoint()
 
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
@@ -126,23 +118,3 @@ def collect_crowd_data(agent: Agent,
 #     data, metrics = collect_crowd_data(agent, env, num_steps)
 #     env.close()
 #     return data, metrics
-
-
-if __name__ == '__main__':
-    pass
-
-    # env = foraging_env_creator({})
-    #
-    # agent_ids = ["Agent0", "Agent1"]
-    #
-    # agents: Dict[str, Agent] = {
-    #     agent_id: Agent(LSTMModel({}), name=agent_id)
-    #     for agent_id in agent_ids
-    # }
-    #
-    # runner = Collector(agents, env, {})
-    #
-    # data_steps = runner.collect_data(num_steps=1000, disable_tqdm=False)
-    # data_episodes = runner.collect_data(num_episodes=2, disable_tqdm=False)
-    # print(data_episodes['observations']['Agent0'].shape)
-    # generate_video(data_episodes['observations']['Agent0'], 'vids/video.mp4')

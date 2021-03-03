@@ -1,5 +1,6 @@
 import os
 from typing import Tuple, Optional, Dict
+import abc
 
 import numpy as np
 
@@ -11,7 +12,7 @@ from coltra.models import BaseModel
 from coltra.buffers import Observation, Action
 
 
-class Agent:
+class Agent(metaclass=abc.ABCMeta):
     model: BaseModel
 
     def act(self, obs_batch: Observation,
@@ -96,7 +97,7 @@ class CAgent(Agent):  # Continuous Agent
         values = extra_outputs["value"].sum(-1)
         # Sum across dimensions of the action
         action_logprobs = action_distribution.log_prob(action_batch.continuous).sum(-1)
-        entropies = action_distribution.entropy().sum(-1)
+        entropies = action_distribution.entropy().sum(-1)  # TODO: normalize the entropy to [0, 1]?
 
         return action_logprobs, values, entropies
 
@@ -137,6 +138,6 @@ class ConstantAgent(Agent):
 
         return Action(continuous=np.tile(self.action, (batch_size, 1))), (), {"value": np.zeros((batch_size,))}
 
-    def evaluate(self, obs_batch: Tensor, action_batch: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
-        zero = torch.zeros_like(action_batch)
+    def evaluate(self, obs_batch: Observation, action_batch: Action) -> Tuple[Tensor, Tensor, Tensor]:
+        zero = torch.zeros((obs_batch.batch_size, ))
         return zero, zero, zero
