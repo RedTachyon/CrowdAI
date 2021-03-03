@@ -12,7 +12,7 @@ import warnings
 warnings.simplefilter('ignore', category=NumbaPerformanceWarning)
 
 # Disable njit for whatever reason
-njit = lambda x: x
+# njit = lambda x: x
 
 
 def get_episode_lens(dones: Tensor) -> List[int]:
@@ -132,7 +132,7 @@ def discount_bgae(rewards: Tensor,  # float tensor (T, )
 
     advantages = _discount_bgae(np_rewards, np_values, np_dones, γ, η, λ, gamma=gamma, eta=eta)
 
-    advantages = torch.as_tensor(advantages.ravel())
+    advantages = torch.as_tensor(advantages.ravel(), device=values.device)
     returns = advantages + values  # A = R - V
 
     return returns, advantages

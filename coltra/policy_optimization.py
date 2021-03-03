@@ -139,9 +139,8 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         # Initialize metrics
         kl_divergence = 0.
         ppo_step = -1
-        # value_loss = torch.tensor(0)
-        # policy_loss = torch.tensor(0)
-        # entropy_batch = torch.tensor([0])
+        value_loss = torch.tensor(0)
+        policy_loss = torch.tensor(0)
 
         # Start a timer
         timer.checkpoint()
