@@ -681,7 +681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 25
-  boards: 4
+  boards: 8
 --- !u!4 &1875459258
 Transform:
   m_ObjectHideFlags: 0

@@ -60,7 +60,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
 
             # Number of gradient updates = ppo_epochs * ceil(batch_size / minibatch_size)
             ppo_epochs: int = 3
-            minibatch_size: int = 8192  # TODO: change Unity time horizon to a round number (512)
+            minibatch_size: int = 8192
 
             use_gpu: bool = False
 

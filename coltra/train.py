@@ -7,18 +7,18 @@ from typarse import BaseParser
 
 from coltra.agents import Agent, CAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
-from coltra.models import MLPModel
+from coltra.models import MLPModel, FancyMLPModel
 from coltra.parallel import SubprocVecEnv
 from coltra.trainers import PPOCrowdTrainer
 
 
 
-def get_env_creator(*args, **kwargs):
-    def _inner():
-        env = UnitySimpleCrowdEnv(*args, **kwargs)
-        env.engine_channel.set_configuration_parameters(time_scale=100)
-        return env
-    return _inner
+# def get_env_creator(*args, **kwargs):
+#     def _inner():
+#         env = UnitySimpleCrowdEnv(*args, **kwargs)
+#         env.engine_channel.set_configuration_parameters(time_scale=100)
+#         return env
+#     return _inner
 
 class Parser(BaseParser):
     config: str = "./configs/base_config.yaml"
@@ -65,16 +65,19 @@ if __name__ == '__main__':
     if args.start_dir:
         agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
     else:
-        model = MLPModel(model_config)
+        model = FancyMLPModel(model_config)
         agent = CAgent(model)
 
     if CUDA:
         agent.cuda()
 
-    env = SubprocVecEnv([
-        get_env_creator(file_name=args.env, no_graphics=True, worker_id=i, seed=i)
-        for i in range(workers)
-    ])
+    env = UnitySimpleCrowdEnv()
+    env.engine_channel.set_configuration_parameters(time_scale=100)
+
+    # env = SubprocVecEnv([
+    #     get_env_creator(file_name=args.env, no_graphics=True, worker_id=i, seed=i)
+    #     for i in range(workers)
+    # ])
 
     trainer = PPOCrowdTrainer(agent, env, config)
     trainer.train(args.iters, disable_tqdm=False, save_path=trainer.path)

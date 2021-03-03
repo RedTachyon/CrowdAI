@@ -15,12 +15,13 @@ from coltra.collectors import collect_crowd_data
 from coltra.parallel import SubprocVecEnv
 from coltra.policy_optimization import CrowdPPOptimizer
 from coltra.utils import Timer, write_dict, concat_subproc_batch
+from envs.unity_envs import MultiAgentEnv
 
 
 class Trainer:
     def __init__(self,
                  agent: Agent,
-                 env: SubprocVecEnv,
+                 env: MultiAgentEnv,
                  config: Dict[str, Any]):
         pass
 
@@ -36,7 +37,7 @@ class PPOCrowdTrainer(Trainer):
 
     def __init__(self,
                  agent: Agent,
-                 env: SubprocVecEnv,
+                 env: MultiAgentEnv,
                  config: Dict[str, Any]):
         super().__init__(agent, env, config)
 
@@ -48,18 +49,22 @@ class PPOCrowdTrainer(Trainer):
             save_freq: int = 10
 
             class PPOConfig(BaseConfig):
+                # Discounting and GAE - by default, exponential discounting at γ=0.99
                 gamma: float = 0.99
-                gae_lambda: float = 0.95
-                ppo_steps: int = 5
+                eta: float = 0.0
+                gae_lambda: float = 1.0
+
+                # PPO optimization parameters
                 eps: float = 0.1
-                target_kl: float = 0.01
-
-                # value_steps: int = 10
-                value_coeff: float = 1.0
-
-                entropy_coeff: float = 0.1
+                target_kl: float = 0.03
+                entropy_coeff: float = 0.001
                 entropy_decay_time: float = 100.
-                min_entropy: float = 0.0001
+                min_entropy: float = 0.001
+                value_coeff: float = 1.0  # Technically irrelevant
+
+                # Number of gradient updates = ppo_epochs * ceil(batch_size / minibatch_size)
+                ppo_epochs: int = 3
+                minibatch_size: int = 8192
 
                 use_gpu: bool = False
 
@@ -126,7 +131,7 @@ class PPOCrowdTrainer(Trainer):
                                                                env=self.env,
                                                                num_steps=self.config.steps)
             # breakpoint()
-            full_batch = concat_subproc_batch(full_batch)
+            # full_batch = concat_subproc_batch(full_batch)
 
             # full_batch, collector_metrics = collect_parallel_unity(num_workers=self.config["workers"],
             #                                                        num_runs=self.config["workers"],

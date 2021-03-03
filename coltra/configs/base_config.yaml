@@ -16,20 +16,23 @@ trainer:
       amsgrad: false
 
     gamma: 0.9
+    eta: 0.0
     gae_lambda: 0.95
-    ppo_steps: 25
+
     eps: 0.25
-    target_kl: 0.01
-
-    value_coeff: 1.0
-
+    target_kl: 0.03
     entropy_coeff: 0.001
     entropy_decay_time: 100
     min_entropy: 0.001
+    value_coeff: 1.0
+
+    ppo_epochs: 3
+    minibatch_size: 8192
+
     use_gpu: false
 
 model:
-  input_size: 72
+  input_size: 4
   num_activations: 2
   activation: tanh
 
