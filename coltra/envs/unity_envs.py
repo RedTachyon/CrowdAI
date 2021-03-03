@@ -6,9 +6,9 @@ import torch
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-from envs.side_channels import StatsChannel, parse_side_message
 
-from buffers import Observation, Action, Reward, Done, TensorArray
+from coltra.envs.side_channels import StatsChannel, parse_side_message
+from coltra.buffers import Observation, Action, Reward, Done, TensorArray
 
 StateDict = Dict[str, Observation]
 ActionDict = Dict[str, Action]

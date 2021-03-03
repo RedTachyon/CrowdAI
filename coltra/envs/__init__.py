@@ -1,1 +1,1 @@
-from envs.unity_envs import UnitySimpleCrowdEnv
+from coltra.envs.unity_envs import UnitySimpleCrowdEnv

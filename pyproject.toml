@@ -5,7 +5,7 @@ description = "PhD project"
 authors = ["redtachyon <ariel.j.kwiatkowski@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8.5,<3.9"
+python = "^3.8,<3.9"
 typarse = "^3.3.0"
 numpy = "^1.18"
 jax = "^0.2.9"

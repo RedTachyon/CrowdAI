@@ -5,7 +5,7 @@ from typing import Sequence, Any, Dict, List
 import gym
 import numpy as np
 
-from parallel.base_vec_env import VecEnv, CloudpickleWrapper
+from coltra.parallel.base_vec_env import VecEnv, CloudpickleWrapper
 
 
 def _worker(remote, parent_remote, env_fn_wrapper):

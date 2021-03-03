@@ -8,7 +8,7 @@ from mlagents_envs.side_channel.side_channel import (
 )
 import numpy as np
 import uuid
-from utils import np_float
+from coltra.utils import np_float
 
 
 def concat_dicts(dicts: Sequence[Dict[str, float]]) -> Dict[str, np.ndarray]:

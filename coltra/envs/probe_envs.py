@@ -2,7 +2,7 @@ from typing import List, Dict
 
 import numpy as np
 
-from buffers import Observation, Action
+from coltra.buffers import Observation, Action
 from coltra.envs.unity_envs import MultiAgentEnv
 
 
