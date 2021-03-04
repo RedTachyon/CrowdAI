@@ -38,6 +38,13 @@ class Agent(metaclass=abc.ABCMeta):
     def get_initial_state(self, requires_grad=True):
         return getattr(self.model, "get_initial_state", lambda *x, **xx: ())(requires_grad=requires_grad)
 
+    @staticmethod
+    def load_agent(base_path: str,
+                   weight_idx: Optional[int] = None,
+                   fname: str = 'base_agent.pt',
+                   weight_fname: str = 'weights') -> "Agent":
+        raise NotImplementedError
+
 
 class CAgent(Agent):  # Continuous Agent
     model: BaseModel

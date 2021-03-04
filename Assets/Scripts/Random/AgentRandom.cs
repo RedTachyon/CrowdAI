@@ -59,8 +59,8 @@ public class AgentRandom : Walker
         // sensor.AddObservation(goalPosition.z / 10f);
         
         // Relative position: 2
-        // var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
-        var relPosition = goalPosition - position;
+        var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
+        // var relPosition = goalPosition - position;
         sensor.AddObservation(relPosition.x / 20f);
         sensor.AddObservation(relPosition.z / 20f);
         
@@ -76,7 +76,7 @@ public class AgentRandom : Walker
         // Debug.Log(distance);
         
         // Debug.Log(relPosition);
-        Debug.DrawLine(transform.position, transform.position + relPosition, Color.red, Time.fixedDeltaTime);
+        Debug.DrawLine(transform.position, goal.position, Color.red, Time.fixedDeltaTime);
 
         // Velocity: 2, up to ~5
         sensor.AddObservation(velocity.x / 5f);

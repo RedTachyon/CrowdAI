@@ -7,6 +7,7 @@ from typarse import BaseParser
 
 from coltra.agents import Agent, CAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
+from coltra.envs.probe_envs import ConstRewardEnv
 from coltra.models import MLPModel, FancyMLPModel
 from coltra.parallel import SubprocVecEnv
 from coltra.trainers import PPOCrowdTrainer
@@ -55,6 +56,16 @@ if __name__ == '__main__':
 
     workers = trainer_config.get("workers") or 8  # default value
 
+    # Initialize the environment
+    if args.env == "probe":
+        env = ConstRewardEnv(20)
+    else:
+        env = UnitySimpleCrowdEnv(args.env)
+        env.engine_channel.set_configuration_parameters(time_scale=100)
+
+    # Initialize the agent
+    obs_size = next(iter(env.reset().values())).vector.shape[0]
+    model_config["input_size"] = obs_size
     if args.start_dir:
         agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
     else:
@@ -63,9 +74,6 @@ if __name__ == '__main__':
 
     if CUDA:
         agent.cuda()
-
-    env = UnitySimpleCrowdEnv(args.env)
-    env.engine_channel.set_configuration_parameters(time_scale=100)
 
     # env = SubprocVecEnv([
     #     get_env_creator(file_name=args.env, no_graphics=True, worker_id=i, seed=i)

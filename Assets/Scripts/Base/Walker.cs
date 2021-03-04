@@ -51,22 +51,24 @@ public class Walker : Agent
         var vectorAction = actions.ContinuousActions;
 
         // Forward velocity
-        var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
+        // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
+        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
         
         // Angular velocity
-        var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
+        // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
+        var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
         
         var velocity = Rigidbody.velocity;
         
         // Debug.Log(velocity);
 
         // Apply the force
-        // Vector3 force = transform.forward * linearSpeed * moveSpeed;
+        Vector3 force = transform.forward * linearSpeed * moveSpeed;
         // Apply the rotation
-        // Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
-        // Rigidbody.rotation = Quaternion.Euler(rotation);
+        Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
+        Rigidbody.rotation = Quaternion.Euler(rotation);
         
-        Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
+        // Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
         
         
         // Reduce the velocity friction-like
@@ -75,28 +77,28 @@ public class Walker : Agent
 
         // Rigidbody.velocity = force / 10f;
 
-        var rotation = Rigidbody.rotation;
-        var forward = rotation * Vector3.forward;
-
-        var dirVector = force;
+        // var rotation = Rigidbody.rotation;
+        // var forward = rotation * Vector3.forward;
+        //
+        // var dirVector = force;
         
-        if (dirVector.magnitude > .1f)
-        {
-            var orthogonal = Vector3.Cross(Vector3.up, forward).normalized;
-            var angle = Vector3.Angle(forward, dirVector.normalized) / 180f;
-            // var dot = Vector3.Dot(rotation * Vector3.forward, dirVector.normalized);
-            var sign = Mathf.Sign(Vector3.Dot(orthogonal, dirVector));
-
-            // Debug.Log(Vector3.SignedAngle(rotation * Vector3.forward, dirVector.normalized, Vector3.up));
-
-
-            var direction = Vector3.MoveTowards(
-                forward, 
-                sign * orthogonal, 
-                Mathf.Min(0.5f * angle, 0.2f)
-            );
-            Rigidbody.rotation = Quaternion.LookRotation(direction);
-        }
+        // if (dirVector.magnitude > .1f)
+        // {
+        //     var orthogonal = Vector3.Cross(Vector3.up, forward).normalized;
+        //     var angle = Vector3.Angle(forward, dirVector.normalized) / 180f;
+        //     // var dot = Vector3.Dot(rotation * Vector3.forward, dirVector.normalized);
+        //     var sign = Mathf.Sign(Vector3.Dot(orthogonal, dirVector));
+        //
+        //     // Debug.Log(Vector3.SignedAngle(rotation * Vector3.forward, dirVector.normalized, Vector3.up));
+        //
+        //
+        //     var direction = Vector3.MoveTowards(
+        //         forward, 
+        //         sign * orthogonal, 
+        //         Mathf.Min(0.5f * angle, 0.2f)
+        //     );
+        //     Rigidbody.rotation = Quaternion.LookRotation(direction);
+        // }
     }
     
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -114,22 +116,22 @@ public class Walker : Agent
         // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
         const float ratio = 1f;
         
-        if (Input.GetKey(KeyCode.W)) zValue = 1f;
-        if (Input.GetKey(KeyCode.S)) zValue = -1f;
+        if (Input.GetKey(KeyCode.W)) xValue = 1f;
+        if (Input.GetKey(KeyCode.S)) xValue = -1f;
         
-        if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
-        if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
+        if (Input.GetKey(KeyCode.D)) zValue = 1f/ratio;
+        if (Input.GetKey(KeyCode.A)) zValue = -1f/ratio;
 
-        if (Input.anyKey)
+        if (true)
         {
             force = new Vector3(xValue, 0, zValue);
         }
-        else
-        {
-            force = goal.position - transform.position;
-            force.y = 0f;
-            force = force.normalized;
-        }
+        // else
+        // {   
+        //     force = goal.position - transform.position;
+        //     force.y = 0f;
+        //     force = force.normalized;
+        // }
 
         // if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
         //     &&
