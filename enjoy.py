@@ -1,7 +1,7 @@
 import time
 import argparse
 
-from coltra.agents import Agent
+from coltra.agents import Agent, CAgent
 from coltra.collectors import collect_crowd_data
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     args = Parser()
 
-    agent = Agent.load_agent(args.start_dir, weight_idx=args.start_idx)
+    agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
 
     time.sleep(args.wait)
 
