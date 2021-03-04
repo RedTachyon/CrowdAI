@@ -14,7 +14,7 @@ from coltra.trainers import PPOCrowdTrainer
 
 
 class Parser(BaseParser):
-    config: str = "./configs/base_config.yaml"
+    config: str = ".coltra//configs/base_config.yaml"
     iters: int = 1000
     env: str
     name: str
