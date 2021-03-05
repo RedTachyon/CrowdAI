@@ -1,9 +1,9 @@
 from torch import nn, tensor, Tensor
 
-from coltra.agents import Agent, CAgent
+from coltra.agents import CAgent
 from coltra.collectors import collect_crowd_data
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
-from coltra.models import MLPModel
+from coltra.models.mlp_models import MLPModel
 
 from coltra.parallel import SubprocVecEnv
 

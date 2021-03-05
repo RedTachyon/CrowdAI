@@ -1,11 +1,8 @@
-from dataclasses import fields
-
-import numpy as np
 import torch
 from torch import Tensor
 
-from coltra.models import FancyMLPModel
-from coltra.agents import CAgent, ConstantAgent
+from coltra.models.mlp_models import FancyMLPModel
+from coltra.agents import CAgent
 from coltra.collectors import collect_crowd_data
 from coltra.envs.probe_envs import ConstRewardEnv
 

@@ -1,15 +1,13 @@
-import argparse
 from typing import Optional
 
 import torch
 import yaml
 from typarse import BaseParser
 
-from coltra.agents import Agent, CAgent
+from coltra.agents import CAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 from coltra.envs.probe_envs import ConstRewardEnv
-from coltra.models import MLPModel, FancyMLPModel
-from coltra.parallel import SubprocVecEnv
+from models.mlp_models import FancyMLPModel
 from coltra.trainers import PPOCrowdTrainer
 
 

@@ -46,6 +46,5 @@ if __name__ == '__main__':
     env.engine_channel.set_configuration_parameters(width=1000, height=1000, time_scale=1)
 
     for _ in range(5):
-        env.reset()
 
         data, metrics = collect_crowd_data(agent, env, args.steps)

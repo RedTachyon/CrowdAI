@@ -3,8 +3,9 @@ import torch
 from torch import Tensor
 
 from coltra.agents import ConstantAgent, CAgent
-from coltra.models import MLPModel, FancyMLPModel
-from coltra.buffers import Observation, MemoryBuffer
+from coltra.models.mlp_models import MLPModel, FancyMLPModel
+from coltra.buffers import Observation
+
 
 def test_constant_agent():
     obs = Observation(vector=np.random.randn(5, 81), buffer=np.random.randn(5, 10, 4))
@@ -38,7 +39,7 @@ def test_mlp_agent():
     for sep_value in [True, False]:
         model = MLPModel({"input_size": 81, "hidden_sizes": [32, 32], "separate_value": sep_value})
 
-        assert len(model.hidden_layers) == 2
+        assert len(model.policy_network.hidden_layers) == 2
 
         agent = CAgent(model)
         actions, _, extra = agent.act(obs_batch=obs, get_value=True)
@@ -83,8 +84,8 @@ def test_fancy_mlp_agent():
 
     model = FancyMLPModel({"input_size": 81, "hidden_sizes": [32, 32]})
 
-    assert len(model.pi_hidden_layers) == 2
-    assert len(model.v_hidden_layers) == 2
+    assert len(model.policy_network.hidden_layers) == 2
+    assert len(model.value_network.hidden_layers) == 2
 
     agent = CAgent(model)
     actions, _, extra = agent.act(obs_batch=obs, get_value=True)

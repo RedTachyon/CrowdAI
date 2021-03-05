@@ -139,6 +139,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         # Initialize metrics
         kl_divergence = 0.
         ppo_step = -1
+        gradient_updates = 0
         value_loss = torch.tensor(0)
         policy_loss = torch.tensor(0)
 
@@ -166,7 +167,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
                 m_logprob, m_value, m_entropy = agent.evaluate(m_obs, m_action)
                 # Compute the KL divergence for early stopping
                 kl_divergence = torch.mean(m_old_logprob - m_logprob).item()
-                if np.isnan(kl_divergence):
+                if np.isnan(kl_divergence):  # TODO: make sure this is right
                     raise ValueError("NaN detected in KL Divergence!")
                 if kl_divergence > self.config.target_kl:
                     break
@@ -195,6 +196,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
                 loss.backward()
 
                 self.policy_optimizer.step()
+                gradient_updates += 1
 
         # for value_step in range(self.config.value_steps):
         #     _, value_batch, _ = agent.evaluate(obs_batch, action_batch)
@@ -212,6 +214,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         # Training-related metrics
         metrics[f"meta/kl_divergence"] = kl_divergence
         metrics[f"meta/ppo_steps_made"] = ppo_step + 1
+        metrics[f"meta/gradient_updates"] = gradient_updates + 1
         metrics[f"meta/policy_loss"] = policy_loss.mean().cpu().item()
         metrics[f"meta/value_loss"] = value_loss.mean().cpu().item()
         # metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()

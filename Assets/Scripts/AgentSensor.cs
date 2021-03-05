@@ -51,7 +51,7 @@ public class AgentSensor : ISensor
             var position = collider.transform.localPosition;
             var velocity = collider.attachedRigidbody.velocity;
             var vals = new[] {position.x, position.z, velocity.x, velocity.z};
-            writer.AddRange(vals, offset);
+            writer.AddList(vals, offset);
             offset += 4;
 
             debugOut.AddRange(vals);
@@ -63,7 +63,7 @@ public class AgentSensor : ISensor
         {
             var vals = new[] {nan, nan, nan, nan};
             // var vals = new[] {0f, 0f, 0f, 0f};
-            writer.AddRange(vals, offset);
+            writer.AddList(vals, offset);
             offset += 4;
             
             debugOut.AddRange(vals);

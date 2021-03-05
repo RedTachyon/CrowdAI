@@ -1,10 +1,9 @@
 import torch
-from torch import Tensor
 import numpy as np
 
-from coltra.buffers import Observation, get_batch_size
+from coltra.buffers import Observation
 from coltra.policy_optimization import minibatches, CrowdPPOptimizer
-from coltra.models import FancyMLPModel
+from coltra.models.mlp_models import FancyMLPModel
 from coltra.agents import CAgent
 from coltra.envs.probe_envs import ConstRewardEnv
 from coltra.collectors import collect_crowd_data

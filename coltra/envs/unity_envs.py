@@ -104,6 +104,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
             decisions, terminals = self.unity.get_steps(name)
 
             dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
+            # TODO: Fix this to avoid repetition
             for idx in dec_ids:
                 agent_name = f"{name}&id={idx}"
                 if len(dec_obs) == 1:
@@ -111,8 +112,12 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
                 elif len(dec_obs) == 2:
                     obs = Observation(vector=dec_obs[1][dec_ids.index(idx)],
                                       buffer=dec_obs[0][dec_ids.index(idx)])
+                elif len(dec_obs) == 3:
+                    obs = Observation(vector=dec_obs[2][dec_ids.index(idx)],
+                                      rays=dec_obs[1][dec_ids.index(idx)],
+                                      buffer=dec_obs[0][dec_ids.index(idx)])
                 else:
-                    raise ValueError("Too many observations (vector, buffer and what else?")
+                    raise ValueError(f"Too many observations, got {len(dec_obs)}")
 
                 obs_dict[agent_name] = obs
                 # obs_dict[agent_name] = np.concatenate([o[dec_ids.index(idx)] for o in dec_obs])
@@ -123,13 +128,17 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
             for idx in terminals.agent_id:
                 agent_name = f"{name}&id={idx}"
-                if len(dec_obs) == 1:
+                if len(ter_obs) == 1:
                     obs = Observation(vector=ter_obs[0][ter_ids.index(idx)])
-                elif len(dec_obs) == 2:
+                elif len(ter_obs) == 2:
                     obs = Observation(vector=ter_obs[1][ter_ids.index(idx)],
                                       buffer=ter_obs[0][ter_ids.index(idx)])
+                elif len(ter_obs) == 3:
+                    obs = Observation(vector=ter_obs[2][ter_ids.index(idx)],
+                                      rays=ter_obs[1][ter_ids.index(idx)],
+                                      buffer=ter_obs[0][ter_ids.index(idx)])
                 else:
-                    raise ValueError("Too many observations (vector, buffer and what else?")
+                    raise ValueError(f"Too many observations, got {len(ter_obs)}")
 
                 ter_obs_dict[agent_name] = obs
                 ter_reward_dict[agent_name] = terminals.reward[ter_ids.index(idx)]

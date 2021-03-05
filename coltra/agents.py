@@ -5,10 +5,10 @@ import abc
 import numpy as np
 
 import torch
-from torch import nn, Tensor
-from torch.distributions import Categorical, Normal
+from torch import Tensor
+from torch.distributions import Normal
 
-from coltra.models import BaseModel
+from coltra.models.mlp_models import BaseModel
 from coltra.buffers import Observation, Action
 
 

@@ -52,7 +52,7 @@ public class Walker : Agent
 
         // Forward velocity
         // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
-        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
+        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -0.5f, 1f);
         
         // Angular velocity
         // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -65,7 +65,8 @@ public class Walker : Agent
         // Apply the force
         Vector3 force = transform.forward * linearSpeed * moveSpeed;
         // Apply the rotation
-        Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed;
+        var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
+        Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed * timeFactor;
         Rigidbody.rotation = Quaternion.Euler(rotation);
         
         // Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
