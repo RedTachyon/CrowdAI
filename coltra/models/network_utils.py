@@ -24,10 +24,10 @@ class FCNetwork(nn.Module):
             for in_size, out_size in zip(layer_sizes, layer_sizes[1:])
         ])
 
-        self.heads = [
+        self.heads = nn.ModuleList([
             nn.Linear(layer_sizes[-1], output_size)
             for output_size in output_sizes
-        ]
+        ])
 
         if initializer:
             # If given an initializer, initialize all weights using it, and all biases with 0's
