@@ -7,7 +7,7 @@ import torch
 from torch import nn, Tensor
 from torch.nn import functional as F
 
-from buffers import Observation
+from coltra.buffers import Observation
 from .network_utils import FCNetwork
 from .mlp_models import BaseModel
 
