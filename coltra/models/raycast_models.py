@@ -40,6 +40,7 @@ class LeeNetwork(nn.Module):
 
         self.heads = [nn.Linear(32, size) for size in output_sizes]
 
+
     def forward(self, x: Observation):
         x_vector = x.vector
         x_vector = self.activation(self.int_fc1(x_vector))
@@ -80,6 +81,8 @@ class LeeModel(BaseModel):
                                         output_sizes=[1],
                                         rays_input_size=self.config.rays_input_size,
                                         conv_filters=self.config.conv_filters)
+
+        self.config = self.config.to_dict()
 
     def forward(self, x: Observation,
                 state: Tuple = (),
