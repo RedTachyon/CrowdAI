@@ -40,7 +40,6 @@ class LeeNetwork(nn.Module):
 
         self.heads = nn.ModuleList([nn.Linear(32, size) for size in output_sizes])
 
-
     def forward(self, x: Observation):
         x_vector = x.vector
         x_vector = self.activation(self.int_fc1(x_vector))
@@ -89,6 +88,8 @@ class LeeModel(BaseModel):
                 get_value: bool = False) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
 
         [action_mu, action_std] = self.policy_network(x)
+        action_std = F.softplus(action_std - 0.5)
+
         action_distribution = Normal(loc=action_mu, scale=action_std)
 
         extra_outputs = {}
