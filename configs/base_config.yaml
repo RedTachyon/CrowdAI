@@ -39,6 +39,10 @@ model:
   hidden_sizes: [64, 64, 64]
   separate_value: true
 
+  rays_input_size:
+
+  conv_filters: int = 2
+
   sigma0: 0.7
 
   initializer: kaiming_uniform

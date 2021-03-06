@@ -7,8 +7,9 @@ from typarse import BaseParser
 from coltra.agents import CAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 from coltra.envs.probe_envs import ConstRewardEnv
-from models.mlp_models import FancyMLPModel
+from coltra.models.mlp_models import FancyMLPModel
 from coltra.trainers import PPOCrowdTrainer
+from coltra.models.raycast_models import LeeModel
 
 
 class Parser(BaseParser):
@@ -16,6 +17,7 @@ class Parser(BaseParser):
     iters: int = 1000
     env: str
     name: str
+    ray_model: bool
     start_dir: Optional[str]
     start_idx: Optional[int] = -1
 
@@ -24,6 +26,7 @@ class Parser(BaseParser):
         "iters": "Number of coltra iterations",
         "env": "Path to the Unity environment binary",
         "name": "Name of the tb directory to store the logs",
+        "ray_model": "Whether we should train a model that uses ray perception",
         "start_dir": "Name of the tb directory containing the run from which we want to (re)start the coltra",
         "start_idx": "From which iteration we should start (only if start_dir is set)",
     }
@@ -33,6 +36,7 @@ class Parser(BaseParser):
         "iters": "i",
         "env": "e",
         "name": "n",
+        "ray_model": "rb",
         "start_dir": "sd",
         "start_idx": "si",
     }
@@ -62,12 +66,22 @@ if __name__ == '__main__':
         env.engine_channel.set_configuration_parameters(time_scale=100)
 
     # Initialize the agent
-    obs_size = next(iter(env.reset().values())).vector.shape[0]
+    sample_obs = next(iter(env.reset().values()))
+    obs_size = sample_obs.vector.shape[0]
+    ray_size = sample_obs.rays.shape[0] if sample_obs.rays else None
+
     model_config["input_size"] = obs_size
+    model_config["rays_input_size"] = ray_size
+
+    if args.ray_model:
+        model_cls = LeeModel
+    else:
+        model_cls = FancyMLPModel
+
     if args.start_dir:
         agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
     else:
-        model = FancyMLPModel(model_config)
+        model = model_cls(model_config)
         agent = CAgent(model)
 
     if CUDA:
