@@ -13,7 +13,7 @@ from coltra.models.raycast_models import LeeModel
 
 
 class Parser(BaseParser):
-    config: str = ".coltra//configs/base_config.yaml"
+    config: str = "configs/base_config.yaml"
     iters: int = 1000
     env: str
     name: str
