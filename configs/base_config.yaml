@@ -41,7 +41,7 @@ model:
 
   rays_input_size:
 
-  conv_filters: int = 2
+  conv_filters: int
 
   sigma0: 0.7
 

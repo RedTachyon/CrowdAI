@@ -36,7 +36,7 @@ class Parser(BaseParser):
         "iters": "i",
         "env": "e",
         "name": "n",
-        "ray_model": "rb",
+        "ray_model": "r",
         "start_dir": "sd",
         "start_idx": "si",
     }
