@@ -38,7 +38,7 @@ class LeeNetwork(nn.Module):
 
         self.combined_fc = nn.Linear(combined_size, 32)
 
-        self.heads = [nn.Linear(32, size) for size in output_sizes]
+        self.heads = nn.ModuleList([nn.Linear(32, size) for size in output_sizes])
 
 
     def forward(self, x: Observation):
