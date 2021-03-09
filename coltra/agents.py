@@ -12,7 +12,7 @@ from coltra.models.mlp_models import BaseModel
 from coltra.buffers import Observation, Action
 
 
-class Agent(metaclass=abc.ABCMeta):
+class Agent:
     model: BaseModel
 
     def act(self, obs_batch: Observation,
@@ -144,6 +144,22 @@ class ConstantAgent(Agent):
         batch_size = obs_batch.batch_size
 
         return Action(continuous=np.tile(self.action, (batch_size, 1))), (), {"value": np.zeros((batch_size,))}
+
+    def evaluate(self, obs_batch: Observation, action_batch: Action) -> Tuple[Tensor, Tensor, Tensor]:
+        zero = torch.zeros((obs_batch.batch_size, ))
+        return zero, zero, zero
+
+
+class ORCAAgent(Agent):
+
+    def __init__(self):
+        pass
+
+    def act(self, obs: Observation,
+            state: Tuple = (),
+            deterministic: bool = True,
+            get_value: bool = False) -> Tuple[Action, Tuple, Dict]:
+        pass
 
     def evaluate(self, obs_batch: Observation, action_batch: Action) -> Tuple[Tensor, Tensor, Tensor]:
         zero = torch.zeros((obs_batch.batch_size, ))

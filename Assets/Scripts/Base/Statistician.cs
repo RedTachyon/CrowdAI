@@ -69,6 +69,7 @@ public class Statistician : Agent
         
         foreach (Transform agent in transform)
         {
+            if (!agent.gameObject.activeSelf) continue;
             // Get distance from goal
             var agentPosition = agent.localPosition;
             var goalPosition = agent.GetComponent<Walker>().goal.localPosition;
