@@ -15,7 +15,7 @@ class ConstRewardEnv(MultiAgentEnv):
         self.obs_vector_size = 1
         self.action_vector_size = 1
 
-    def reset(self):
+    def reset(self, *args, **kwargs):
         zero_obs = Observation(vector=np.ones((1,), dtype=np.float32))
         return {agent_id: zero_obs for agent_id in self.active_agents}
 
