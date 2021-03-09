@@ -1,11 +1,13 @@
 import numpy as np
 import gym
 from typing import Dict, Any, Tuple, Callable, List
+from enum import Enum
 
 import torch
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 
 from coltra.envs.side_channels import StatsChannel, parse_side_message
 from coltra.buffers import Observation, Action, Reward, Done, TensorArray
@@ -15,6 +17,12 @@ ActionDict = Dict[str, Action]
 RewardDict = Dict[str, Reward]
 DoneDict = Dict[str, Done]
 InfoDict = Dict[str, Any]
+
+
+class Mode(Enum):
+    Random = 0.0
+    Circle = 1.0
+    Hallway = 2.0
 
 
 class MultiAgentEnv(gym.Env):
@@ -76,17 +84,19 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         super().__init__()
         self.engine_channel = EngineConfigurationChannel()
         self.stats_channel = StatsChannel()
+        self.param_channel = EnvironmentParametersChannel()
 
         self.active_agents: List[str] = []
 
         kwargs.setdefault("side_channels", []).append(self.engine_channel)
         kwargs["side_channels"].append(self.stats_channel)
+        kwargs["side_channels"].append(self.param_channel)
 
         self.unity = UnityEnvironment(*args, **kwargs)
         self.behaviors = {}
         self.manager = ""
 
-        # semi-hardcoded computation of osb/action spaces, slightly different api than gym
+        # semi-hardcoded computation of obs/action spaces, slightly different api than gym
         self.obs_vector_size = next(iter(self.reset().values())).vector.shape[0]
         self.action_vector_size = 2
 
@@ -190,7 +200,12 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         return obs_dict, reward_dict, done_dict, info_dict
 
-    def reset(self) -> StateDict:
+    def reset(self, mode: Mode = None, num_agents: int = None) -> StateDict:
+        if mode:
+            self.param_channel.set_float_parameter("mode", mode.value)
+        if num_agents:
+            self.param_channel.set_float_parameter("agents", num_agents)
+
         self.unity.reset()
 
         # All behavior names, except for Manager agents which do not take actions but manage the environment
@@ -201,8 +216,14 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.manager = [key for key in behaviors if key.startswith("Manager")][0]
 
         obs_dict, _, _, _ = self._get_step_info(step=True)
+        if len(obs_dict) == 0:
+            # Dealing with some terminal steps due to reducing the number of agents
+            self.unity.step()
+            obs_dict, _, _, _ = self._get_step_info(step=True)
 
         self.active_agents = list(obs_dict.keys())
+        # if len(self.active_agents) == 0:
+        #     self.reset(mode, num_agents)
 
         return obs_dict
 

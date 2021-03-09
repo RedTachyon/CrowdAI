@@ -8,45 +8,50 @@ public class MLUtils
 {
 
     public static Vector3 NoncollidingPosition(
-        float min,
-        float max,
+        float xMin,
+        float xMax,
+        float zMin,
+        float zMax,
         float yVal,
-        Transform excludes,
+        List<Vector3> excludes,
         int maxTries = 10,
         float threshold = 0.5f)
     {
         Vector3 position = new Vector3(
-            Random.Range(min, max), 
+            Random.Range(xMin, xMax), 
             yVal,
-            Random.Range(min, max)
+            Random.Range(zMin, zMax)
         );
-        
+
+        var found = false;
         for (var i = 0; i < maxTries; i++)
         {
 
-            var valid = true;
-            foreach (Transform t in excludes)
-            {
-                if ((t.localPosition - position).magnitude < threshold)
-                {
-                    valid = false;
-                    break;
-                }
-            }
+            var valid = excludes
+                .All(p => (p - position).magnitude > threshold);
+            
+            // Debug.Log($"Comparing against {excludes.Count} agents");
 
             if (valid)
             {
+                found = true;
+                // Debug.Log($"Found a location after {i} tries");
                 break;
             }
             
             position = new Vector3(
-                Random.Range(min, max), 
+                Random.Range(xMin, xMax), 
                 yVal,
-                Random.Range(min, max)
+                Random.Range(zMin, zMax)
             );
-            
-
         }
+
+        if (!found)
+        {
+            Debug.Log("Can't find a collision-free placement!");
+        }
+        
+        
 
         return position;
 
@@ -89,6 +94,8 @@ public class MLUtils
 
         return result;
     }
+    
+    // public static Vector3 gridPlacement
     
     
 }

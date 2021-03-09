@@ -49,6 +49,8 @@ public class Walker : Agent
         Collision = 0;
         
         var vectorAction = actions.ContinuousActions;
+        
+        // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
 
         // Forward velocity
         // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
