@@ -24,6 +24,17 @@ class Mode(Enum):
     Circle = 1.0
     Hallway = 2.0
 
+    @staticmethod
+    def from_string(name: str):
+        if name.lower() == "random":
+            return Mode.Random
+        elif name.lower() == "circle":
+            return Mode.Circle
+        elif name.lower() == "hallway":
+            return Mode.Hallway
+        else:
+            raise ValueError(f"{name} is not a valid mode identifier")
+
 
 class MultiAgentEnv(gym.Env):
     """

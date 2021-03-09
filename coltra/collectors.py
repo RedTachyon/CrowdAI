@@ -9,7 +9,7 @@ from tqdm import trange
 from coltra.agents import Agent
 from coltra.parallel import SubprocVecEnv
 
-from coltra.envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv
+from coltra.envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv, Mode
 
 from coltra.buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
 
@@ -17,6 +17,8 @@ from coltra.buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
 def collect_crowd_data(agent: Agent,
                        env: Union[MultiAgentEnv, SubprocVecEnv],
                        num_steps: Optional[int] = None,
+                       mode: Mode = Mode.Random,
+                       num_agents: int = 20,
                        deterministic: bool = False,
                        disable_tqdm: bool = True) -> Tuple[MemoryRecord, Dict]:
     """
@@ -26,6 +28,8 @@ def collect_crowd_data(agent: Agent,
             agent: Agent with which to collect the data
             env: Environment in which the agent will act
             num_steps: number of steps to take; either this or num_episodes has to be passed (not both)
+            mode: which environment should be used
+            num_agents: how many agents in the environment
             deterministic: whether each agent should use the greedy policy; False by default
             disable_tqdm: whether a live progress bar should be (not) displayed
 
@@ -36,7 +40,7 @@ def collect_crowd_data(agent: Agent,
     memory = MemoryBuffer()
 
     # reset_start: change here in case I ever need to not reset
-    obs_dict = env.reset()
+    obs_dict = env.reset(mode=mode, num_agents=num_agents)
 
     # state = {
     #     agent_id: self.agents[agent_id].get_initial_state(requires_grad=False) for agent_id in self.agent_ids

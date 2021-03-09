@@ -15,7 +15,7 @@ from coltra.collectors import collect_crowd_data
 from coltra.parallel import SubprocVecEnv
 from coltra.policy_optimization import CrowdPPOptimizer
 from coltra.utils import Timer, write_dict, concat_subproc_batch
-from coltra.envs.unity_envs import MultiAgentEnv
+from coltra.envs.unity_envs import MultiAgentEnv, Mode
 
 
 class Trainer:
@@ -44,6 +44,9 @@ class PPOCrowdTrainer(Trainer):
         class Config(BaseConfig):
             steps: int = 500
             workers: int = 8
+
+            mode: str = "random"
+            num_agents: int = 20
 
             tensorboard_name: str = None
             save_freq: int = 10
@@ -129,7 +132,9 @@ class PPOCrowdTrainer(Trainer):
 
             full_batch, collector_metrics = collect_crowd_data(agent=self.agent,
                                                                env=self.env,
-                                                               num_steps=self.config.steps)
+                                                               num_steps=self.config.steps,
+                                                               mode=Mode.from_string(self.config.mode),
+                                                               num_agents=self.config.num_agents)
             # breakpoint()
             # full_batch = concat_subproc_batch(full_batch)
 

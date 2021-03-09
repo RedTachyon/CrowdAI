@@ -3,6 +3,9 @@ trainer:
   steps: 500
   workers: 8
 
+  mode: random
+  num_agents: 20
+
   tensorboard_name:
   save_freq: 10
 
