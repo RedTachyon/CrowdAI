@@ -125,7 +125,7 @@ public class AgentRandom : Walker
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(0.03f);
+            AddReward(.1f);
             GetComponentInParent<ManagerRandom>().ReachGoal(this);
             _material.color = Color.blue;
             
@@ -139,7 +139,7 @@ public class AgentRandom : Walker
         
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-.01f);
+            AddReward(-.1f);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");

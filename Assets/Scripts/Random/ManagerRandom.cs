@@ -47,13 +47,13 @@ public class ManagerRandom : Statistician
         // _done = false;
         // Debug.Log(UnityEngine.Random.state.GetHashCode());
         // UnityEngine.Random.InitState(DateTime.Now.Millisecond);
-        var newMode = GetMode();
+        mode = GetMode();
         
         numAgents = GetNumAgents();
         var currentNumAgents = transform.childCount;
         var agentsToAdd = numAgents - currentNumAgents;
 
-        obstacles.gameObject.SetActive(newMode == Placement.Hallway);
+        obstacles.gameObject.SetActive(mode == Placement.Hallway);
         Debug.Log($"Number of children: {currentNumAgents}");
 
         // Activate the right amount of agents
@@ -101,7 +101,7 @@ public class ManagerRandom : Statistician
             Vector3 goalPosition;
             Quaternion newRotation;
             
-            switch (newMode)
+            switch (mode)
             {
                 case Placement.Random:
                 {
@@ -216,7 +216,7 @@ public class ManagerRandom : Statistician
 
     public Placement GetMode()
     {
-        var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1);
+        var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1f);
         Placement currentMode;
         if (val < -0.5f) // == -1f 
         {
