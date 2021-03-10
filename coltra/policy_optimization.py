@@ -34,7 +34,7 @@ def minibatches(*tensors: Union[Tensor, Multitype], batch_size: int = 32, shuffl
         yield [tensor[idx, ...] for tensor in tensors]
 
 
-class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
+class CrowdPPOptimizer:
     """
     An optimizer for a single homogeneous crowd agent. Estimates the gradient from the whole batch (no SGD).
     """
@@ -57,6 +57,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
             entropy_decay_time: float = 100.
             min_entropy: float = 0.001
             value_coeff: float = 1.0  # Technically irrelevant
+            advantage_normalization: bool = False
 
             # Number of gradient updates = ppo_epochs * ceil(batch_size / minibatch_size)
             ppo_epochs: int = 3
@@ -156,6 +157,11 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
                                                 γ=self.config.gamma,
                                                 η=self.config.eta,
                                                 λ=self.config.gae_lambda)
+
+            if self.config.advantage_normalization:
+                advantages = advantages - advantages.mean()
+                advantages = advantages / (advantages.std() + 1e-8)
+
             for m_obs, m_action, m_old_logprob, m_return, m_advantage in minibatches(obs,
                                                                                      actions,
                                                                                      old_logprobs,
@@ -217,6 +223,7 @@ class CrowdPPOptimizer:  # TODO: rewrite this with minibatches
         metrics[f"meta/gradient_updates"] = gradient_updates + 1
         metrics[f"meta/policy_loss"] = policy_loss.mean().cpu().item()
         metrics[f"meta/value_loss"] = value_loss.mean().cpu().item()
+        metrics[f"meta/mean_value"] = old_values.mean().cpu().item()
         # metrics[f"{agent_id}/total_loss"] = loss.detach().cpu().item()
         metrics[f"meta/total_steps"] = rewards.numel()
 

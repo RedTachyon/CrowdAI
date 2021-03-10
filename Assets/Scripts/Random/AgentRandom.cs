@@ -95,7 +95,7 @@ public class AgentRandom : Walker
         
         // Debug.Log(diff);
         
-        AddReward(0.1f * diff);  // Add reward for getting closer to the goal
+        AddReward(Constants.PotentialReward * diff);  // Add reward for getting closer to the goal
 
         // Maximum distance: 20; this puts it in the range [0, 0.1]
         // AddReward(-currentDistance / 200f);
@@ -107,10 +107,10 @@ public class AgentRandom : Walker
 
         _material.color = _originalColor;
 
-        for (var i = 0; i < 4; i++)
-        {
-            bufferSensor.AppendObservation(new float[] {1,2,3,4});
-        }
+        // for (var i = 0; i < 4; i++)
+        // {
+        //     bufferSensor.AppendObservation(new float[] {1,2,3,4});
+        // }
         
         
         // Debug.Log($"Total reward: {GetCumulativeReward()}");
@@ -125,7 +125,7 @@ public class AgentRandom : Walker
 
         if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
         {
-            AddReward(.1f);
+            AddReward(Constants.GoalReward);
             GetComponentInParent<ManagerRandom>().ReachGoal(this);
             _material.color = Color.blue;
             
@@ -139,7 +139,7 @@ public class AgentRandom : Walker
         
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(-.1f);
+            AddReward(Constants.CollisionReward);
             _material.color = Color.red;
             // Debug.Log($"Collision with an {other.collider.tag}!");
             // Debug.Log("I shouldn't be here");

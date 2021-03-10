@@ -17,6 +17,8 @@ class Parser(BaseParser):
     iters: int = 1000
     env: str
     name: str
+    mode: str
+    num_agents: int
     ray_model: bool
     start_dir: Optional[str]
     start_idx: Optional[int] = -1
@@ -26,6 +28,7 @@ class Parser(BaseParser):
         "iters": "Number of coltra iterations",
         "env": "Path to the Unity environment binary",
         "name": "Name of the tb directory to store the logs",
+        "mode": "What board layout should be used",
         "ray_model": "Whether we should train a model that uses ray perception",
         "start_dir": "Name of the tb directory containing the run from which we want to (re)start the coltra",
         "start_idx": "From which iteration we should start (only if start_dir is set)",
@@ -36,6 +39,8 @@ class Parser(BaseParser):
         "iters": "i",
         "env": "e",
         "name": "n",
+        "mode": "m",
+        "num_agents": "na",
         "ray_model": "r",
         "start_dir": "sd",
         "start_idx": "si",
@@ -63,7 +68,7 @@ if __name__ == '__main__':
         env = ConstRewardEnv(20)
     else:
         env = UnitySimpleCrowdEnv(args.env)
-        env.engine_channel.set_configuration_parameters(time_scale=100)
+        env.engine_channel.set_configuration_parameters(time_scale=100, width=100, height=100)
 
     # Initialize the agent
     sample_obs = next(iter(env.reset().values()))

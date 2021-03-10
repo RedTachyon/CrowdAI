@@ -36,7 +36,7 @@ class Parser(BaseParser):
         "wait": "w",
         "seed": "seed",
         "mode": "m",
-        "num_agents": "n",
+        "num_agents": "na",
     }
 
 
