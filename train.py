@@ -17,8 +17,8 @@ class Parser(BaseParser):
     iters: int = 1000
     env: str
     name: str
-    mode: str
-    num_agents: int
+    mode: Optional[str]
+    num_agents: Optional[int]
     ray_model: bool
     start_dir: Optional[str]
     start_idx: Optional[int] = -1
@@ -60,6 +60,11 @@ if __name__ == '__main__':
 
     trainer_config["tensorboard_name"] = args.name
     trainer_config["ppo_config"]["use_gpu"] = CUDA
+    if args.mode:
+        trainer_config["mode"] = args.mode
+
+    if args.num_agents:
+        trainer_config["num_agents"] = args.num_agents
 
     workers = trainer_config.get("workers") or 8  # default value
 
