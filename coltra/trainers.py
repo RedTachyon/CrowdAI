@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -10,12 +10,12 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 from typarse import BaseConfig
 
-from coltra.agents import Agent
-from coltra.collectors import collect_crowd_data
-from coltra.parallel import SubprocVecEnv
-from coltra.policy_optimization import CrowdPPOptimizer
-from coltra.utils import Timer, write_dict, concat_subproc_batch
-from coltra.envs.unity_envs import MultiAgentEnv, Mode
+from .agents import Agent
+from .collectors import collect_crowd_data
+from .envs import SubprocVecEnv, MultiAgentEnv
+from .policy_optimization import CrowdPPOptimizer
+from .utils import Timer, write_dict, concat_subproc_batch
+from .envs.unity_envs import Mode
 
 
 class Trainer:
@@ -37,7 +37,7 @@ class PPOCrowdTrainer(Trainer):
 
     def __init__(self,
                  agent: Agent,
-                 env: MultiAgentEnv,
+                 env: Union[MultiAgentEnv, SubprocVecEnv],
                  config: Dict[str, Any]):
         super().__init__(agent, env, config)
 
@@ -169,7 +169,7 @@ class PPOCrowdTrainer(Trainer):
                 extra_metric[f"stats/{key}"] = np.mean(collector_metrics[key])
                 extra_metric[f"stats/{key}_100"] = np.mean(collector_metrics[key][:100])
                 extra_metric[f"stats/{key}_l100"] = np.mean(collector_metrics[key][-100:])
-                extra_metric[f"stats/{key}_l1"] = np.mean(collector_metrics[key][-1:])
+                extra_metric[f"stats/{key}_l1"] = np.mean(collector_metrics[key][-2])
 
             write_dict(extra_metric, step, self.writer)
 

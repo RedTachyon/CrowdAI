@@ -1,11 +1,13 @@
 import multiprocessing
 from collections import OrderedDict
-from typing import Sequence, Any, Dict, List
+from typing import Sequence, Any, Dict, List, Callable
 
 import gym
 import numpy as np
 
-from coltra.parallel.base_vec_env import VecEnv, CloudpickleWrapper
+from coltra.buffers import Observation
+from .base_env import VecEnv, CloudpickleWrapper
+from .base_env import MultiAgentEnv
 
 
 def _worker(remote, parent_remote, env_fn_wrapper):
@@ -24,7 +26,7 @@ def _worker(remote, parent_remote, env_fn_wrapper):
             elif cmd == 'seed':
                 remote.send(env.seed(data))
             elif cmd == 'reset':
-                observation = env.reset()
+                observation = env.reset(**data)
                 remote.send(observation)
             elif cmd == 'render':
                 remote.send(env.render(data))
@@ -47,7 +49,7 @@ def _worker(remote, parent_remote, env_fn_wrapper):
             break
 
 
-class SubprocVecEnv(VecEnv):
+class SubprocVecEnv(VecEnv, MultiAgentEnv):
     """
     Creates a multiprocess vectorized wrapper for multiple environments, distributing each environment to its own
     process, allowing significant speed up when the environment is computationally complex.
@@ -72,7 +74,9 @@ class SubprocVecEnv(VecEnv):
            Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
     """
 
-    def __init__(self, env_fns, start_method=None):
+    def __init__(self,
+                 env_fns: List[Callable],
+                 start_method: str = None):
         self.waiting = False
         self.closed = False
         n_envs = len(env_fns)
@@ -100,8 +104,9 @@ class SubprocVecEnv(VecEnv):
         VecEnv.__init__(self, len(env_fns), observation_space, action_space)
 
     def step_async(self, actions):
+        """Send the actons to the environments"""
         for i, remote in enumerate(self.remotes):
-            action = {k: a[i] for k, a in actions.items()}
+            action = {k.split('::')[1]: a for k, a in actions.items() if int(k.split('::')[0]) == i}
             remote.send(('step', action))
         # for remote, action in zip(self.remotes, actions):
         #     remote.send(('step', action))
@@ -111,18 +116,19 @@ class SubprocVecEnv(VecEnv):
         results = [remote.recv() for remote in self.remotes]
         self.waiting = False
         obs, rews, dones, infos = zip(*results)
-        return _flatten_obs(obs, self.observation_space), _flatten_scalar(rews), _flatten_scalar(dones), infos
+        # infos - tuple of dicts
+        return _gather_subproc(obs), _gather_subproc(rews), _gather_subproc(dones), _flatten_info(infos)
 
     def seed(self, seed=None):
         for idx, remote in enumerate(self.remotes):
             remote.send(('seed', seed + idx))
         return [remote.recv() for remote in self.remotes]
 
-    def reset(self):
+    def reset(self, **kwargs) -> Dict[str, Observation]:
         for remote in self.remotes:
-            remote.send(('reset', None))
+            remote.send(('reset', kwargs))
         obs = [remote.recv() for remote in self.remotes]
-        return _flatten_obs(obs, self.observation_space)
+        return _gather_subproc(obs)
 
     def close(self):
         if self.closed:
@@ -178,35 +184,24 @@ class SubprocVecEnv(VecEnv):
         return [self.remotes[i] for i in indices]
 
 
-def _flatten_obs(obs, space):
-    """
-    Flatten observations, depending on the observation space.
-
-    :param obs: (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray) observations.
-                A list or tuple of observations, one per environment.
-                Each environment observation may be a NumPy array, or a dict or tuple of NumPy arrays.
-    :return (OrderedDict<ndarray>, tuple<ndarray> or ndarray) flattened observations.
-            A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays.
-            Each NumPy array has the environment index as its first axis.
-    """
-    assert isinstance(obs, (list, tuple)), "expected list or tuple of observations per environment"
-    assert len(obs) > 0, "need observations from at least one environment"
-
-    if isinstance(space, gym.spaces.Dict):
-        assert isinstance(space.spaces, OrderedDict), "Dict space must have ordered subspaces"
-        assert isinstance(obs[0], dict), "non-dict observation for environment with Dict observation space"
-        return OrderedDict([(k, np.stack([o[k] for o in obs])) for k in space.spaces.keys()])
-    elif isinstance(space, gym.spaces.Tuple):
-        assert isinstance(obs[0], tuple), "non-tuple observation for environment with Tuple observation space"
-        obs_len = len(space.spaces)
-        return tuple((np.stack([o[i] for o in obs]) for i in range(obs_len)))
-    elif isinstance(obs[0], dict):
-        keys = obs[0].keys()  # Assume all envs have the same keys
-        return {k: np.stack([o[k] for o in obs]) for k in keys}
-    else:
-        return np.stack(obs)
+def _gather_subproc(obs: List[Dict[str, Observation]]) -> Dict[str, Observation]:
+    combined_obs = {
+        f"{i}::{key}": value for i, s_obs in enumerate(obs) for (key, value) in s_obs.items()
+    }
+    return combined_obs
 
 
 def _flatten_scalar(values: List[Dict[str, Any]]) -> Dict[str, np.ndarray]:
     keys = values[0].keys()
     return {k: np.array([v[k] for v in values]) for k in keys}
+
+
+def _flatten_info(infos: List[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:
+    all_metrics = {}
+    for key in infos[0].keys():
+        if key.startswith("m_"):
+            all_metrics[key] = np.concatenate([val[key] for val in infos])
+        else:
+            all_metrics[key] = [val[key] for val in infos]
+
+    return all_metrics

@@ -8,8 +8,7 @@ from torch import nn, Tensor
 from torch.nn import functional as F
 
 from coltra.buffers import Observation
-from .network_utils import FCNetwork
-from .mlp_models import BaseModel
+from .base_models import FCNetwork, BaseModel
 
 
 class LeeNetwork(nn.Module):

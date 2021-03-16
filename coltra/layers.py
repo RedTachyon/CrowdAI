@@ -5,7 +5,7 @@ from torch import Tensor
 from torch import nn
 from typarse import BaseConfig
 
-from coltra.utils import get_activation_module, get_initializer
+from .utils import get_activation_module, get_initializer
 
 
 class RelationLayer(nn.Module):

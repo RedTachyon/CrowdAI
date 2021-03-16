@@ -1,11 +1,15 @@
+from typing import List
+
+import torch
 from torch import Tensor
+from torch.distributions import Normal
+from typarse import BaseConfig
 
 from coltra.agents import CAgent
 from coltra.buffers import Observation
 from coltra.models import FCNetwork
-import torch
-
 from coltra.models.raycast_models import LeeNetwork, LeeModel
+from coltra.models.relational_models import RelationNetwork, RelationModel
 
 
 def test_fc():
@@ -72,3 +76,30 @@ def test_lee():
     assert state == ()
     assert extra["value"].shape == (10,)
 
+
+def test_relnet():
+    class Config(BaseConfig):
+        vec_input_size: int = 4
+        rel_input_size: int = 5
+        vec_hidden_layers: List[int] = [32, 32]
+        rel_hidden_layers: List[int] = [32, 32]
+        com_hidden_layers: List[int] = [32, 32]
+        num_action: int = 2
+        activation: str = "tanh"
+        initializer: str = "kaiming_uniform"
+
+    config = Config.to_dict()
+    model = RelationModel(config)
+
+    obs = Observation(
+        vector=torch.rand(7, 4),
+        buffer=torch.rand(7, 11, 5)
+    )
+
+    action, state, extra = model(obs, get_value=True)
+
+    assert isinstance(action, Normal)
+    assert action.loc.shape == (7, 2)
+    assert action.scale.shape == (7, 2)
+    assert state == ()
+    assert extra["value"].shape == (7, 1)

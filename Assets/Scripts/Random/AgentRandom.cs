@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Net;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
@@ -15,6 +18,7 @@ public class AgentRandom : Walker
     
     private Material _material;
     private Color _originalColor;
+    private bool _collectedGoal;
 
     public CBufferSensorComponent bufferSensor;
     // public Transform goal;
@@ -25,6 +29,13 @@ public class AgentRandom : Walker
         base.Initialize();
         _material = GetComponent<Renderer>().material;
         _originalColor = _material.color;
+
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        base.OnEpisodeBegin();
+        _collectedGoal = false;
 
     }
 
@@ -76,7 +87,6 @@ public class AgentRandom : Walker
         // Debug.Log(distance);
         
         // Debug.Log(relPosition);
-        Debug.DrawLine(transform.position, goal.position, Color.red, Time.fixedDeltaTime);
 
         // Velocity: 2, up to ~5
         sensor.AddObservation(velocity.x / 5f);
@@ -92,28 +102,46 @@ public class AgentRandom : Walker
         var currentDistance = Vector3.Distance(position, goalPosition);
         // Up to ~0.1
         var diff = prevDistance - currentDistance;
-        
-        // Debug.Log(diff);
-        
-        AddReward(Constants.PotentialReward * diff);  // Add reward for getting closer to the goal
 
-        // Maximum distance: 20; this puts it in the range [0, 0.1]
-        // AddReward(-currentDistance / 200f);
-        
         // Debug.Log($"Distance {currentDistance}");
         // Debug.Log($"Distance difference {diff}");
 
-        PreviousPosition = position;
+
+        
+        // Compute the reward
+        AddReward(Params.Potential * diff);  // Add reward for getting closer to the goal
+
+        var layerMask = 1 << 3;
+        var nearbyObjects =
+            Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
+                .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
+                .Select(c => MLUtils.GetColliderInfo(transform, c))
+                .Take(Params.SightAgents);
+        
+        // Debug.Log(nearbyObjects);
+        foreach (var agentInfo in nearbyObjects)
+        {
+            Debug.Log(String.Join(",", agentInfo));
+            bufferSensor.AppendObservation(agentInfo);
+        }
+
+
+        // Debug.Log($"Total reward: {GetCumulativeReward()}");
+
+        // Debug graphics
+        Debug.DrawLine(transform.position, goal.position, Color.red, Time.fixedDeltaTime);
+        // Debug.Log($"Current position: {transform.position}. Previous position: {PreviousPosition}");
+        var parentPosition = transform.parent.position;
+        var absPrevPosition = PreviousPosition + parentPosition;
+        Debug.DrawLine(transform.position, absPrevPosition, Color.green, 20*Time.fixedDeltaTime);
+
+
+        
+        // Final updates
+        PreviousPosition = transform.localPosition;
 
         _material.color = _originalColor;
-
-        // for (var i = 0; i < 4; i++)
-        // {
-        //     bufferSensor.AppendObservation(new float[] {1,2,3,4});
-        // }
-        
-        
-        // Debug.Log($"Total reward: {GetCumulativeReward()}");
 
     }
 
@@ -122,15 +150,19 @@ public class AgentRandom : Walker
     {
         // Debug.Log("Hitting a trigger");
         
-
-        if (other.name == goal.name)  // Requires the goals to have unique names - not ideal, but only thing that works
+        if (other.name != goal.name) return;
+        
+        // Give the goal reward at most only once per episode
+        if (!_collectedGoal)
         {
-            AddReward(Constants.GoalReward);
-            GetComponentInParent<ManagerRandom>().ReachGoal(this);
-            _material.color = Color.blue;
-            
-            // Debug.Log("Collecting a reward");
+            AddReward(Params.Goal);
         }
+        _collectedGoal = true;
+
+        GetComponentInParent<ManagerRandom>().ReachGoal(this);
+        _material.color = Color.blue;
+            
+        // Debug.Log("Collecting a reward");
     }
 
     protected override void OnCollisionEnter(Collision other)
@@ -139,11 +171,8 @@ public class AgentRandom : Walker
         
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
-            AddReward(Constants.CollisionReward);
+            AddReward(Params.Collision);
             _material.color = Color.red;
-            // Debug.Log($"Collision with an {other.collider.tag}!");
-            // Debug.Log("I shouldn't be here");
-    
         }
     }
     
@@ -159,19 +188,6 @@ public class AgentRandom : Walker
 
         }
     }
-
-    // private void OnCollisionExit(Collision other)
-    // {
-    //     _material.color = _originalColor;
-    // }
-    //
-    // private void OnCollisionEnter(Collision other)
-    // {
-    //     if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
-    //     {
-    //         _material.color = Color.red;
-    //     }
-    // }
 
     public Vector3 PreviousPosition { get; set; }
 }

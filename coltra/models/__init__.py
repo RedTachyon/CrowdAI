@@ -1,2 +1,2 @@
 from .mlp_models import MLPModel, FancyMLPModel
-from .network_utils import FCNetwork
+from .base_models import FCNetwork

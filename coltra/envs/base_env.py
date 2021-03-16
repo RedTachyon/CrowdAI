@@ -1,11 +1,20 @@
 from abc import ABC, abstractmethod
 import inspect
 import pickle
-from typing import Sequence, Optional, List, Union
+from typing import Sequence, Optional, List, Union, Tuple, Dict, Any
 
 import cloudpickle
+import gym
 import numpy as np
 
+from coltra.buffers import Observation, Action, Reward, Done
+
+
+ObsDict = Dict[str, Observation]
+ActionDict = Dict[str, Action]
+RewardDict = Dict[str, Reward]
+DoneDict = Dict[str, Done]
+InfoDict = Dict[str, Any]
 
 
 class AlreadySteppingError(Exception):
@@ -156,13 +165,6 @@ class VecEnv(ABC):
     def render(self, mode: str = 'human'):
         return
 
-    @property
-    def unwrapped(self):
-        if isinstance(self, VecEnvWrapper):
-            return self.venv.unwrapped
-        else:
-            return self
-
     def getattr_depth_check(self, name, already_found):
         """Check if an attribute reference is being hidden in a recursive call to __getattr__
 
@@ -189,113 +191,6 @@ class VecEnv(ABC):
         return indices
 
 
-class VecEnvWrapper(VecEnv):
-    """
-    Vectorized environment base class
-
-    :param venv: (VecEnv) the vectorized environment to wrap
-    :param observation_space: (Gym Space) the observation space (can be None to load from venv)
-    :param action_space: (Gym Space) the action space (can be None to load from venv)
-    """
-
-    def __init__(self, venv, observation_space=None, action_space=None):
-        self.venv = venv
-        VecEnv.__init__(self, num_envs=venv.num_envs, observation_space=observation_space or venv.observation_space,
-                        action_space=action_space or venv.action_space)
-        self.class_attributes = dict(inspect.getmembers(self.__class__))
-
-    def step_async(self, actions):
-        self.venv.step_async(actions)
-
-    @abstractmethod
-    def reset(self):
-        pass
-
-    @abstractmethod
-    def step_wait(self):
-        pass
-
-    def seed(self, seed=None):
-        return self.venv.seed(seed)
-
-    def close(self):
-        return self.venv.close()
-
-    def render(self, mode: str = 'human'):
-        return self.venv.render(mode=mode)
-
-    def get_images(self):
-        return self.venv.get_images()
-
-    def get_attr(self, attr_name, indices=None):
-        return self.venv.get_attr(attr_name, indices)
-
-    def set_attr(self, attr_name, value, indices=None):
-        return self.venv.set_attr(attr_name, value, indices)
-
-    def env_method(self, method_name, *method_args, indices=None, **method_kwargs):
-        return self.venv.env_method(method_name, *method_args, indices=indices, **method_kwargs)
-
-    def __getattr__(self, name):
-        """Find attribute from wrapped venv(s) if this wrapper does not have it.
-        Useful for accessing attributes from venvs which are wrapped with multiple wrappers
-        which have unique attributes of interest.
-        """
-        blocked_class = self.getattr_depth_check(name, already_found=False)
-        if blocked_class is not None:
-            own_class = "{0}.{1}".format(type(self).__module__, type(self).__name__)
-            format_str = ("Error: Recursive attribute lookup for {0} from {1} is "
-                          "ambiguous and hides attribute from {2}")
-            raise AttributeError(format_str.format(name, own_class, blocked_class))
-
-        return self.getattr_recursive(name)
-
-    def _get_all_attributes(self):
-        """Get all (inherited) instance and class attributes
-
-        :return: (dict<str, object>) all_attributes
-        """
-        all_attributes = self.__dict__.copy()
-        all_attributes.update(self.class_attributes)
-        return all_attributes
-
-    def getattr_recursive(self, name):
-        """Recursively check wrappers to find attribute.
-
-        :param name (str) name of attribute to look for
-        :return: (object) attribute
-        """
-        all_attributes = self._get_all_attributes()
-        if name in all_attributes:  # attribute is present in this wrapper
-            attr = getattr(self, name)
-        elif hasattr(self.venv, 'getattr_recursive'):
-            # Attribute not present, child is wrapper. Call getattr_recursive rather than getattr
-            # to avoid a duplicate call to getattr_depth_check.
-            attr = self.venv.getattr_recursive(name)
-        else:  # attribute not present, child is an unwrapped VecEnv
-            attr = getattr(self.venv, name)
-
-        return attr
-
-    def getattr_depth_check(self, name, already_found):
-        """See base class.
-
-        :return: (str or None) name of module whose attribute is being shadowed, if any.
-        """
-        all_attributes = self._get_all_attributes()
-        if name in all_attributes and already_found:
-            # this venv's attribute is being hidden because of a higher venv.
-            shadowed_wrapper_class = "{0}.{1}".format(type(self).__module__, type(self).__name__)
-        elif name in all_attributes and not already_found:
-            # we have found the first reference to the attribute. Now check for duplicates.
-            shadowed_wrapper_class = self.venv.getattr_depth_check(name, True)
-        else:
-            # this wrapper does not have the attribute. Keep searching.
-            shadowed_wrapper_class = self.venv.getattr_depth_check(name, already_found)
-
-        return shadowed_wrapper_class
-
-
 class CloudpickleWrapper(object):
     def __init__(self, var):
         """
@@ -310,3 +205,65 @@ class CloudpickleWrapper(object):
 
     def __setstate__(self, obs):
         self.var = cloudpickle.loads(obs)
+
+
+class MultiAgentEnv(gym.Env):
+    """
+    Base class for a gym-like environment for multiple agents. An agent is identified with its id (string),
+    and most interactions are communicated through that API (actions, states, etc)
+    """
+
+    obs_vector_size: int
+    action_vector_size: int
+
+    def __init__(self, *args, **kwargs):
+        self.config = {}
+        self.active_agents: List = []
+
+    def reset(self, *args, **kwargs) -> ObsDict:
+        """
+        Resets the environment and returns the state.
+        Returns:
+            A dictionary holding the state visible to each agent.
+        """
+        raise NotImplementedError
+
+    def step(self, action_dict: ActionDict) -> Tuple[ObsDict, RewardDict, DoneDict, InfoDict]:
+        """
+        Executes the chosen actions for each agent and returns information about the new state.
+
+        Args:
+            action_dict: dictionary holding each agent's action
+
+        Returns:
+            states: new state for each agent
+            rewards: reward obtained by each agent
+            dones: whether the environment is done for each agent
+            infos: any additional information
+        """
+        raise NotImplementedError
+
+    def render(self, mode='human'):
+        raise NotImplementedError
+
+    @staticmethod
+    def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
+        keys = list(dict_.keys())
+        values = Observation.stack_tensor([dict_[key] for key in keys])
+
+        return values, keys
+
+    @staticmethod
+    def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
+        value_dict = {key: arrays[i] for i, key in enumerate(keys)}
+        return value_dict
+
+    @classmethod
+    def get_env_creator(cls, *args, **kwargs):
+        def _inner():
+            return cls(*args, **kwargs)
+        return _inner
+
+    @classmethod
+    def get_venv(cls, workers: int = 8, *args, **kwargs) -> VecEnv:
+        raise NotImplementedError

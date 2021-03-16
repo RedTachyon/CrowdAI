@@ -8,18 +8,20 @@ from coltra.agents import CAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 from coltra.envs.probe_envs import ConstRewardEnv
 from coltra.models.mlp_models import FancyMLPModel
+from coltra.models.relational_models import RelationModel
 from coltra.trainers import PPOCrowdTrainer
 from coltra.models.raycast_models import LeeModel
 
 
 class Parser(BaseParser):
     config: str = "configs/base_config.yaml"
-    iters: int = 1000
+    iters: int = 500
     env: str
     name: str
+    workers: int = 8
+    model_type: str = "blind"
     mode: Optional[str]
     num_agents: Optional[int]
-    ray_model: bool
     start_dir: Optional[str]
     start_idx: Optional[int] = -1
 
@@ -28,8 +30,8 @@ class Parser(BaseParser):
         "iters": "Number of coltra iterations",
         "env": "Path to the Unity environment binary",
         "name": "Name of the tb directory to store the logs",
+        "model_type": "Type of the information that a model has access to",
         "mode": "What board layout should be used",
-        "ray_model": "Whether we should train a model that uses ray perception",
         "start_dir": "Name of the tb directory containing the run from which we want to (re)start the coltra",
         "start_idx": "From which iteration we should start (only if start_dir is set)",
     }
@@ -39,9 +41,9 @@ class Parser(BaseParser):
         "iters": "i",
         "env": "e",
         "name": "n",
+        "model_type": "mt",
         "mode": "m",
         "num_agents": "na",
-        "ray_model": "r",
         "start_dir": "sd",
         "start_idx": "si",
     }
@@ -51,6 +53,8 @@ if __name__ == '__main__':
     CUDA = torch.cuda.is_available()
 
     args = Parser()
+
+    assert args.model_type in ("blind", "rays", "relation"), ValueError("Wrong model type passed.")
 
     with open(args.config, "r") as f:
         config = yaml.load(f.read(), yaml.Loader)
@@ -69,11 +73,9 @@ if __name__ == '__main__':
     workers = trainer_config.get("workers") or 8  # default value
 
     # Initialize the environment
-    if args.env == "probe":
-        env = ConstRewardEnv(20)
-    else:
-        env = UnitySimpleCrowdEnv(args.env)
-        env.engine_channel.set_configuration_parameters(time_scale=100, width=100, height=100)
+    env = UnitySimpleCrowdEnv.get_venv(args.workers, file_name=args.env)
+
+    # env.engine_channel.set_configuration_parameters(time_scale=100, width=100, height=100)
 
     # Initialize the agent
     sample_obs = next(iter(env.reset().values()))
@@ -83,8 +85,10 @@ if __name__ == '__main__':
     model_config["input_size"] = obs_size
     model_config["rays_input_size"] = ray_size
 
-    if args.ray_model:
+    if args.model_type == "rays":
         model_cls = LeeModel
+    elif args.model_type == "relation":
+        model_cls = RelationModel
     else:
         model_cls = FancyMLPModel
 

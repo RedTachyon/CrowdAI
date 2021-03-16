@@ -7,12 +7,12 @@ from torch import Tensor
 from torch.utils.tensorboard import SummaryWriter
 from typarse import BaseConfig
 
-from coltra.agents import Agent
-from coltra.bgae import discount_bgae, get_episode_rewards
-from coltra.utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
+from .agents import Agent
+from .bgae import discount_bgae, get_episode_rewards
+from .utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
     write_dict, batch_to_gpu
 
-from coltra.buffers import Reward, Value, Done, Multitype, get_batch_size, MemoryRecord, Observation, Action
+from .buffers import Reward, Value, Done, Multitype, get_batch_size, MemoryRecord, Observation, Action
 
 
 def minibatches(*tensors: Union[Tensor, Multitype], batch_size: int = 32, shuffle: bool = True, rng: Generator = None):

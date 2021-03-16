@@ -1,11 +1,12 @@
 from torch import nn, tensor, Tensor
+from typarse import BaseParser
 
-from coltra.agents import CAgent
+from coltra.agents import CAgent, ConstantAgent
 from coltra.collectors import collect_crowd_data
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 from coltra.models.mlp_models import MLPModel
 
-from coltra.parallel import SubprocVecEnv
+from coltra.envs import SubprocVecEnv
 
 
 class Model(nn.Module):
@@ -27,6 +28,16 @@ def get_env_creator(*args, **kwargs):
         return env
     return _inner
 
+class Parser(BaseParser):
+    env: str
+
+    _help = {
+        "env": "Path to the environment executable"
+    }
+
+    _abbrev = {
+        "env": "e"
+    }
 
 if __name__ == '__main__':
 
@@ -37,9 +48,7 @@ if __name__ == '__main__':
          for i in range(8)]
     )
 
-    agent = CAgent(MLPModel({
-        "input_size": 72,
-    }))
+    agent = ConstantAgent([1, 1])
 
     data, metrics = collect_crowd_data(agent, venv, 500, disable_tqdm=False)
     breakpoint()

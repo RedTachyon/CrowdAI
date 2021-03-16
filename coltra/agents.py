@@ -8,8 +8,8 @@ import torch
 from torch import Tensor
 from torch.distributions import Normal
 
-from coltra.models.mlp_models import BaseModel
-from coltra.buffers import Observation, Action
+from .models.base_models import BaseModel
+from .buffers import Observation, Action
 
 
 class Agent:
@@ -104,7 +104,7 @@ class CAgent(Agent):  # Continuous Agent
         values = extra_outputs["value"].sum(-1)
         # Sum across dimensions of the action
         action_logprobs = action_distribution.log_prob(action_batch.continuous).sum(-1)
-        entropies = action_distribution.entropy().sum(-1)  # TODO: normalize the entropy to [0, 1]?
+        entropies = action_distribution.entropy().sum(-1)
 
         return action_logprobs, values, entropies
 
@@ -134,7 +134,7 @@ class CAgent(Agent):  # Continuous Agent
 class ConstantAgent(Agent):
 
     def __init__(self, action: np.array):
-        self.action = action
+        self.action = np.asarray(action, dtype=np.float32)
 
     def act(self, obs_batch: Observation,
             state_batch: Tuple = (),

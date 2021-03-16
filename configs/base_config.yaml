@@ -50,4 +50,11 @@ model:
 
   sigma0: 0.7
 
+  vec_input_size: 4
+  rel_input_size: 4
+  vec_hidden_layers: [32, 32]
+  rel_hidden_layers: [32, 32]
+  com_hidden_layers: [32, 32]
+  num_action: 2
+
   initializer: kaiming_uniform

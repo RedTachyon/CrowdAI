@@ -6,19 +6,20 @@ import torch
 import torch.multiprocessing as mp
 from tqdm import trange
 
-from coltra.agents import Agent
-from coltra.parallel import SubprocVecEnv
+from .agents import Agent
+from .envs import SubprocVecEnv
 
-from coltra.envs.unity_envs import MultiAgentEnv, UnitySimpleCrowdEnv, Mode
+from .envs.unity_envs import UnitySimpleCrowdEnv, Mode
+from .envs import MultiAgentEnv
 
-from coltra.buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
+from .buffers import MemoryRecord, MemoryBuffer, AgentMemoryBuffer
 
 
 def collect_crowd_data(agent: Agent,
-                       env: Union[MultiAgentEnv, SubprocVecEnv],
+                       env: MultiAgentEnv,
                        num_steps: Optional[int] = None,
                        mode: Mode = Mode.Random,
-                       num_agents: int = 20,
+                       num_agents: int = None,
                        deterministic: bool = False,
                        disable_tqdm: bool = True) -> Tuple[MemoryRecord, Dict]:
     """
@@ -74,15 +75,16 @@ def collect_crowd_data(agent: Agent,
         # breakpoint()
 
         # Collect the metrics passed by the environment
-        if isinstance(info_dict, tuple):  # SubProcVecEnv
-            # all_metrics = np.concatenate([info["metrics"] for info in info_dict])
-            all_metrics = {}
-            for key in info_dict[0].keys():
-                if key.startswith("m_"):
-                    all_metrics[key] = np.concatenate([val[key] for val in info_dict])
-        else:
-            # all_metrics = info_dict["metrics"]
-            all_metrics = {k: v for k, v in info_dict.items() if k.startswith("m_")}
+        # if isinstance(info_dict, tuple):  # SubProcVecEnv
+        #     # all_metrics = np.concatenate([info["metrics"] for info in info_dict])
+        #     all_metrics = {}
+        #     for key in info_dict[0].keys():
+        #         if key.startswith("m_"):
+        #             all_metrics[key] = np.concatenate([val[key] for val in info_dict])
+        # else:
+        #     # all_metrics = info_dict["metrics"]
+
+        all_metrics = {k: v for k, v in info_dict.items() if k.startswith("m_")}
 
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])

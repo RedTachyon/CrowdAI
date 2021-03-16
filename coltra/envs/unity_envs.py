@@ -1,22 +1,16 @@
 import numpy as np
-import gym
-from typing import Dict, Any, Tuple, Callable, List
+from typing import Tuple, List
 from enum import Enum
 
-import torch
-from mlagents_envs.base_env import BehaviorSpec, ActionTuple
+from mlagents_envs.base_env import ActionTuple
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 
-from coltra.envs.side_channels import StatsChannel, parse_side_message
-from coltra.buffers import Observation, Action, Reward, Done, TensorArray
-
-StateDict = Dict[str, Observation]
-ActionDict = Dict[str, Action]
-RewardDict = Dict[str, Reward]
-DoneDict = Dict[str, Done]
-InfoDict = Dict[str, Any]
+from .side_channels import StatsChannel
+from coltra.buffers import Observation, Action
+from .subproc_vec_env import SubprocVecEnv
+from .base_env import MultiAgentEnv, ObsDict, ActionDict, RewardDict, DoneDict, InfoDict
 
 
 class Mode(Enum):
@@ -36,61 +30,9 @@ class Mode(Enum):
             raise ValueError(f"{name} is not a valid mode identifier")
 
 
-class MultiAgentEnv(gym.Env):
-    """
-    Base class for a gym-like environment for multiple agents. An agent is identified with its id (string),
-    and most interactions are communicated through that API (actions, states, etc)
-    """
-
-    obs_vector_size: int
-    action_vector_size: int
-
-    def __init__(self):
-        self.config = {}
-        self.active_agents: List = []
-
-    def reset(self, *args, **kwargs) -> StateDict:
-        """
-        Resets the environment and returns the state.
-        Returns:
-            A dictionary holding the state visible to each agent.
-        """
-        raise NotImplementedError
-
-    def step(self, action_dict: ActionDict) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
-        """
-        Executes the chosen actions for each agent and returns information about the new state.
-
-        Args:
-            action_dict: dictionary holding each agent's action
-
-        Returns:
-            states: new state for each agent
-            rewards: reward obtained by each agent
-            dones: whether the environment is done for each agent
-            infos: any additional information
-        """
-        raise NotImplementedError
-
-    def render(self, mode='human'):
-        raise NotImplementedError
-
-    @staticmethod
-    def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
-        keys = list(dict_.keys())
-        values = Observation.stack_tensor([dict_[key] for key in keys])
-
-        return values, keys
-
-    @staticmethod
-    def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
-        value_dict = {key: arrays[i] for i, key in enumerate(keys)}
-        return value_dict
-
-
 class UnitySimpleCrowdEnv(MultiAgentEnv):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, file_name: str = None, **kwargs):
 
         super().__init__()
         self.engine_channel = EngineConfigurationChannel()
@@ -103,7 +45,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         kwargs["side_channels"].append(self.stats_channel)
         kwargs["side_channels"].append(self.param_channel)
 
-        self.unity = UnityEnvironment(*args, **kwargs)
+        self.unity = UnityEnvironment(file_name=file_name, **kwargs)
         self.behaviors = {}
         self.manager = ""
 
@@ -111,9 +53,9 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.obs_vector_size = next(iter(self.reset().values())).vector.shape[0]
         self.action_vector_size = 2
 
-    def _get_step_info(self, step: bool = False) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
+    def _get_step_info(self, step: bool = False) -> Tuple[ObsDict, RewardDict, DoneDict, InfoDict]:
         names = self.behaviors.keys()
-        obs_dict: StateDict = {}
+        obs_dict: ObsDict = {}
         reward_dict: RewardDict = {}
         done_dict: DoneDict = {}
         info_dict: InfoDict = {}
@@ -177,7 +119,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         return obs_dict, reward_dict, done_dict, info_dict
 
-    def step(self, action: ActionDict) -> Tuple[StateDict, RewardDict, DoneDict, InfoDict]:
+    def step(self, action: ActionDict) -> Tuple[ObsDict, RewardDict, DoneDict, InfoDict]:
 
         for name in self.behaviors.keys():
             decisions, terminals = self.unity.get_steps(name)
@@ -211,11 +153,14 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         return obs_dict, reward_dict, done_dict, info_dict
 
-    def reset(self, mode: Mode = None, num_agents: int = None) -> StateDict:
+    def reset(self, mode: Mode = None, num_agents: int = None, **kwargs) -> ObsDict:
         if mode:
             self.param_channel.set_float_parameter("mode", mode.value)
         if num_agents:
             self.param_channel.set_float_parameter("agents", num_agents)
+
+        for (name, value) in kwargs.items():
+            self.param_channel.set_float_parameter(name, value)
 
         self.unity.reset()
 
@@ -239,7 +184,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         return obs_dict
 
     @property
-    def current_obs(self) -> StateDict:
+    def current_obs(self) -> ObsDict:
         obs_dict, _, _, info_dict = self._get_step_info()
         return obs_dict
 
@@ -253,3 +198,20 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def render(self, mode='human'):
         raise NotImplementedError
+
+    @classmethod
+    def get_env_creator(cls, *args, **kwargs):
+        def _inner():
+            env = cls(*args, **kwargs)
+            env.engine_channel.set_configuration_parameters(time_scale=100)
+            return env
+
+        return _inner
+
+    @classmethod
+    def get_venv(cls, workers: int = 8, file_name: str = None, *args, **kwargs) -> SubprocVecEnv:
+        venv = SubprocVecEnv([
+            cls.get_env_creator(file_name=file_name, no_graphics=False, worker_id=i, seed=i, *args, **kwargs)
+            for i in range(workers)
+        ])
+        return venv

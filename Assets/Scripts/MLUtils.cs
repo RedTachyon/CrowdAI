@@ -96,6 +96,16 @@ public class MLUtils
     }
     
     // public static Vector3 gridPlacement
-    
+
+    public static float[] GetColliderInfo(Transform baseTransform, Collider collider)
+    {
+        var rigidbody = collider.GetComponent<Rigidbody>();
+        var transform = collider.transform;
+        var rotation = baseTransform.localRotation;
+        var pos = Quaternion.Inverse(rotation) * (transform.localPosition - baseTransform.localPosition);
+        var velocity = Quaternion.Inverse(rotation) * rigidbody.velocity;
+
+        return new[] {pos.x, pos.z, velocity.x, velocity.z};
+    }
     
 }

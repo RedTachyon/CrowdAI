@@ -12,6 +12,7 @@ public class Walker : Agent
     // A basic agent that only implements the environment dynamics, i.e. walking around with friction
     protected Rigidbody Rigidbody;
 
+    public bool velocityControl = false;
     public float moveSpeed = 25f;
     public float rotationSpeed = 3f;
 
@@ -43,7 +44,7 @@ public class Walker : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        base.OnActionReceived(actions);
+        base.OnActionReceived(actions); // TODO: consider velocity-based dynamics
         // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
         
         Collision = 0;
@@ -52,20 +53,31 @@ public class Walker : Agent
         
         // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
 
-        // Forward velocity
-        // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
         var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -0.5f, 1f);
-        
-        // Angular velocity
-        // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
         var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
+
+        // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
+        // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);        
         
         var velocity = Rigidbody.velocity;
         
         // Debug.Log(velocity);
 
         // Apply the force
-        Vector3 force = transform.forward * linearSpeed * moveSpeed;
+        if (velocityControl)
+        {
+            // Average mean comfort speed = 1.4mps
+            var newVelocity = transform.forward * linearSpeed * moveSpeed / 5f; // Rough adjustment to a normal range
+            Rigidbody.velocity = newVelocity;
+        }
+        else
+        {
+            var force = transform.forward * linearSpeed * moveSpeed;
+            var drag = -dragFactor * velocity;
+            Rigidbody.AddForce(force + drag);
+        }
+        // Rigidbody.velocity = force;
+        
         // Apply the rotation
         var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
         Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed * timeFactor;
@@ -75,8 +87,7 @@ public class Walker : Agent
         
         
         // Reduce the velocity friction-like
-        Vector3 drag = -dragFactor * velocity;
-        Rigidbody.AddForce(force + drag);
+
 
         // Rigidbody.velocity = force / 10f;
 
@@ -85,23 +96,7 @@ public class Walker : Agent
         //
         // var dirVector = force;
         
-        // if (dirVector.magnitude > .1f)
-        // {
-        //     var orthogonal = Vector3.Cross(Vector3.up, forward).normalized;
-        //     var angle = Vector3.Angle(forward, dirVector.normalized) / 180f;
-        //     // var dot = Vector3.Dot(rotation * Vector3.forward, dirVector.normalized);
-        //     var sign = Mathf.Sign(Vector3.Dot(orthogonal, dirVector));
-        //
-        //     // Debug.Log(Vector3.SignedAngle(rotation * Vector3.forward, dirVector.normalized, Vector3.up));
-        //
-        //
-        //     var direction = Vector3.MoveTowards(
-        //         forward, 
-        //         sign * orthogonal, 
-        //         Mathf.Min(0.5f * angle, 0.2f)
-        //     );
-        //     Rigidbody.rotation = Quaternion.LookRotation(direction);
-        // }
+
     }
     
     public override void Heuristic(in ActionBuffers actionsOut)

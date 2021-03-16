@@ -3,7 +3,8 @@ from typing import List, Dict
 import numpy as np
 
 from coltra.buffers import Observation, Action
-from coltra.envs.unity_envs import MultiAgentEnv
+from .base_env import MultiAgentEnv
+from .subproc_vec_env import SubprocVecEnv
 
 
 class ConstRewardEnv(MultiAgentEnv):
@@ -16,6 +17,10 @@ class ConstRewardEnv(MultiAgentEnv):
         self.action_vector_size = 1
 
     def reset(self, *args, **kwargs):
+        if num_agents := kwargs.get("num_agents"):
+            self.num_agents = num_agents
+            self.active_agents = [f"Agent{i}" for i in range(num_agents)]
+
         zero_obs = Observation(vector=np.ones((1,), dtype=np.float32))
         return {agent_id: zero_obs for agent_id in self.active_agents}
 
@@ -29,3 +34,10 @@ class ConstRewardEnv(MultiAgentEnv):
     def render(self, mode='human'):
         return 0
 
+    @classmethod
+    def get_venv(cls, workers: int = 8, *args, **kwargs) -> SubprocVecEnv:
+        venv = SubprocVecEnv([
+            cls.get_env_creator(*args, **kwargs)
+            for _ in range(workers)
+        ])
+        return venv
