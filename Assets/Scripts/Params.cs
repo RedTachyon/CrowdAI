@@ -17,6 +17,10 @@ public class Params
     public static float Collision => Get("collision", -0.3f);
     public static float SightRadius => Get("radius", 5f);
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", 10f));
+    public static float ComfortSpeed => Get("comfort_speed", 1.4f);
+    public static float ComfortSpeedWeight => Get("comfort_speed_weight", 1f);
+    public static float ComfortDistance => Get("comfort_distance", 1.5f);
+    public static float ComfortDistanceWeight => Get("comfort_distance_weight", 1f);
 
     public static float Get(string name, float defaultValue)
     {

@@ -55,4 +55,5 @@ if __name__ == '__main__':
 
         data, metrics = collect_crowd_data(agent, env, args.steps,
                                            mode=Mode.from_string(args.mode),
-                                           num_agents=args.num_agents)
+                                           num_agents=args.num_agents,
+                                           deterministic=True)

@@ -4,7 +4,6 @@ from typarse import BaseParser
 from coltra.agents import CAgent, ConstantAgent
 from coltra.collectors import collect_crowd_data
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
-from coltra.models.mlp_models import MLPModel
 
 from coltra.envs import SubprocVecEnv
 

@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Callable, List
 import torch
 import torch.nn.functional as F
 from torch import nn, Tensor
-from torch.distributions import Distribution, Normal
+from torch.distributions import Distribution, Normal, Categorical
 from typarse import BaseConfig
 
 from coltra.buffers import Observation
@@ -110,17 +110,24 @@ class FancyMLPModel(BaseModel):
 
             hidden_sizes: List[int] = [64, 64]
 
+            discrete: bool = False
+
             initializer: str = "kaiming_uniform"
 
         Config.update(config)
         self.config = Config
+        self.discrete = self.config.discrete
 
         self.activation: Callable = get_activation(self.config.activation)
+
+        heads = [self.config.num_actions] \
+            if self.discrete \
+            else [self.config.num_actions, self.config.num_actions]
 
         # Create the policy network
         self.policy_network = FCNetwork(
             input_size=self.config.input_size,
-            output_sizes=[self.config.num_actions, self.config.num_actions],
+            output_sizes=heads,
             hidden_sizes=self.config.hidden_sizes,
             activation=self.config.activation,
             initializer=self.config.initializer,
@@ -142,10 +149,14 @@ class FancyMLPModel(BaseModel):
                 state: Tuple = (),
                 get_value: bool = True) -> Tuple[Distribution, Tuple[Tensor, Tensor], Dict[str, Tensor]]:
 
-        [action_mu, action_std] = self.policy_network(x.vector)
-        action_std = F.softplus(action_std - 0.5)
+        if self.discrete:
+            [action_logits] = self.policy_network(x.vector)
+            action_distribution = Categorical(logits=action_logits)
+        else:
+            [action_mu, action_std] = self.policy_network(x.vector)
+            action_std = F.softplus(action_std - 0.5)
 
-        action_distribution = Normal(loc=action_mu, scale=action_std)
+            action_distribution = Normal(loc=action_mu, scale=action_std)
 
         extra_outputs = {}
 

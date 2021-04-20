@@ -68,6 +68,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
             dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
             # TODO: Fix this to avoid repetition
+            # TOOD: fix this with the new information
             for idx in dec_ids:
                 agent_name = f"{name}&id={idx}"
                 if len(dec_obs) == 1:

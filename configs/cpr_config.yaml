@@ -1,10 +1,10 @@
 ---
 trainer:
-  steps: 500
+  steps: 1000
   workers: 8
 
   mode: random
-  num_agents: 20
+  num_agents: 9
 
   tensorboard_name:
   save_freq: 10
@@ -38,9 +38,9 @@ trainer:
 
 model:
   input_size:
-  num_actions: 2
+  num_actions: 8
   activation: tanh
-  discrete: false
+  discrete: true
 
   hidden_sizes: [64, 64, 64]
   separate_value: true

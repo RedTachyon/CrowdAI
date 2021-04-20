@@ -8,6 +8,51 @@ from coltra.buffers import Observation
 from coltra.utils import get_activation, get_initializer
 
 
+class BaseModel(nn.Module):
+    """
+    A base class for any NN-based models, stateful or not, following a common convention:
+    Each model in its forward pass takes an input and the previous recurrent state.
+    If the state is not used in that specific model, it will just be discarded
+
+    The output of each model is an action distribution, the next recurrent state,
+    and a dictionary with any extra outputs like the value
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._stateful = False
+        # self.config = config
+        self.device = 'cpu'
+
+    # TO IMPLEMENT
+    def forward(self, x: Observation,
+                state: Tuple,
+                get_value: bool) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
+        # Output: action_dist, state, {value, whatever else}
+        raise NotImplementedError
+
+    def value(self, x: Observation,
+              state: Tuple) -> Tensor:
+        raise NotImplementedError
+
+    # Built-ins
+    def get_initial_state(self, requires_grad=True) -> Tuple:
+        return ()
+
+    @property
+    def stateful(self):
+        return self._stateful
+
+    def cuda(self, *args, **kwargs):
+        super().cuda(*args, **kwargs)
+        self.device = 'cuda'
+
+    def cpu(self):
+        super().cpu()
+        self.device = 'cpu'
+
+
+
 class FCNetwork(nn.Module):
     def __init__(self,
                  input_size: int,
@@ -54,47 +99,3 @@ class FCNetwork(nn.Module):
             x = self.activation(x)
 
         return [head(x) for head in self.heads]
-
-
-class BaseModel(nn.Module):
-    """
-    A base class for any NN-based models, stateful or not, following a common convention:
-    Each model in its forward pass takes an input and the previous recurrent state.
-    If the state is not used in that specific model, it will just be discarded
-
-    The output of each model is an action distribution, the next recurrent state,
-    and a dictionary with any extra outputs like the value
-    """
-
-    def __init__(self):
-        super().__init__()
-        self._stateful = False
-        # self.config = config
-        self.device = 'cpu'
-
-    # TO IMPLEMENT
-    def forward(self, x: Observation,
-                state: Tuple,
-                get_value: bool) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
-        # Output: action_dist, state, {value, whatever else}
-        raise NotImplementedError
-
-    def value(self, x: Observation,
-              state: Tuple) -> Tensor:
-        raise NotImplementedError
-
-    # Built-ins
-    def get_initial_state(self, requires_grad=True) -> Tuple:
-        return ()
-
-    @property
-    def stateful(self):
-        return self._stateful
-
-    def cuda(self, *args, **kwargs):
-        super().cuda(*args, **kwargs)
-        self.device = 'cuda'
-
-    def cpu(self):
-        super().cpu()
-        self.device = 'cpu'

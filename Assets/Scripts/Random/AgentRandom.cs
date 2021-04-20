@@ -20,7 +20,9 @@ public class AgentRandom : Walker
     private Color _originalColor;
     private bool _collectedGoal;
 
-    public CBufferSensorComponent bufferSensor;
+    // public CBufferSensorComponent bufferSensor;
+    private BufferSensorComponent _bufferSensor;
+    
     // public Transform goal;
 
 
@@ -29,6 +31,7 @@ public class AgentRandom : Walker
         base.Initialize();
         _material = GetComponent<Renderer>().material;
         _originalColor = _material.color;
+        _bufferSensor = GetComponent<BufferSensorComponent>();
 
     }
 
@@ -44,7 +47,6 @@ public class AgentRandom : Walker
     {
         base.CollectObservations(sensor);
         // Debug.Log($"{name} CollectObs at step {GetComponentInParent<Statistician>().Time}");
-
         
         // RayPerceptionSensor structure:
         // 0 - n_tags: one-hot encoding of what was hit
@@ -123,7 +125,7 @@ public class AgentRandom : Walker
         foreach (var agentInfo in nearbyObjects)
         {
             Debug.Log(String.Join(",", agentInfo));
-            bufferSensor.AppendObservation(agentInfo);
+            _bufferSensor.AppendObservation(agentInfo);
         }
 
 

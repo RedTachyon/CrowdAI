@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Specialized;
+using Dynamics;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -12,9 +13,12 @@ public class Walker : Agent
     // A basic agent that only implements the environment dynamics, i.e. walking around with friction
     protected Rigidbody Rigidbody;
 
-    public bool velocityControl = false;
+    // public bool velocityControl = false;
     public float moveSpeed = 25f;
     public float rotationSpeed = 3f;
+    
+    public DynamicsEnum DynamicsType;
+    internal IDynamics Dynamics;
 
     public float dragFactor = 5f;
 
@@ -38,63 +42,22 @@ public class Walker : Agent
         startPosition = transform.localPosition;
         startRotation = transform.localRotation;
 
-        
+        Dynamics = DynamicsType switch
+        {
+            DynamicsEnum.CartesianVelocity => new CartesianVelocity(),
+            DynamicsEnum.CartesianAcceleration => new CartesianAcceleration(),
+            DynamicsEnum.PolarVelocity => new PolarVelocity(),
+            DynamicsEnum.PolarAcceleration => new PolarAcceleration(),
+            _ => Dynamics
+        };
     }
 
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        base.OnActionReceived(actions); // TODO: consider velocity-based dynamics
+        base.OnActionReceived(actions);
         // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
-        
-        Collision = 0;
-        
-        var vectorAction = actions.ContinuousActions;
-        
-        // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
-
-        var linearSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -0.5f, 1f);
-        var angularSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);
-
-        // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
-        // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);        
-        
-        var velocity = Rigidbody.velocity;
-        
-        // Debug.Log(velocity);
-
-        // Apply the force
-        if (velocityControl)
-        {
-            // Average mean comfort speed = 1.4mps
-            var newVelocity = transform.forward * linearSpeed * moveSpeed / 5f; // Rough adjustment to a normal range
-            Rigidbody.velocity = newVelocity;
-        }
-        else
-        {
-            var force = transform.forward * linearSpeed * moveSpeed;
-            var drag = -dragFactor * velocity;
-            Rigidbody.AddForce(force + drag);
-        }
-        // Rigidbody.velocity = force;
-        
-        // Apply the rotation
-        var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
-        Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotationSpeed * timeFactor;
-        Rigidbody.rotation = Quaternion.Euler(rotation);
-        
-        // Vector3 force = new Vector3(xSpeed, 0f, zSpeed).normalized * moveSpeed;
-        
-        
-        // Reduce the velocity friction-like
-
-
-        // Rigidbody.velocity = force / 10f;
-
-        // var rotation = Rigidbody.rotation;
-        // var forward = rotation * Vector3.forward;
-        //
-        // var dirVector = force;
+        Dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, 3f);
         
 
     }
