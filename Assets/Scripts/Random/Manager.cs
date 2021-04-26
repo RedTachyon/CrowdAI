@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 public enum Placement
 {
@@ -11,42 +15,38 @@ public enum Placement
     Hallway,
 }
 
-public class ManagerRandom : Statistician
+public class Manager : MonoBehaviour
 {
     [Range(1, 100)]
     public int numAgents = 1;
     public Placement mode;
+    
+    [FormerlySerializedAs("MaxStep")] [Range(1, 1000)]
+    public int maxStep = 500;
 
-    public Transform baseObstacle;
+    private Dictionary<Transform, bool> _finished;
+    internal int Time;
+    public StatsCommunicator statsCommunicator;
+
     public Transform obstacles;
-    
-    public override void Initialize()
-    {
-        base.Initialize();
-    
-        // var agent = GetComponentInChildren<AgentRandom>();
-        // var goal = agent.goal;
-        
-        // Debug.Log("Cloning agents");
-        // for (var i = 1; i < numAgents; i++)
-        // {
-        //     var newAgent = Instantiate(agent, transform);
-        //     var newGoal = Instantiate(goal, goal.parent);
-        //     
-        //     newAgent.GetComponent<AgentRandom>().goal = newGoal;
-        //     newAgent.name = agent.name + $" ({i})";
-        //     newGoal.name = goal.name + $" ({i})";
-        // }
-        
 
+    private SimpleMultiAgentGroup _agentGroup;
+    
+    public void Awake()
+    {
+        _finished = new Dictionary<Transform, bool>();
+        Academy.Instance.OnEnvironmentReset += ResetEpisode;
+        _agentGroup = new SimpleMultiAgentGroup();
+
+        foreach (Transform agent in transform)
+        {
+            _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
+        }
     }
 
-    public override void OnEpisodeBegin()
+    public void ResetEpisode()
     {
-        // Debug.Log("Manager starting an episode");
-        // _done = false;
-        // Debug.Log(UnityEngine.Random.state.GetHashCode());
-        // UnityEngine.Random.InitState(DateTime.Now.Millisecond);
+
         mode = GetMode();
         
         numAgents = GetNumAgents();
@@ -62,11 +62,24 @@ public class ManagerRandom : Statistician
             var active = i < numAgents;
             var currentAgent = transform.GetChild(i);
             currentAgent.gameObject.SetActive(active);
-            var currentGoal = currentAgent.GetComponent<AgentRandom>().goal;
+            var currentGoal = currentAgent.GetComponent<AgentBasic>().goal;
             currentGoal.gameObject.SetActive(active);
+
+            Agent agent = currentAgent.GetComponent<Agent>();
+
+            // TODO: this will crash?
+            if (active)
+            {
+                _agentGroup.RegisterAgent(agent);
+            }
+            else
+            {
+                _agentGroup.UnregisterAgent(agent);
+            }
+            
         }
         
-        var baseAgent = GetComponentInChildren<AgentRandom>();
+        var baseAgent = GetComponentInChildren<AgentBasic>();
         var baseGoal = baseAgent.goal;
 
         // If necessary, add some more agents
@@ -77,7 +90,7 @@ public class ManagerRandom : Statistician
             var newAgent = Instantiate(baseAgent, transform);
             var newGoal = Instantiate(baseGoal, baseGoal.parent);
             
-            newAgent.GetComponent<AgentRandom>().goal = newGoal;
+            newAgent.GetComponent<AgentBasic>().goal = newGoal;
             newAgent.name = baseAgent.name + $" ({i})";
             newGoal.name = baseGoal.name + $" ({i})";
         }
@@ -89,13 +102,12 @@ public class ManagerRandom : Statistician
         var agentIdx = 0;
         var placedAgents = new List<Vector3>();
         var placedGoals = new List<Vector3>();
-        
 
         foreach (Transform agent in transform)
         {
             if (!agent.gameObject.activeSelf) continue;
 
-            var goal = agent.GetComponent<AgentRandom>().goal;
+            var goal = agent.GetComponent<AgentBasic>().goal;
 
             Vector3 newPosition;
             Vector3 goalPosition;
@@ -193,25 +205,90 @@ public class ManagerRandom : Statistician
             agent.GetComponent<Rigidbody>().velocity = Vector3.zero;
             agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         
-            agent.GetComponent<AgentRandom>().PreviousPosition = agent.localPosition;
+            agent.GetComponent<AgentBasic>().PreviousPosition = agent.localPosition;
             
             // Update the counter
             agentIdx++;
         }
 
         // Initialize stats
-        base.OnEpisodeBegin();
+        _finished.Clear();
+
+        Time = 0;
+
+        foreach (Transform agent in transform)
+        {
+            _finished[agent] = false;
+        }
+
+    }
+    public void ReachGoal(Agent agent)
+    {
+        _finished[agent.GetComponent<Transform>()] = true;
+    }
+
+    private void FixedUpdate()
+    {
+        foreach (Transform agent in transform)
+        {
+            agent.GetComponent<Agent>().RequestDecision();
+        }
+        Time++;
+        
+        Debug.Log(Time);
+
+        if (Time > maxStep)
+        {
+            Debug.Log("Resetting");
+            _agentGroup.EndGroupEpisode();
+            ResetEpisode();
+        }
+    
+        CollectStats();
+
 
     }
     
-    public new void ReachGoal(Walker agent)
+    
+    private void CollectStats()
     {
-        base.ReachGoal(agent);
-        // Debug.Log("I'm here!");
-        // agent.goal.localPosition = new Vector3(
-        //     UnityEngine.Random.Range(-9f, 9f),
-        //     0.15f,
-        //     UnityEngine.Random.Range(-9f, 9f));
+        var distances = new List<float>();
+        var speeds = new List<float>();
+        var dones = new List<float>();
+        var collisions = new List<int>();
+        
+        foreach (Transform agent in transform)
+        {
+            if (!agent.gameObject.activeSelf) continue;
+            // Get distance from goal
+            var agentPosition = agent.localPosition;
+            var goalPosition = agent.GetComponent<AgentBasic>().goal.localPosition;
+
+            var distance = Vector3.Distance(agentPosition, goalPosition);
+            distances.Add(distance);
+            
+            // Get speed
+            var speed = agent.GetComponent<Rigidbody>().velocity.magnitude;
+            speeds.Add(speed);
+
+            // Fraction of agents that finished already
+            dones.Add(_finished[agent] ? 1f : 0f);
+            // Debug.Log(_finished[agent]);
+            
+            collisions.Add(agent.GetComponent<AgentBasic>().Collision);
+
+        }
+        var meanDist = distances.Average();
+        var meanSpeed = speeds.Average();
+        var finished =  dones.Average();
+        var collision = (float) collisions.Average();
+        
+        // Debug.Log(collision);
+
+        
+        var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
+        statsCommunicator.StatsChannel.SendMessage(message);
+        // Debug.Log("Message allegedly sent");
     }
 
     public Placement GetMode()
@@ -246,4 +323,5 @@ public class ManagerRandom : Statistician
 
         return agents;
     }
+    
 }
