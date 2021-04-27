@@ -21,7 +21,7 @@ public class Manager : MonoBehaviour
     public int numAgents = 1;
     public Placement mode;
     
-    [FormerlySerializedAs("MaxStep")] [Range(1, 1000)]
+    [Range(1, 1000)]
     public int maxStep = 500;
 
     private Dictionary<Transform, bool> _finished;
@@ -270,7 +270,8 @@ public class Manager : MonoBehaviour
             // Get speed
             var speed = agent.GetComponent<Rigidbody>().velocity.magnitude;
             speeds.Add(speed);
-
+            
+            Debug.Log($"Stats from agent {agent.name}");
             // Fraction of agents that finished already
             dones.Add(_finished[agent] ? 1f : 0f);
             // Debug.Log(_finished[agent]);

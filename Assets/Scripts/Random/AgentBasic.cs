@@ -5,10 +5,13 @@ using System.Linq;
 using System.Net;
 using Dynamics;
 using Observers;
+using Rewards;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using UnityEngine.Serialization;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -21,7 +24,7 @@ public class AgentBasic : Agent
     
     private Material _material;
     private Color _originalColor;
-    private bool _collectedGoal;
+    internal bool CollectedGoal;
 
     private BufferSensorComponent _bufferSensor;
     
@@ -31,11 +34,14 @@ public class AgentBasic : Agent
     public float moveSpeed = 25f;
     public float rotationSpeed = 3f;
     
-    public DynamicsEnum DynamicsType;
+    public DynamicsEnum dynamicsType;
     private IDynamics _dynamics;
 
-    public ObserversEnum ObserverType;
+    public ObserversEnum observerType;
     private IObserver _observer;
+
+    public RewardersEnum rewarderType;
+    private IRewarder _rewarder;
 
     public float dragFactor = 5f;
 
@@ -63,8 +69,11 @@ public class AgentBasic : Agent
         startPosition = transform.localPosition;
         startRotation = transform.localRotation;
 
-        _dynamics = Dynamics.Mapper.GetDynamics(DynamicsType);
-        _observer = Observers.Mapper.GetObserver(ObserverType);
+        _dynamics = Dynamics.Mapper.GetDynamics(dynamicsType);
+        _observer = Observers.Mapper.GetObserver(observerType);
+        _rewarder = Rewards.Mapper.GetRewarder(rewarderType);
+
+        GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
         
 
         _material = GetComponent<Renderer>().material;
@@ -76,7 +85,7 @@ public class AgentBasic : Agent
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
-        _collectedGoal = false;
+        CollectedGoal = false;
 
     }
 
@@ -140,20 +149,8 @@ public class AgentBasic : Agent
 
         _observer.Observe(sensor, transform, goal);
         
+        _rewarder.ComputeReward(transform);
         
-        // REWARDS
-        // Compute the distance-based reward
-        var prevDistance = Vector3.Distance(PreviousPosition, goal.localPosition);
-        var currentDistance = Vector3.Distance(transform.localPosition, goal.localPosition);
-        // Up to ~0.1
-        var diff = prevDistance - currentDistance;
-
-        // Debug.Log($"Distance {currentDistance}");
-        // Debug.Log($"Distance difference {diff}");
-        
-        // Compute the reward
-        AddReward(Params.Potential * diff);  // Add reward for getting closer to the goal
-
         
         // Collect Buffer observations
         var layerMask = 1 << 3; // Only look at the Agent layer
@@ -171,10 +168,6 @@ public class AgentBasic : Agent
             _bufferSensor.AppendObservation(agentInfo);
         }
 
-
-        // Debug.Log($"Total reward: {GetCumulativeReward()}");
-
-        
         // Draw some debugging lines
         
         Debug.DrawLine(transform.position, goal.position, Color.red, Time.fixedDeltaTime);
@@ -200,12 +193,10 @@ public class AgentBasic : Agent
         
         if (other.name != goal.name) return;
         
-        // Give the goal reward at most only once per episode
-        if (!_collectedGoal)
-        {
-            AddReward(Params.Goal);
-        }
-        _collectedGoal = true;
+        AddReward(_rewarder.TriggerReward(transform, other, true));
+        
+        
+        CollectedGoal = true;
 
         GetComponentInParent<Manager>().ReachGoal(this);
         _material.color = Color.blue;
@@ -218,13 +209,10 @@ public class AgentBasic : Agent
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             Collision = 1;
-        }
-        
-        if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
-        {
-            AddReward(Params.Collision);
             _material.color = Color.red;
         }
+        
+        AddReward(_rewarder.CollisionReward(transform, other, false));
     }
     
     
@@ -233,13 +221,10 @@ public class AgentBasic : Agent
         if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
         {
             Collision = 1;
-        }
-        if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
-        {
-            // AddReward(-.5f);
             _material.color = Color.red;
-
         }
+        
+        AddReward(_rewarder.CollisionReward(transform, other, true));
     }
 
     public Vector3 PreviousPosition { get; set; }
