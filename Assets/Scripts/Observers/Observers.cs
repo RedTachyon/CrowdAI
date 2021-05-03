@@ -6,7 +6,7 @@ namespace Observers
 {
     public interface IObserver
     {
-        public void Observe(VectorSensor sensor, Transform transform, Transform goal);
+        public void Observe(VectorSensor sensor, Transform transform);
 
         public int Size
         {
@@ -18,7 +18,8 @@ namespace Observers
     {
         Absolute,
         Relative,
-        RotRelative
+        RotRelative,
+        Proprioceptive
     }
     
     public static class Mapper
@@ -30,6 +31,7 @@ namespace Observers
                 ObserversEnum.Absolute => new Absolute(),
                 ObserversEnum.Relative => new Relative(),
                 ObserversEnum.RotRelative => new RotRelative(),
+                ObserversEnum.Proprioceptive => new Proprioceptive(),
                 _ => null
             };
 

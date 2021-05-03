@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace Rewards
 {
-    public class PredatorChase : IRewarder
+    public class Empty : IRewarder
     {
         public float ComputeReward(Transform transform)
         {
-            throw new System.NotImplementedException();
+            return 0f;
         }
 
         public float CollisionReward(Transform transform, Collision other, bool stay)

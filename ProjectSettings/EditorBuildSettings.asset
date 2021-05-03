@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Random/general_scene.unity
+    path: Assets/Scenes/PredatorPrey.unity
     guid: 646748b68796c440ab8826e4ab01c6d8
   m_configObjects: {}

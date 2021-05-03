@@ -1,3 +1,4 @@
+using Agents;
 using UnityEngine;
 
 namespace Rewards
@@ -11,6 +12,24 @@ namespace Rewards
 
     public enum RewardersEnum
     {
-        BaseRewarder
+        BaseRewarder,
+        Empty,
+        AnimalChase,
+    }
+    
+    public static class Mapper
+    {
+        public static IRewarder GetRewarder(RewardersEnum rewarderType)
+        {
+            IRewarder rewarder = rewarderType switch
+            {
+                RewardersEnum.BaseRewarder => new BaseRewarder(),
+                RewardersEnum.Empty => new Empty(),
+                RewardersEnum.AnimalChase => new AnimalChase(),
+                _ => null
+            };
+
+            return rewarder;
+        }
     }
 }

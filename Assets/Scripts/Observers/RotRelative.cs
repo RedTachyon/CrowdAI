@@ -1,4 +1,5 @@
 using System;
+using Agents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Observers
 {
     public class RotRelative : IObserver
     {
-        public void Observe(VectorSensor sensor, Transform transform, Transform goal)
+        public void Observe(VectorSensor sensor, Transform transform)
         {
             // Debug.Log($"{name} CollectObs at step {GetComponentInParent<Statistician>().Time}");
         
@@ -14,6 +15,9 @@ namespace Observers
             // 0 - n_tags: one-hot encoding of what was hit
             // n_tags: whether *something* was hit
             // n_tags + 1: normalized distance
+            
+            Transform goal = transform.GetComponent<AgentBasic>().goal;
+
         
             Vector3 position = transform.localPosition;
             Quaternion rotation = transform.localRotation;
