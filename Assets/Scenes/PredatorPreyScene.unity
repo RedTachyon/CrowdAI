@@ -301,11 +301,12 @@ MonoBehaviour:
   moveSpeed: 25
   rotationSpeed: 3
   dragFactor: 5
+  maxSpeed: 10
   type: 1
-  dynamicsType: 0
+  dynamicsType: 1
   observerType: 3
   rewarderType: 2
-  heuristicType: 1
+  heuristicType: 0
 --- !u!114 &229545802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -887,11 +888,12 @@ MonoBehaviour:
   moveSpeed: 25
   rotationSpeed: 3
   dragFactor: 5
+  maxSpeed: 10
   type: 0
-  dynamicsType: 0
+  dynamicsType: 1
   observerType: 3
   rewarderType: 2
-  heuristicType: 1
+  heuristicType: 0
 --- !u!114 &1618035132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1031,7 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cb4fed692b49d9a5488f53c599c441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 10
+  numAgents: 1
   maxStep: 500
   statsCommunicator: {fileID: 2113393393}
 --- !u!1 &1875459256
@@ -1124,7 +1126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cb4fed692b49d9a5488f53c599c441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 10
+  numAgents: 1
   maxStep: 500
   statsCommunicator: {fileID: 2113393393}
 --- !u!1 &2113393392

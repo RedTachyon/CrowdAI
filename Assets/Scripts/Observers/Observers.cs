@@ -19,7 +19,8 @@ namespace Observers
         Absolute,
         Relative,
         RotRelative,
-        Proprioceptive
+        Proprioceptive,
+        AnimalProprioceptive,
     }
     
     public static class Mapper
@@ -32,6 +33,7 @@ namespace Observers
                 ObserversEnum.Relative => new Relative(),
                 ObserversEnum.RotRelative => new RotRelative(),
                 ObserversEnum.Proprioceptive => new Proprioceptive(),
+                ObserversEnum.AnimalProprioceptive => new AnimalProprioceptive(),
                 _ => null
             };
 

@@ -133,7 +133,7 @@ namespace Managers
             }
             _time++;
         
-            Debug.Log(_time);
+            // Debug.Log(_time);
 
             if (_time > maxStep)
             {
@@ -174,7 +174,7 @@ namespace Managers
             // Debug.Log(collision);
 
 
-            var message = $"mean_speed {meanSpeed}\n";
+            var message = $"mean_speed {meanSpeed}";
 
             statsCommunicator.StatsChannel.SendMessage(message);
             // Debug.Log("Message allegedly sent");

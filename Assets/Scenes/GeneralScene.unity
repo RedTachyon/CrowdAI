@@ -793,7 +793,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 4071786926523291306}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.75
   m_Height: 2
   m_Direction: 1
@@ -1091,7 +1091,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3898099998562990148}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -1821,7 +1821,7 @@ SphereCollider:
   m_GameObject: {fileID: 4071786926523291306}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.3
   m_Center: {x: 0, y: 0, z: 0}
@@ -2111,7 +2111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &5848424186752706545
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2168,7 +2168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 20
+  numAgents: 1
   mode: 1
   maxStep: 500
   statsCommunicator: {fileID: 2113393393}
@@ -2293,10 +2293,10 @@ MonoBehaviour:
   MaxStep: 1000
   moveSpeed: 25
   rotationSpeed: 3
+  dragFactor: 5
   dynamicsType: 3
   observerType: 0
   rewarderType: 0
-  dragFactor: 5
   goal: {fileID: 3898099998562990149}
   startPosition: {x: 0, y: 0, z: 0}
   startRotation: {x: 0, y: 0, z: 0, w: 0}

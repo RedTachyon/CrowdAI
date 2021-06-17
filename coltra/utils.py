@@ -20,6 +20,7 @@ from collections import defaultdict
 
 from torch.utils.tensorboard import SummaryWriter
 
+from coltra.buffers import Observation
 
 DataBatch = DataBatchT = Dict[str, Dict[str, Any]]
 AgentDataBatch = Dict[str, Union[Tensor, Tuple]]
@@ -259,3 +260,77 @@ def minibatches(data: Dict[str, Tensor], batch_size: int, shuffle: bool = True) 
         batch_end = min(batch_start + batch_size, data_size)
 
         yield indices[batch_start:batch_end], batch
+
+
+def pack(dict_: Dict[str, Observation]) -> Tuple[Observation, List[str]]:
+    keys = list(dict_.keys())
+    values = Observation.stack_tensor([dict_[key] for key in keys])
+
+    return values, keys
+
+
+def unpack(arrays: Any, keys: List[str]) -> Dict[str, Any]:
+    value_dict = {key: arrays[i] for i, key in enumerate(keys)}
+    return value_dict
+
+
+def parse_agent_name(name: str) -> Dict[str, str]:
+    parts = name.split('&')
+    result = {
+        "name": parts[0]
+    }
+    for part in parts[1:]:
+        subname, value = part.split('=')
+        result[subname] = value
+
+    return result
+
+
+def split_ana(content: str) -> List[str]:
+    """
+    Splits an .ana file into parts, each of which is a string that corresponds to some data batch.
+    """
+    outputs = []
+    temp = []
+    for line in content.split('\n'):
+        if len(line) > 0 and line[0] != ' ':
+            outputs.append('\n'.join(temp))
+            temp = [line]
+        else:
+            temp.append(line)
+
+    outputs.append('\n'.join(temp))
+    return outputs[1:]
+
+
+def parse_segment(content: str) -> Tuple[str, np.ndarray]:
+    """Parses a segment of .ana data.
+    The first line is assumed to be the title, each line after that has one or more numbers"""
+    result = []
+    lines = content.split('\n')
+    name = lines[0]
+    for line in lines[1:-1]:
+        line = line.strip()
+        numbers = [float(num) for num in line.split(' ') if len(num) > 0]
+
+        result.append(numbers)
+
+    result = np.array(result)
+    return name, result
+
+
+def parse_ana(content: str) -> Dict:
+    """Parse the text of the entire file, split it into segments and return a dictionary of arrays"""
+    segments = split_ana(content)
+    data = [parse_segment(segment) for segment in segments]
+    data = {name.strip(): array for name, array in data}
+    return data
+
+
+def read_ana(path: str) -> Dict:
+    """Same as read_ana, but handle reading the file as well"""
+    with open(path, "r") as f:
+        text = f.read()
+
+    data = parse_ana(text)
+    return data

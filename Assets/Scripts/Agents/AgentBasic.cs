@@ -182,6 +182,7 @@ namespace Agents
             CollectedGoal = true;
 
             GetComponentInParent<Manager>().ReachGoal(this);
+            // Debug.Log("Trying to change color");
             _material.color = Color.blue;
             
             // Debug.Log("Collecting a reward");

@@ -21,8 +21,8 @@ namespace Heuristics
             if (Input.GetKey(KeyCode.W)) xValue = 1f;
             if (Input.GetKey(KeyCode.S)) xValue = -1f;
         
-            if (Input.GetKey(KeyCode.D)) zValue = 1f/ratio;
-            if (Input.GetKey(KeyCode.A)) zValue = -1f/ratio;
+            if (Input.GetKey(KeyCode.D)) zValue = -1f/ratio;
+            if (Input.GetKey(KeyCode.A)) zValue = 1f/ratio;
 
             if (true)
             {

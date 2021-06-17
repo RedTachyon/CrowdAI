@@ -8,8 +8,8 @@ import torch
 from torch import Tensor
 from torch.distributions import Normal, Categorical
 
-from .models.base_models import BaseModel
-from .buffers import Observation, Action
+from coltra.models.base_models import BaseModel
+from coltra.buffers import Observation, Action
 
 
 class Agent:

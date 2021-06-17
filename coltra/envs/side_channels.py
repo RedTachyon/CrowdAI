@@ -30,7 +30,7 @@ def parse_side_message(msg: str) -> Dict[str, np.ndarray]:
     """Parses a message from StatsChannel"""
     if msg == "": return {}
     lines = msg.split('\n')
-    out = {line.split(' ')[0]: np_float(float(line.split(' ')[1])) for line in lines}
+    out = {line.split(' ')[0]: np_float(float(line.split(' ')[1])) for line in lines if line != ""}
     return out
 
 

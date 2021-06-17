@@ -228,20 +228,23 @@ namespace Managers
 
         private void FixedUpdate()
         {
-            foreach (Transform agent in transform)
-            {
-                agent.GetComponent<Agent>().RequestDecision();
-            }
-            Time++;
-        
-            Debug.Log(Time);
-
+            
             if (Time > maxStep)
             {
                 Debug.Log("Resetting");
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
+            
+            foreach (Transform agent in transform)
+            {
+                agent.GetComponent<Agent>().RequestDecision();
+            }
+            Time++;
+        
+            // Debug.Log(Time);
+
+
     
             CollectStats();
 
@@ -270,7 +273,7 @@ namespace Managers
                 var speed = agent.GetComponent<Rigidbody>().velocity.magnitude;
                 speeds.Add(speed);
             
-                Debug.Log($"Stats from agent {agent.name}");
+                // Debug.Log($"Stats from agent {agent.name}");
                 // Fraction of agents that finished already
                 dones.Add(_finished[agent] ? 1f : 0f);
                 // Debug.Log(_finished[agent]);

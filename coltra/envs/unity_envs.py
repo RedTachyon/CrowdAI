@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Dict
 from enum import Enum
 
 from mlagents_envs.base_env import ActionTuple, DecisionStep, TerminalStep, DecisionSteps, TerminalSteps, \
@@ -82,6 +82,7 @@ def process_decisions(decisions: Union[DecisionSteps, TerminalSteps], name: str,
 
     return obs_dict, reward_dict, done_dict
 
+
 class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def __init__(self, file_name: str = None, **kwargs):
@@ -120,12 +121,22 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
             behavior_specs = self.behaviors[name][0]
 
-            obs_dict, reward_dict, done_dict = process_decisions(decisions, name, behavior_specs)
-            ter_obs_dict, ter_reward_dict, ter_done_dict = process_decisions(terminals, name, behavior_specs)
+            n_obs_dict, n_reward_dict, n_done_dict = process_decisions(decisions, name, behavior_specs)
+            n_ter_obs_dict, n_ter_reward_dict, n_ter_done_dict = process_decisions(terminals, name, behavior_specs)
 
-            for key, value in ter_done_dict.items():
-                done_dict[key] = value
+            for key, value in n_ter_done_dict.items():
+                n_done_dict[key] = value
 
+            obs_dict.update(n_obs_dict)
+            # breakpoint()
+            reward_dict.update(n_reward_dict)
+            done_dict.update(n_done_dict)
+
+            ter_obs_dict.update(n_ter_obs_dict)
+            ter_reward_dict.update(n_ter_reward_dict)
+
+        if len(reward_dict) < len(obs_dict):
+            breakpoint()
         done_dict["__all__"] = all(done_dict.values())
 
         info_dict["final_obs"] = ter_obs_dict
@@ -169,6 +180,9 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         self.unity.step()
         obs_dict, reward_dict, done_dict, info_dict = self._get_step_info(step=True)
+
+        if len(reward_dict) < len(obs_dict):
+            breakpoint()
 
         return obs_dict, reward_dict, done_dict, info_dict
 

@@ -27,6 +27,7 @@ namespace Agents
         public float moveSpeed = 25f;
         public float rotationSpeed = 3f;
         public float dragFactor = 5f;
+        public float maxSpeed = 5f;
 
         public AnimalType type;
     
@@ -65,7 +66,9 @@ namespace Agents
         {
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
-            _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, 3f);
+            _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, maxSpeed);
+            
+            Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void CollectObservations(VectorSensor sensor)

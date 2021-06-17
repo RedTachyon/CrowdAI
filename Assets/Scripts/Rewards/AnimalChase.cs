@@ -23,7 +23,7 @@ namespace Rewards
 
             var closestDistance = transform.GetComponent<Animal>().FindNearestDistance(otherType);
             
-            Debug.Log($"Closest distance: {closestDistance}");
+            // Debug.Log($"Closest distance: {closestDistance}");
             // transform.parent.parent
 
             return factor * Params.PredatorPreyWeight * closestDistance;
