@@ -44,6 +44,10 @@ def _worker(remote, parent_remote, env_fn_wrapper):
                 remote.send(getattr(env, data))
             elif cmd == 'set_attr':
                 remote.send(setattr(env, data[0], data[1]))
+            elif cmd == "observation_space":
+                remote.send(env.observation_space)
+            elif cmd == "action_space":
+                remote.send(env.action_space)
             else:
                 raise NotImplementedError("`{}` is not implemented in the worker".format(cmd))
         except EOFError:

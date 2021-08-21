@@ -1,0 +1,1 @@
+TODO: make a dummy multiagent env with the desired `manager` format

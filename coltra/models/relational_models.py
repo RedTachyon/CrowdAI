@@ -119,7 +119,7 @@ class RelationModel(BaseModel):
                 get_value: bool = True) -> Tuple[Distribution, Tuple, Dict[str, Tensor]]:
 
         [action_mu, action_std] = self.policy_network(x)
-        action_std = F.softplus(action_std)  # TODO: Figure out the low entropy
+        action_std = F.softplus(action_std)  # TODO.txt: Figure out the low entropy
 
         action_distribution = Normal(loc=action_mu, scale=action_std)
 

@@ -274,7 +274,7 @@ namespace Managers
                 speeds.Add(speed);
             
                 // Debug.Log($"Stats from agent {agent.name}");
-                // Fraction of agents that finished already
+                // Fraction of agents  that finished already
                 dones.Add(_finished[agent] ? 1f : 0f);
                 // Debug.Log(_finished[agent]);
             
