@@ -11,7 +11,7 @@ from coltra.models.mlp_models import FancyMLPModel
 from coltra.models.relational_models import RelationModel
 from coltra.trainers import PPOCrowdTrainer
 from coltra.models.raycast_models import LeeModel
-from envs import MultiGymEnv
+from coltra.envs import MultiGymEnv
 
 
 class Parser(BaseParser):
