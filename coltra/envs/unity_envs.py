@@ -1,8 +1,9 @@
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple, List, Union, Dict
 from enum import Enum
 
-from mlagents_envs.base_env import ActionTuple
+from mlagents_envs.base_env import ActionTuple, DecisionStep, TerminalStep, DecisionSteps, TerminalSteps, \
+    ObservationSpec
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
@@ -30,6 +31,58 @@ class Mode(Enum):
             raise ValueError(f"{name} is not a valid mode identifier")
 
 
+class Sensor(Enum):
+    Buffer = 0
+    Ray = 1
+    Vector = 2
+
+    @staticmethod
+    def from_string(name: str):
+        if name.lower().startswith("buffer"):
+            return Sensor.Buffer
+        elif name.lower().startswith("ray"):
+            return Sensor.Ray
+        elif name.lower().startswith("vector"):
+            return Sensor.Vector
+        else:
+            raise ValueError(f"{name} is not a supported sensor")
+
+    def to_string(self) -> str:
+        if self == Sensor.Buffer:
+            return "buffer"
+        elif self == Sensor.Ray:
+            return "rays"
+        elif self == Sensor.Vector:
+            return "vector"
+        else:
+            raise ValueError(f"You have angered the Old God Cthulhu (and need to update the sensors)")
+
+
+def process_decisions(decisions: Union[DecisionSteps, TerminalSteps], name: str, obs_specs: List[ObservationSpec]):
+    """
+    Takes in a DecisionSteps or TerminalSteps object, and returns the relevant information (observations, rewards, dones)
+    """
+    dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
+
+    obs_dict = {}
+    reward_dict = {}
+    done_dict = {}
+
+    for idx in dec_ids:
+        agent_name = f"{name}&id={idx}"
+
+        obs = Observation(**{
+            Sensor.from_string(spec.name).to_string(): obs[dec_ids.index(idx)]
+            for spec, obs in zip(obs_specs, dec_obs)
+        })
+
+        obs_dict[agent_name] = obs
+        reward_dict[agent_name] = decisions.reward[dec_ids.index(idx)]
+        done_dict[agent_name] = isinstance(decisions, TerminalSteps)
+
+    return obs_dict, reward_dict, done_dict
+
+
 class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def __init__(self, file_name: str = None, **kwargs):
@@ -47,7 +100,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
         self.unity = UnityEnvironment(file_name=file_name, **kwargs)
         self.behaviors = {}
-        self.manager = ""
+        # self.manager = ""
 
         # semi-hardcoded computation of obs/action spaces, slightly different api than gym
         self.obs_vector_size = next(iter(self.reset().values())).vector.shape[0]
@@ -66,49 +119,25 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         for name in names:
             decisions, terminals = self.unity.get_steps(name)
 
-            dec_obs, dec_ids = decisions.obs, list(decisions.agent_id)
-            # TODO: Fix this to avoid repetition
-            # TOOD: fix this with the new information
-            for idx in dec_ids:
-                agent_name = f"{name}&id={idx}"
-                if len(dec_obs) == 1:
-                    obs = Observation(vector=dec_obs[0][dec_ids.index(idx)])
-                elif len(dec_obs) == 2:
-                    obs = Observation(vector=dec_obs[1][dec_ids.index(idx)],
-                                      buffer=dec_obs[0][dec_ids.index(idx)])
-                elif len(dec_obs) == 3:
-                    obs = Observation(vector=dec_obs[2][dec_ids.index(idx)],
-                                      rays=dec_obs[1][dec_ids.index(idx)],
-                                      buffer=dec_obs[0][dec_ids.index(idx)])
-                else:
-                    raise ValueError(f"Too many observations, got {len(dec_obs)}")
+            behavior_specs = self.behaviors[name][0]
 
-                obs_dict[agent_name] = obs
-                # obs_dict[agent_name] = np.concatenate([o[dec_ids.index(idx)] for o in dec_obs])
-                reward_dict[agent_name] = decisions.reward[dec_ids.index(idx)]
-                done_dict[agent_name] = False
+            n_obs_dict, n_reward_dict, n_done_dict = process_decisions(decisions, name, behavior_specs)
+            n_ter_obs_dict, n_ter_reward_dict, n_ter_done_dict = process_decisions(terminals, name, behavior_specs)
 
-            ter_obs, ter_ids = terminals.obs, list(terminals.agent_id)
+            for key, value in n_ter_done_dict.items():
+                n_done_dict[key] = value
 
-            for idx in terminals.agent_id:
-                agent_name = f"{name}&id={idx}"
-                if len(ter_obs) == 1:
-                    obs = Observation(vector=ter_obs[0][ter_ids.index(idx)])
-                elif len(ter_obs) == 2:
-                    obs = Observation(vector=ter_obs[1][ter_ids.index(idx)],
-                                      buffer=ter_obs[0][ter_ids.index(idx)])
-                elif len(ter_obs) == 3:
-                    obs = Observation(vector=ter_obs[2][ter_ids.index(idx)],
-                                      rays=ter_obs[1][ter_ids.index(idx)],
-                                      buffer=ter_obs[0][ter_ids.index(idx)])
-                else:
-                    raise ValueError(f"Too many observations, got {len(ter_obs)}")
+            obs_dict.update(n_obs_dict)
+            # breakpoint()
+            reward_dict.update(n_reward_dict)
+            done_dict.update(n_done_dict)
 
-                ter_obs_dict[agent_name] = obs
-                ter_reward_dict[agent_name] = terminals.reward[ter_ids.index(idx)]
-                done_dict[agent_name] = True
+            ter_obs_dict.update(n_ter_obs_dict)
+            ter_reward_dict.update(n_ter_reward_dict)
 
-        done_dict["__all__"] = len(self.active_agents) == 0
+        if len(reward_dict) < len(obs_dict):
+            breakpoint()
+        done_dict["__all__"] = all(done_dict.values())
 
         info_dict["final_obs"] = ter_obs_dict
         info_dict["final_rewards"] = ter_reward_dict
@@ -152,6 +181,9 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.unity.step()
         obs_dict, reward_dict, done_dict, info_dict = self._get_step_info(step=True)
 
+        if len(reward_dict) < len(obs_dict):
+            breakpoint()
+
         return obs_dict, reward_dict, done_dict, info_dict
 
     def reset(self, mode: Mode = None, num_agents: int = None, **kwargs) -> ObsDict:
@@ -170,7 +202,7 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
         self.behaviors = {key: value for key, value in behaviors.items() if not key.startswith("Manager")}
 
         # ...but manager is used to collect stats
-        self.manager = [key for key in behaviors if key.startswith("Manager")][0]
+        # self.manager = [key for key in behaviors if key.startswith("Manager")][0]
 
         obs_dict, _, _, _ = self._get_step_info(step=True)
         if len(obs_dict) == 0:
@@ -199,6 +231,9 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
 
     def render(self, mode='human'):
         raise NotImplementedError
+
+    def set_timescale(self, timescale: float = 100.):
+        self.engine_channel.set_configuration_parameters(time_scale=timescale)
 
     @classmethod
     def get_env_creator(cls, *args, **kwargs):

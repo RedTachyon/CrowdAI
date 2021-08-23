@@ -27,5 +27,6 @@ namespace Dynamics
             
             rigidbody.velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
         }
+        
     }
 }

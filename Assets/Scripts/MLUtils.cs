@@ -107,5 +107,17 @@ public class MLUtils
 
         return new[] {pos.x, pos.z, velocity.x, velocity.z};
     }
+
+    public static float[] GetPredatorPreyInfo(Transform baseTransform, Collider collider)
+    {
+        var rigidbody = collider.GetComponent<Rigidbody>();
+        var transform = collider.transform;
+        var rotation = baseTransform.localRotation;
+        var pos = Quaternion.Inverse(rotation) * (transform.localPosition - baseTransform.localPosition);
+        var velocity = Quaternion.Inverse(rotation) * rigidbody.velocity;
+        var type = Convert.ToSingle(collider.name.Contains("Predator"));
+
+        return new[] {pos.x, pos.z, velocity.x, velocity.z, type};
+    }
     
 }

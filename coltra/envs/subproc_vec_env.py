@@ -6,6 +6,7 @@ import gym
 import numpy as np
 
 from coltra.buffers import Observation
+from coltra.utils import parse_agent_name
 from .base_env import VecEnv, CloudpickleWrapper
 from .base_env import MultiAgentEnv
 
@@ -43,6 +44,10 @@ def _worker(remote, parent_remote, env_fn_wrapper):
                 remote.send(getattr(env, data))
             elif cmd == 'set_attr':
                 remote.send(setattr(env, data[0], data[1]))
+            elif cmd == "observation_space":
+                remote.send(env.observation_space)
+            elif cmd == "action_space":
+                remote.send(env.action_space)
             else:
                 raise NotImplementedError("`{}` is not implemented in the worker".format(cmd))
         except EOFError:
@@ -106,7 +111,7 @@ class SubprocVecEnv(VecEnv, MultiAgentEnv):
     def step_async(self, actions):
         """Send the actons to the environments"""
         for i, remote in enumerate(self.remotes):
-            action = {k.split('::')[1]: a for k, a in actions.items() if int(k.split('::')[0]) == i}
+            action = {'&'.join(k.split('&')[:-1]): a for k, a in actions.items() if int(parse_agent_name(k)["env"]) == i}
             remote.send(('step', action))
         # for remote, action in zip(self.remotes, actions):
         #     remote.send(('step', action))
@@ -186,7 +191,7 @@ class SubprocVecEnv(VecEnv, MultiAgentEnv):
 
 def _gather_subproc(obs: List[Dict[str, Observation]]) -> Dict[str, Observation]:
     combined_obs = {
-        f"{i}::{key}": value for i, s_obs in enumerate(obs) for (key, value) in s_obs.items()
+        f"{key}&env={i}": value for i, s_obs in enumerate(obs) for (key, value) in s_obs.items()
     }
     return combined_obs
 

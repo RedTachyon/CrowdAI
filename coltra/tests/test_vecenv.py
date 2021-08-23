@@ -10,13 +10,13 @@ def test_venv():
     assert len(obs) == 80
     for env_idx in range(8):
         for agent_idx in range(10):
-            assert f"{env_idx}::Agent{agent_idx}" in obs
+            assert f"Agent{agent_idx}&env={env_idx}" in obs
 
     obs, reward, done, info = venv.step({})
 
     for env_idx in range(8):
         for agent_idx in range(10):
-            name = f"{env_idx}::Agent{agent_idx}"
+            name = f"Agent{agent_idx}&env={env_idx}"
             assert name in obs
             assert name in reward
             assert name in done
