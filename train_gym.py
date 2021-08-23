@@ -36,7 +36,7 @@ class Parser(BaseParser):
     _abbrev = {
         "config": "c",
         "iters": "i",
-        "env": "e",
+        "env_name": "e",
         "name": "n",
         "workers": "w",
         "start_dir": "sd",
