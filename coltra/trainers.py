@@ -16,6 +16,7 @@ from coltra.envs import SubprocVecEnv, MultiAgentEnv
 from coltra.policy_optimization import CrowdPPOptimizer
 from coltra.utils import Timer, write_dict, concat_subproc_batch
 from coltra.envs.unity_envs import Mode
+from envs.base_env import VecEnv
 
 
 class Trainer:
@@ -34,7 +35,7 @@ class PPOCrowdTrainer(Trainer):
 
     def __init__(self,
                  agent: Agent,
-                 env: Union[MultiAgentEnv, SubprocVecEnv],
+                 env: Union[MultiAgentEnv, VecEnv],
                  config: Dict[str, Any]):
         super().__init__(agent, env, config)
 

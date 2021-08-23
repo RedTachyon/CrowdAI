@@ -232,6 +232,9 @@ class UnitySimpleCrowdEnv(MultiAgentEnv):
     def render(self, mode='human'):
         raise NotImplementedError
 
+    def set_timescale(self, timescale: float = 100.):
+        self.engine_channel.set_configuration_parameters(time_scale=timescale)
+
     @classmethod
     def get_env_creator(cls, *args, **kwargs):
         def _inner():

@@ -91,7 +91,6 @@ class MultiGymEnv(MultiAgentEnv):
             return MultiAgentWrapper(env)
         return _inner
 
-
     @classmethod
     def get_venv(cls, workers: int = 8, *args, **kwargs) -> VecEnv:
         venv = SubprocVecEnv([
