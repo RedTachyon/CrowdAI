@@ -1,10 +1,11 @@
 from typing import Optional
 
+import gym
 import torch
 import yaml
 from typarse import BaseParser
 
-from coltra.agents import CAgent
+from coltra.agents import CAgent, DAgent
 from coltra.envs.unity_envs import UnitySimpleCrowdEnv
 from coltra.envs.probe_envs import ConstRewardEnv
 from coltra.models.mlp_models import FancyMLPModel
@@ -62,6 +63,7 @@ if __name__ == '__main__':
 
     # Initialize the environment
     env = MultiGymEnv.get_venv(workers=workers, env_name=args.env_name)
+    obs_space = env.observation_space
 
     # Initialize the agent
     sample_obs = next(iter(env.reset().values()))
@@ -72,6 +74,7 @@ if __name__ == '__main__':
     model_config["rays_input_size"] = ray_size
 
     model_cls = FancyMLPModel
+    agent_cls = CAgent if isinstance(obs_space, gym.spaces.Box) else DAgent
 
     if args.start_dir:
         agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
