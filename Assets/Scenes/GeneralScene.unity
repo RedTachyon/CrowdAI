@@ -2168,7 +2168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 20
   mode: 1
   maxStep: 500
   statsCommunicator: {fileID: 2113393393}

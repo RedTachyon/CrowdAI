@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from coltra.bgae import discount_bgae, _discount_bgae, convert_params, get_beta_vector
+from coltra.discounting import discount_bgae, _discount_bgae, convert_params, get_beta_vector
 
 
 def test_convert():

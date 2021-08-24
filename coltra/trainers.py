@@ -55,6 +55,8 @@ class PPOCrowdTrainer(Trainer):
                 eta: float = 0.0
                 gae_lambda: float = 1.0
 
+                advantage_normalization: bool = False
+
                 # PPO optimization parameters
                 eps: float = 0.1
                 target_kl: float = 0.03

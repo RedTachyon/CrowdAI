@@ -69,10 +69,7 @@ def collect_crowd_data(agent: Agent,
         for key in all_metrics:
             metrics.setdefault(key[2:], []).append(all_metrics[key])
 
-        try:
-            memory.append(obs_dict, action_dict, reward_dict, values_dict, done_dict)
-        except:
-            breakpoint()
+        memory.append(obs_dict, action_dict, reward_dict, values_dict, done_dict)
 
         obs_dict = next_obs
 

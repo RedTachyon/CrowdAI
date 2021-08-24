@@ -57,13 +57,22 @@ if __name__ == '__main__':
     model_config = config["model"]
 
     trainer_config["tensorboard_name"] = args.name
-    trainer_config["ppo_config"]["use_gpu"] = CUDA
+    trainer_config["PPOConfig"]["use_gpu"] = CUDA
 
     workers = trainer_config.get("workers") or 8  # default value
 
     # Initialize the environment
     env = MultiGymEnv.get_venv(workers=workers, env_name=args.env_name)
-    obs_space = env.observation_space
+    action_space = env.action_space
+
+    print(f"{env.observation_space=}")
+    print(f"{action_space=}")
+
+    is_discrete_action = isinstance(action_space, gym.spaces.Discrete)
+    if is_discrete_action:
+        action_shape = action_space.n
+    else:
+        action_shape = action_space.shape[0]
 
     # Initialize the agent
     sample_obs = next(iter(env.reset().values()))
@@ -72,15 +81,18 @@ if __name__ == '__main__':
 
     model_config["input_size"] = obs_size
     model_config["rays_input_size"] = ray_size
+    model_config["discrete"] = is_discrete_action
+    model_config["num_actions"] = action_shape
 
     model_cls = FancyMLPModel
-    agent_cls = CAgent if isinstance(obs_space, gym.spaces.Box) else DAgent
+    agent_cls = CAgent if isinstance(action_space, gym.spaces.Box) else DAgent
+
 
     if args.start_dir:
-        agent = CAgent.load_agent(args.start_dir, weight_idx=args.start_idx)
+        agent = agent_cls.load_agent(args.start_dir, weight_idx=args.start_idx)
     else:
         model = model_cls(model_config)
-        agent = CAgent(model)
+        agent = agent_cls(model)
 
     if CUDA:
         agent.cuda()

@@ -81,7 +81,7 @@ class RelationModel(BaseModel):
             vec_hidden_layers: List[int] = [32, 32]
             rel_hidden_layers: List[int] = [32, 32]
             com_hidden_layers: List[int] = [32, 32]
-            num_action: int = 2
+            num_actions: int = 2
             activation: str = "tanh"
             initializer: str = "kaiming_uniform"
 
@@ -94,7 +94,7 @@ class RelationModel(BaseModel):
             vec_hidden_layers=self.config.vec_hidden_layers,
             rel_hidden_layers=self.config.rel_hidden_layers,
             com_hidden_layers=self.config.com_hidden_layers,
-            output_sizes=[self.config.num_action, self.config.num_action],
+            output_sizes=[self.config.num_actions, self.config.num_actions],
             is_policy=[True, False],
             activation=self.config.activation,
             initializer=self.config.initializer

@@ -65,7 +65,7 @@ if __name__ == '__main__':
     model_config = config["model"]
 
     trainer_config["tensorboard_name"] = args.name
-    trainer_config["ppo_config"]["use_gpu"] = CUDA
+    trainer_config["PPOConfig"]["use_gpu"] = CUDA
     if args.mode:
         trainer_config["mode"] = args.mode
 

@@ -8,7 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 from typarse import BaseConfig
 
 from coltra.agents import Agent
-from coltra.bgae import discount_bgae, get_episode_rewards
+from coltra.discounting import discount_bgae, get_episode_rewards
 from coltra.utils import get_optimizer, DataBatch, Timer, AgentDataBatch, \
     write_dict, batch_to_gpu
 

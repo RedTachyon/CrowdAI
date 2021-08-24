@@ -122,8 +122,10 @@ def discount_bgae(rewards: Tensor,  # float tensor (T, )
     for val in ep_lens:
         assert val == ep_len, "Episodes need to be of constant length"
 
-    np_rewards = rewards.view((-1, ep_len)).detach().cpu().numpy()
-    np_values = values.view((-1, ep_len)).detach().cpu().numpy()
+    # breakpoint()
+
+    np_rewards = rewards.view((-1, ep_len)).detach().cpu().numpy().astype(np.float32)
+    np_values = values.view((-1, ep_len)).detach().cpu().numpy().astype(np.float32)
     np_dones = dones.view((-1, ep_len)).detach().cpu().numpy()
 
     # rewards = rewards.cpu().numpy()
@@ -167,3 +169,23 @@ def get_beta_vector(T: int, α: float, β: float) -> np.ndarray:
         current_discount *= factor
 
     return discount
+
+
+def discount_gae(rewards: Tensor, values: Tensor, dones: Tensor, γ: float = 0.99, η: float = 0.95):
+    last_value = agent.get_value(next_obs.to(device)).reshape(1, -1)
+    if args.gae:
+        advantages = torch.zeros_like(rewards).to(device)
+        lastgaelam = 0
+        for t in reversed(range(args.num_steps)):
+            if t == args.num_steps - 1:
+                nextnonterminal = 1.0 - next_done
+                nextvalues = last_value
+            else:
+                nextnonterminal = 1.0 - dones[t + 1]
+                nextvalues = values[t + 1]
+            delta = rewards[t] + args.gamma * nextvalues * nextnonterminal - values[t]
+            advantages[t] = lastgaelam = delta + args.gamma * args.gae_lambda * nextnonterminal * lastgaelam
+        returns = advantages + values
+
+def discount_experience(rewards: Tensor, values: Tensor, dones: Tensor, mode: str = "default", **kwargs):
+    assert mode in ["default", "bgae"]
