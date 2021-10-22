@@ -30,6 +30,8 @@ namespace Managers
         public Transform obstacles;
 
         private SimpleMultiAgentGroup _agentGroup;
+
+        private bool _initialized;
     
         public void Awake()
         {
@@ -46,6 +48,8 @@ namespace Managers
         public void ResetEpisode()
         {
 
+            Debug.Log("ResetEpisode");
+            _initialized = true;
             mode = GetMode();
         
             numAgents = GetNumAgents();
@@ -228,6 +232,8 @@ namespace Managers
 
         private void FixedUpdate()
         {
+
+            if (!_initialized) return;
             
             if (Time > maxStep)
             {
