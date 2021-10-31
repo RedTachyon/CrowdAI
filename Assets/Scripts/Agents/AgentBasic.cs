@@ -165,6 +165,7 @@ namespace Agents
         
             // Final updates
             PreviousPosition = transform.localPosition;
+            Collision = 0;
             _material.color = _originalColor;
 
         }

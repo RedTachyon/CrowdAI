@@ -235,7 +235,7 @@ namespace Managers
 
             if (!_initialized) return;
             
-            if (Time > maxStep)
+            if (Time >= maxStep)
             {
                 Debug.Log("Resetting");
                 _agentGroup.EndGroupEpisode();
