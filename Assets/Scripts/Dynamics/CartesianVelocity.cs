@@ -20,8 +20,10 @@ namespace Dynamics
             var zSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);        
 
             var velocity = new Vector3(xSpeed, 0, zSpeed);
-            
-            rigidbody.velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+            velocity = velocity.normalized * moveSpeed;
+            // velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+
+            rigidbody.velocity = velocity;
         }
     }
 }

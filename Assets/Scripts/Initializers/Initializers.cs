@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Initializers
 {
     public interface IInitializer
     {
-        public Vector3 GetPosition(int idx);
+        public void PlaceAgents(Transform baseTransform);
     }
 
     public enum InitializerEnum
@@ -16,7 +17,7 @@ namespace Initializers
     
     public static class Mapper
     {
-        public static IInitializer GetObserver(InitializerEnum initializerType)
+        public static IInitializer GetInitializer(InitializerEnum initializerType)
         {
             IInitializer initializer = initializerType switch
             {

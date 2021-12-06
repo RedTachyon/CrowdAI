@@ -92,6 +92,7 @@ namespace Agents
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, 3f);
+            // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -109,11 +110,11 @@ namespace Agents
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
             const float ratio = 1f;
         
-            if (Input.GetKey(KeyCode.W)) xValue = 1f;
-            if (Input.GetKey(KeyCode.S)) xValue = -1f;
+            if (Input.GetKey(KeyCode.W)) zValue = 1f;
+            if (Input.GetKey(KeyCode.S)) zValue = -1f;
         
-            if (Input.GetKey(KeyCode.D)) zValue = 1f/ratio;
-            if (Input.GetKey(KeyCode.A)) zValue = -1f/ratio;
+            if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
+            if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
 
             if (true)
             {
@@ -181,8 +182,7 @@ namespace Agents
         
         
             CollectedGoal = true;
-
-            GetComponentInParent<Manager>().ReachGoal(this);
+            Manager.Instance.ReachGoal(this);
             // Debug.Log("Trying to change color");
             _material.color = Color.blue;
             

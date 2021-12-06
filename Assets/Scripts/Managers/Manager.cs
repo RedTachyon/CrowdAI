@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Agents;
+using Initializers;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -18,10 +19,12 @@ namespace Managers
     {
         [Range(1, 100)]
         public int numAgents = 1;
-        public Placement mode;
+        public InitializerEnum mode;
     
         [Range(1, 1000)]
         public int maxStep = 500;
+
+        [Range(1, 10)] public int decisionFrequency = 1;
 
         private Dictionary<Transform, bool> _finished;
         internal int Time;
@@ -32,9 +35,24 @@ namespace Managers
         private SimpleMultiAgentGroup _agentGroup;
 
         private bool _initialized;
-    
+
+        private float[,,] _positionMemory;
+
+
+        private static Manager _instance;
+        public static Manager Instance => _instance;
+
         public void Awake()
         {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                _instance = this;
+            }
+            
             _finished = new Dictionary<Transform, bool>();
             Academy.Instance.OnEnvironmentReset += ResetEpisode;
             _agentGroup = new SimpleMultiAgentGroup();
@@ -49,14 +67,18 @@ namespace Managers
         {
 
             Debug.Log("ResetEpisode");
+
+            
             _initialized = true;
             mode = GetMode();
         
             numAgents = GetNumAgents();
+            _positionMemory = new float[numAgents,maxStep,2];
+
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
 
-            obstacles.gameObject.SetActive(mode == Placement.Hallway);
+            obstacles.gameObject.SetActive(mode == InitializerEnum.Hallway);
             Debug.Log($"Number of children: {currentNumAgents}");
 
             // Activate the right amount of agents
@@ -98,121 +120,12 @@ namespace Managers
                 newGoal.name = baseGoal.name + $" ({i})";
             }
         
+            
+            
             // Find the right locations for all agents
-        
             Debug.Log($"Total agents: {transform.childCount}");
-
-            var agentIdx = 0;
-            var placedAgents = new List<Vector3>();
-            var placedGoals = new List<Vector3>();
-
-            foreach (Transform agent in transform)
-            {
-                if (!agent.gameObject.activeSelf) continue;
-
-                var goal = agent.GetComponent<AgentBasic>().goal;
-
-                Vector3 newPosition;
-                Vector3 goalPosition;
-                Quaternion newRotation;
-            
-                switch (mode)
-                {
-                    case Placement.Random:
-                    {
-                        // Choose a new location for the agent and the goal
-                        newPosition = MLUtils.NoncollidingPosition(
-                            -9f,
-                            9f,
-                            -9f,
-                            9f,
-                            agent.localPosition.y,
-                            placedAgents);
-
-                        goalPosition = MLUtils.NoncollidingPosition(
-                            -9f,
-                            9f,
-                            -9f,
-                            9f,
-                            goal.localPosition.y,
-                            placedGoals);
-
-                        newRotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
-                        break;
-                    }
-                    case Placement.Circle:
-                    {
-                        // Place agents in a centered circle of radius 9, with goals on the opposite side
-                        const float r = 9;
-                        var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
-                        var z = r * Mathf.Sin((float) agentIdx / numAgents * Constants.Tau);
-                        newPosition = new Vector3(x, agent.localPosition.y, z);
-                        goalPosition = new Vector3(-x, goal.localPosition.y, -z);
-                        newRotation = Quaternion.LookRotation(goalPosition, Vector3.up);
-
-                        // Debug.Log($"Placing an agent at x={x}, z={z}");
-                        break;
-                    }
-                    case Placement.Hallway:
-                    {
-                        // Place half the agents in one corridor, and half in the other
-                        if (agentIdx < numAgents / 2)
-                        {
-                            newPosition = MLUtils.NoncollidingPosition(
-                                6f,
-                                9f,
-                                -4f,
-                                4f,
-                                agent.localPosition.y,
-                                placedAgents
-                            );
-
-                        }
-                        else
-                        {
-                            newPosition = MLUtils.NoncollidingPosition(
-                                -4f,
-                                4f,
-                                6f,
-                                9f,
-                                agent.localPosition.y,
-                                placedAgents
-                            );
-                        
-                        }
-                    
-                    
-                        goalPosition = Quaternion.AngleAxis(180, Vector3.up) * newPosition;
-                        goalPosition.y = goal.localPosition.y;
-                        newRotation = Quaternion.LookRotation(goalPosition, Vector3.up);
-                        break;
-                    }
-                    default:
-                    {
-                        throw new ArgumentOutOfRangeException();
-                    }
-                
-                }
-            
-                // Set the new positions
-                agent.localPosition = newPosition;
-                agent.localRotation = newRotation;
-
-                goal.localPosition = goalPosition;
-            
-                // Save the placed agents
-                placedAgents.Add(newPosition);
-                placedGoals.Add(goalPosition);
-
-                // Reset the dynamics
-                agent.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        
-                agent.GetComponent<AgentBasic>().PreviousPosition = agent.localPosition;
-            
-                // Update the counter
-                agentIdx++;
-            }
+            IInitializer initializer = Mapper.GetInitializer(mode);
+            initializer.PlaceAgents(transform);
 
             // Initialize stats
             _finished.Clear();
@@ -232,19 +145,42 @@ namespace Managers
 
         private void FixedUpdate()
         {
-
             if (!_initialized) return;
             
-            if (Time >= maxStep)
+            if (Time >= maxStep * decisionFrequency)
             {
                 Debug.Log("Resetting");
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
+
+            // Log the positions
+            
+            if (Time % decisionFrequency == 0)
+            {
+                var agentIdx = 0;
+                var decisionTime = Time / decisionFrequency;
+                foreach (Transform agent in transform)
+                {
+                    var localPosition = agent.localPosition;
+                    _positionMemory[agentIdx, decisionTime, 0] = localPosition.x;
+                    _positionMemory[agentIdx, decisionTime, 1] = localPosition.z;
+
+                    agentIdx++;
+                }
+            }
             
             foreach (Transform agent in transform)
             {
-                agent.GetComponent<Agent>().RequestDecision();
+                if (Time % decisionFrequency == 0)
+                {
+                    Debug.Log($"Action time: {Time}");
+                    agent.GetComponent<Agent>().RequestDecision();
+                }
+                else
+                {
+                    agent.GetComponent<Agent>().RequestAction();
+                }
             }
             Time++;
         
@@ -300,25 +236,25 @@ namespace Managers
             // Debug.Log("Message allegedly sent");
         }
 
-        public Placement GetMode()
+        public InitializerEnum GetMode()
         {
             var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1f);
-            Placement currentMode;
+            InitializerEnum currentMode;
             if (val < -0.5f) // == -1f 
             {
                 currentMode = mode;
             }
             else if (val < 0.5f) // == 0f
             {
-                currentMode = Placement.Random;
+                currentMode = InitializerEnum.Random;
             } 
             else if (val < 1.5f) // == 1f
             {
-                currentMode = Placement.Circle;
+                currentMode = InitializerEnum.Circle;
             }
             else // == 2f
             {
-                currentMode = Placement.Hallway;
+                currentMode = InitializerEnum.Hallway;
             }
 
             return currentMode;
