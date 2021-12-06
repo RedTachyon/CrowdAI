@@ -22,6 +22,7 @@ public class Params
     public static float ComfortDistance => Get("comfort_distance", 1.5f);
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", 1f);
     public static float PredatorPreyWeight => Get("predator_prey_weight", 1f);
+    public static bool SaveTrajectory => Get("save_trajectory", 1f) > 0.5f;
 
     public static float Get(string name, float defaultValue)
     {

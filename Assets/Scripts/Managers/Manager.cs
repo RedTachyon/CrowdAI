@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Agents;
 using Initializers;
+using Newtonsoft.Json;
+using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -35,9 +38,9 @@ namespace Managers
         private SimpleMultiAgentGroup _agentGroup;
 
         private bool _initialized;
+        private int _episodeNum;
 
         private float[,,] _positionMemory;
-
 
         private static Manager _instance;
         public static Manager Instance => _instance;
@@ -61,6 +64,8 @@ namespace Managers
             {
                 _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
             }
+
+            _episodeNum = 0;
         }
 
         public void ResetEpisode()
@@ -68,11 +73,12 @@ namespace Managers
 
             Debug.Log("ResetEpisode");
 
-            
+            _episodeNum++;
             _initialized = true;
             mode = GetMode();
         
             numAgents = GetNumAgents();
+
             _positionMemory = new float[numAgents,maxStep,2];
 
             var currentNumAgents = transform.childCount;
@@ -149,7 +155,17 @@ namespace Managers
             
             if (Time >= maxStep * decisionFrequency)
             {
+
+                if (Params.SaveTrajectory)
+                {
+                    var savePath = $"output/trajectory_{_episodeNum}.json";
+                    Debug.Log($"Writing to {savePath}");
+                    var json = JsonConvert.SerializeObject(_positionMemory);
+                    File.WriteAllText(savePath, json);
+                }
+
                 Debug.Log("Resetting");
+                
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
