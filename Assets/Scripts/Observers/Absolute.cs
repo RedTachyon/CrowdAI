@@ -29,15 +29,15 @@ namespace Observers
             sensor.AddObservation(position.z / 10f);
         
             // Rotation: 1
-            sensor.AddObservation(rotation.eulerAngles.y / 360f);
+            sensor.AddObservation(Mathf.Deg2Rad * rotation.eulerAngles.y);
         
             // Goal position: 2
             sensor.AddObservation(goalPosition.x / 10f);
             sensor.AddObservation(goalPosition.z / 10f);
 
-            // Velocity: 2, up to ~5
-            sensor.AddObservation(velocity.x / 5f);
-            sensor.AddObservation(velocity.z / 5f);
+            // Velocity: 2, up to ~2
+            sensor.AddObservation(velocity.x / 2f);
+            sensor.AddObservation(velocity.z / 2f);
         }
 
         public int Size => 7;

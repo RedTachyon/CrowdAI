@@ -12,22 +12,25 @@ namespace Initializers
     {
         Random,
         Circle,
-        Hallway
+        Hallway,
+        JsonInitializer,
     }
     
     public static class Mapper
     {
-        public static IInitializer GetInitializer(InitializerEnum initializerType)
+        public static IInitializer GetInitializer(InitializerEnum initializerType, string path = null)
         {
             IInitializer initializer = initializerType switch
             {
                 InitializerEnum.Random => new Random(),
                 InitializerEnum.Circle => new Circle(),
                 InitializerEnum.Hallway => new Hallway(),
+                InitializerEnum.JsonInitializer => new JsonInitializer(path),
                 _ => null
             };
 
             return initializer;
         }
+
     }
 }

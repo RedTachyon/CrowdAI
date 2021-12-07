@@ -19,25 +19,27 @@ namespace Dynamics
         
             // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
 
-            var linearSpeed = Mathf.Clamp(vectorAction[0], -0.5f, 1f);
-            var angularSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
+            var angularSpeed = Mathf.Clamp(vectorAction[0], -1f, 1f);
+            var linearSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
 
             // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
             // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);        
         
-            var velocity = rigidbody.velocity;
+            // var velocity = rigidbody.velocity;
         
             // Debug.Log(velocity);
 
             // Average mean comfort speed = 1.4mps
-            
-            var newVelocity = rigidbody.transform.forward * linearSpeed * moveSpeed / 5f; // Rough adjustment to a normal range
-            rigidbody.velocity = newVelocity;
         
             // Apply the rotation
-            var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
-            Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotSpeed * timeFactor;
+            // var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
+            Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotSpeed;
             rigidbody.rotation = Quaternion.Euler(rotation);
+            
+            
+            var newVelocity = rigidbody.transform.forward * linearSpeed * moveSpeed; // Rough adjustment to a normal range
+            rigidbody.velocity = newVelocity;
+        
         }
     }
 }

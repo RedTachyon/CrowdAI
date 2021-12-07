@@ -217,6 +217,60 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &218126827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 218126829}
+  - component: {fileID: 218126828}
+  m_Layer: 0
+  m_Name: Params
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &218126828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 218126827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  potential: 0.4
+  goal: 1
+  collision: -0.3
+  sightRadius: 5
+  sightAgents: 10
+  comfortSpeed: 1
+  comfortSpeedWeight: 1
+  comfortDistance: 1.5
+  comfortDistanceWeight: 1
+  saveTrajectory: 1
+--- !u!4 &218126829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 218126827}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &294986514
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +655,7 @@ Transform:
   m_Children:
   - {fileID: 4071786924970322748}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2113393392
 GameObject:
@@ -1839,7 +1893,7 @@ Transform:
   m_GameObject: {fileID: 4071786926523291306}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -9, y: 0.875, z: 0.1}
-  m_LocalScale: {x: 0.45, y: 0.875, z: 0.45}
+  m_LocalScale: {x: 0.4, y: 0.875, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4071786926725622368}
@@ -2209,8 +2263,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numAgents: 12
-  mode: 1
-  maxStep: 100
+  mode: 3
+  dataFileName: 12peds-1.json
+  maxStep: 200
   decisionFrequency: 10
   statsCommunicator: {fileID: 2113393393}
   obstacles: {fileID: 554176723367476335}
@@ -2333,11 +2388,11 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
-  moveSpeed: 5
+  MaxStep: 0
+  moveSpeed: 2
   rotationSpeed: 3
   dragFactor: 5
-  dynamicsType: 0
+  dynamicsType: 2
   observerType: 0
   rewarderType: 0
   goal: {fileID: 3898099998562990149}

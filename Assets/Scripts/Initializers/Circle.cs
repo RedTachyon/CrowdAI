@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Initializers
 {
     public class Circle : IInitializer
-    {        public void PlaceAgents(Transform baseTransform)
+    {        
+        public void PlaceAgents(Transform baseTransform)
         {
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();

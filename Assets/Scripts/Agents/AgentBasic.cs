@@ -115,12 +115,24 @@ namespace Agents
         
             if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
             if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
+            
 
             if (true)
             {
                 force = new Vector3(xValue, 0, zValue);
             }
 
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                force *= 1;
+            }
+            else
+            {
+                force *= 0.5f;
+            }
+            
+            // Debug.Log(force.magnitude);
+            
             cActionsOut[0] = force.x;
             cActionsOut[1] = force.z;
         }
