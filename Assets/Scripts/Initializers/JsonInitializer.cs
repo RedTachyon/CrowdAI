@@ -12,6 +12,12 @@ namespace Initializers
     {
         public float[] time { get; set; }
         public float[,,] position { get; set; }
+
+        public TrajectoryData(float[] _time, float[,,] _position)
+        {
+            time = _time;
+            position = _position;
+        }
     }
     public class JsonInitializer : IInitializer
     {

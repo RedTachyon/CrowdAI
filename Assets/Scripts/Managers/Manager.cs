@@ -146,6 +146,19 @@ namespace Managers
             _finished[agent.GetComponent<Transform>()] = true;
         }
 
+        private void WriteTrajectory()
+        {
+            if (!Directory.Exists("output"))
+            {
+                Directory.CreateDirectory("output");
+            }
+            var savePath = $"output/trajectory_{_episodeNum}.json";
+            Debug.Log($"Writing to {savePath}");
+            var data = new TrajectoryData(_timeMemory, _positionMemory);
+            var json = JsonConvert.SerializeObject(data);
+            File.WriteAllText(savePath, json);
+        }
+
         private void FixedUpdate()
         {
             if (!_initialized) return;
@@ -155,13 +168,7 @@ namespace Managers
             if (Timestep >= maxStep * decisionFrequency)
             {
 
-                if (Params.SaveTrajectory)
-                {
-                    var savePath = $"output/trajectory_{_episodeNum}.json";
-                    Debug.Log($"Writing to {savePath}");
-                    var json = JsonConvert.SerializeObject(_positionMemory);
-                    File.WriteAllText(savePath, json);
-                }
+                if (Params.SaveTrajectory) WriteTrajectory();
 
                 Debug.Log("Resetting");
                 
