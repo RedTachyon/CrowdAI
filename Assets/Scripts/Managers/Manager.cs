@@ -11,18 +11,13 @@ using UnityEngine;
 
 namespace Managers
 {
-    public enum Placement
-    {
-        Random,
-        Circle,
-        Hallway,
-    }
 
     public class Manager : MonoBehaviour
     {
         [Range(1, 100)]
         public int numAgents = 1;
         public InitializerEnum mode;
+        public string dataFileName;
     
         [Range(1, 1000)]
         public int maxStep = 500;
@@ -30,7 +25,7 @@ namespace Managers
         [Range(1, 10)] public int decisionFrequency = 1;
 
         private Dictionary<Transform, bool> _finished;
-        internal int Time;
+        internal int Timestep;
         public StatsCommunicator statsCommunicator;
 
         public Transform obstacles;
@@ -41,6 +36,7 @@ namespace Managers
         private int _episodeNum;
 
         private float[,,] _positionMemory;
+        private float[] _timeMemory;
 
         private static Manager _instance;
         public static Manager Instance => _instance;
@@ -79,7 +75,8 @@ namespace Managers
         
             numAgents = GetNumAgents();
 
-            _positionMemory = new float[numAgents,maxStep,2];
+            _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
+            _timeMemory = new float[maxStep * decisionFrequency];
 
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
@@ -130,13 +127,13 @@ namespace Managers
             
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
-            IInitializer initializer = Mapper.GetInitializer(mode);
+            IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
             initializer.PlaceAgents(transform);
 
             // Initialize stats
             _finished.Clear();
 
-            Time = 0;
+            Timestep = 0;
 
             foreach (Transform agent in transform)
             {
@@ -153,7 +150,9 @@ namespace Managers
         {
             if (!_initialized) return;
             
-            if (Time >= maxStep * decisionFrequency)
+            // Debug.Log(Time.fixedDeltaTime);
+            
+            if (Timestep >= maxStep * decisionFrequency)
             {
 
                 if (Params.SaveTrajectory)
@@ -170,35 +169,45 @@ namespace Managers
                 ResetEpisode();
             }
 
-            // Log the positions
+            ///////////////////////
+            // Log the positions //
+            ///////////////////////
             
-            if (Time % decisionFrequency == 0)
-            {
-                var agentIdx = 0;
-                var decisionTime = Time / decisionFrequency;
-                foreach (Transform agent in transform)
-                {
-                    var localPosition = agent.localPosition;
-                    _positionMemory[agentIdx, decisionTime, 0] = localPosition.x;
-                    _positionMemory[agentIdx, decisionTime, 1] = localPosition.z;
-
-                    agentIdx++;
-                }
-            }
-            
+            var agentIdx = 0;
+            // var decisionTime = Time / decisionFrequency;
             foreach (Transform agent in transform)
             {
-                if (Time % decisionFrequency == 0)
+                var localPosition = agent.localPosition;
+                _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
+                _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
+
+                agentIdx++;
+            }
+
+            _timeMemory[Timestep] = Timestep * Time.fixedDeltaTime;
+            
+            
+            /////////////////////
+            // Request actions //
+            /////////////////////
+
+            if (Timestep % decisionFrequency == 0)
+            {
+                Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
+
+                foreach (Transform agent in transform)
                 {
-                    Debug.Log($"Action time: {Time}");
                     agent.GetComponent<Agent>().RequestDecision();
                 }
-                else
+            } else
+            {
+                foreach (Transform agent in transform)
                 {
                     agent.GetComponent<Agent>().RequestAction();
                 }
             }
-            Time++;
+
+            Timestep++;
         
             // Debug.Log(Time);
 

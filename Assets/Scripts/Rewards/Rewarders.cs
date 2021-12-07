@@ -25,7 +25,7 @@ namespace Rewards
             {
                 RewardersEnum.BaseRewarder => new BaseRewarder(),
                 RewardersEnum.Empty => new Empty(),
-                RewardersEnum.AnimalChase => new AnimalChase(),
+                // RewardersEnum.AnimalChase => new AnimalChase(),
                 _ => null
             };
 

@@ -20,10 +20,15 @@ namespace Dynamics
             var zSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);        
 
             var velocity = new Vector3(xSpeed, 0, zSpeed);
-            velocity = velocity.normalized * moveSpeed;
+            velocity = Vector3.ClampMagnitude(velocity, 1) * moveSpeed;
+            // velocity = velocity.normalized * moveSpeed;
             // velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
             rigidbody.velocity = velocity;
+            if (velocity.magnitude > 1e-8)
+            {
+                rigidbody.rotation = Quaternion.LookRotation(velocity, Vector3.up);
+            }
         }
     }
 }
