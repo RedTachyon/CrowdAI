@@ -31,9 +31,13 @@ namespace Initializers
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            
-            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "data", path);
-            
+
+            var rootPath = Application.isEditor
+                ? Directory.GetCurrentDirectory()
+                : Path.GetDirectoryName(Application.dataPath);
+
+            var fullPath = Path.Combine(rootPath, "data", path);
+
             Debug.Log($"Trying to read from {fullPath}");
             var data = JsonConvert.DeserializeObject<TrajectoryData>(File.ReadAllText(fullPath));
             
