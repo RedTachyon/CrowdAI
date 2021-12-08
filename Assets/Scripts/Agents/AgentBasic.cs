@@ -77,6 +77,7 @@ namespace Agents
             _material = GetComponent<Renderer>().material;
             _originalColor = _material.color;
             _bufferSensor = GetComponent<BufferSensorComponent>();
+            _bufferSensor.MaxNumObservables = Params.SightAgents;
 
         }
 
@@ -92,6 +93,8 @@ namespace Agents
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, 3f);
+            var reward = _rewarder.ActionReward(transform, actions);
+            AddReward(reward);
             // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
@@ -166,7 +169,7 @@ namespace Agents
 
             // Draw some debugging lines
         
-            Debug.DrawLine(transform.position, goal.position, Color.red, Time.fixedDeltaTime);
+            Debug.DrawLine(transform.position, goal.position, Color.red, Time.deltaTime*2);
         
             // Debug.Log($"Current position: {transform.position}. Previous position: {PreviousPosition}");
         

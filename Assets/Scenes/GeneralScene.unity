@@ -252,7 +252,7 @@ MonoBehaviour:
   sightRadius: 5
   sightAgents: 10
   comfortSpeed: 1
-  comfortSpeedWeight: 1
+  comfortSpeedWeight: 0.1
   comfortDistance: 1.5
   comfortDistanceWeight: 1
   saveTrajectory: 1
@@ -1878,7 +1878,7 @@ GameObject:
   - component: {fileID: 1291936535}
   - component: {fileID: 4071786926523291308}
   m_Layer: 3
-  m_Name: PersonRandom
+  m_Name: Person
   m_TagString: Agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1938,7 +1938,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Person1
+  m_BehaviorName: Person
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -2392,7 +2392,7 @@ MonoBehaviour:
   moveSpeed: 2
   rotationSpeed: 3
   dragFactor: 5
-  dynamicsType: 2
+  dynamicsType: 0
   observerType: 0
   rewarderType: 0
   goal: {fileID: 3898099998562990149}

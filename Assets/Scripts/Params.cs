@@ -41,7 +41,7 @@ public class Params : MonoBehaviour
     public float comfortSpeed = 1.0f;
     public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
     
-    public float comfortSpeedWeight = 1.0f;
+    public float comfortSpeedWeight = 0.1f;
     public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
     
     public float comfortDistance = 1.5f;
@@ -50,13 +50,10 @@ public class Params : MonoBehaviour
     public float comfortDistanceWeight = 1.0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
     
-    // public float goal = 1.0f;
-    // public static float PredatorPreyWeight => Get("predator_prey_weight", 1f);
-    
     public bool saveTrajectory = true;
     public static bool SaveTrajectory => Get("save_trajectory", Instance.saveTrajectory ? 1f : 0f) > 0.5f;
 
-    public static float Get(string name, float defaultValue)
+    private static float Get(string name, float defaultValue)
     {
         return Academy.Instance.EnvironmentParameters.GetWithDefault(name, defaultValue);
     }

@@ -1,3 +1,4 @@
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 
 namespace Rewards
@@ -15,6 +16,11 @@ namespace Rewards
         }
 
         public float TriggerReward(Transform transform, Collider other, bool stay)
+        {
+            return 0f;
+        }
+
+        public float ActionReward(Transform transform, ActionBuffers actions)
         {
             return 0f;
         }

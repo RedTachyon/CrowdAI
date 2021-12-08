@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -119,5 +120,11 @@ public class MLUtils
 
         return new[] {pos.x, pos.z, velocity.x, velocity.z, type};
     }
-    
+
+    [Pure]
+    public static float Flood(Vector3 x, Vector3 xMin, Vector3 xMax)
+    {
+        return Vector3.Min(x - xMin, Vector3.zero).magnitude
+            + Vector3.Max(x - xMax, Vector3.zero).magnitude;
+    }
 }

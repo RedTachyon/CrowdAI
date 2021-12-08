@@ -200,7 +200,7 @@ namespace Managers
 
             if (Timestep % decisionFrequency == 0)
             {
-                Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
+                // Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
 
                 foreach (Transform agent in transform)
                 {
@@ -284,9 +284,13 @@ namespace Managers
             {
                 currentMode = InitializerEnum.Circle;
             }
-            else // == 2f
+            else if (val < 2.5f) // == 2f
             {
                 currentMode = InitializerEnum.Hallway;
+            }
+            else
+            {
+                currentMode = InitializerEnum.JsonInitializer;
             }
 
             return currentMode;

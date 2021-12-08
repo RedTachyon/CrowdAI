@@ -1,5 +1,6 @@
 using Agents;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 
 namespace Rewards
@@ -8,6 +9,7 @@ namespace Rewards
     {
         public float ComputeReward(Transform transform)
         {
+            var reward = 0f;
             AgentBasic agent = transform.GetComponent<AgentBasic>();
             Transform goal = agent.goal;
             
@@ -17,8 +19,18 @@ namespace Rewards
             // Up to ~0.1
             var diff = prevDistance - currentDistance;
             
-            return Params.Potential * diff;  // Add reward for getting closer to the goal
+            reward += Params.Potential * diff;  // Add reward for getting closer to the goal
+            
+            // Speed similarity
+            var idealSpeed = Params.ComfortSpeed;
+            var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
+            var speedDiff = Mathf.Abs(idealSpeed - currentSpeed);
+            
+            // Debug.Log($"Current speed rmse: {speedDiff}");
 
+            reward += Params.ComfortSpeedWeight * speedDiff;
+            
+            return reward;
         }
 
         public float CollisionReward(Transform transform, Collision other, bool stay)
@@ -49,6 +61,12 @@ namespace Rewards
 
             return reward;
             
+        }
+
+        public float ActionReward(Transform transform, ActionBuffers actions)
+        {
+            float reward = 0f;
+            return reward;
         }
     }
 }

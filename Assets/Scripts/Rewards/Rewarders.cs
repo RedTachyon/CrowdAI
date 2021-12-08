@@ -1,4 +1,5 @@
 using Agents;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 
 namespace Rewards
@@ -8,6 +9,7 @@ namespace Rewards
         public float ComputeReward(Transform transform);
         public float CollisionReward(Transform transform, Collision other, bool stay);
         public float TriggerReward(Transform transform, Collider other, bool stay);
+        public float ActionReward(Transform transform, ActionBuffers actions);
     }
 
     public enum RewardersEnum
