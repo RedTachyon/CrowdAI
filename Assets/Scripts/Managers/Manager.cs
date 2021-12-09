@@ -7,6 +7,7 @@ using Initializers;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 using UnityEngine;
 
 namespace Managers
@@ -18,7 +19,8 @@ namespace Managers
         public int numAgents = 1;
         public InitializerEnum mode;
         public string dataFileName;
-    
+        public string savePath;
+
         [Range(1, 1000)]
         public int maxStep = 500;
 
@@ -27,6 +29,8 @@ namespace Managers
         private Dictionary<Transform, bool> _finished;
         internal int Timestep;
         public StatsCommunicator statsCommunicator;
+
+        private SavePathChannel _savePathChannel;
 
         public Transform obstacles;
 
@@ -60,6 +64,9 @@ namespace Managers
             {
                 _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
             }
+            
+            _savePathChannel = new SavePathChannel();
+            SideChannelManager.RegisterSideChannel(_savePathChannel);
 
             _episodeNum = 0;
         }
@@ -148,12 +155,24 @@ namespace Managers
 
         private void WriteTrajectory()
         {
-            if (!Directory.Exists("output"))
+            Debug.Log("Trying to save a trajectory");
+            string fullSavePath;
+            if (savePath != null)
             {
-                Directory.CreateDirectory("output");
+                fullSavePath = savePath;
             }
-            var savePath = $"output/trajectory_{_episodeNum}.json";
-            Debug.Log($"Writing to {savePath}");
+            else
+            {
+                if (!Directory.Exists("output"))
+                {
+                    Directory.CreateDirectory("output");
+                }
+
+                fullSavePath = Path.Combine("output", $"trajectory_{_episodeNum}.json");
+                // var savePath = $"output/trajectory_{_episodeNum}.json";
+            }
+            
+            Debug.Log($"Writing to {fullSavePath}");
             var data = new TrajectoryData(_timeMemory, _positionMemory);
             var json = JsonConvert.SerializeObject(data);
             File.WriteAllText(savePath, json);
@@ -304,6 +323,13 @@ namespace Managers
 
             return agents;
         }
-    
+
+        private void OnDestroy()
+        {
+            if (Academy.IsInitialized)
+            {
+                SideChannelManager.UnregisterSideChannel(_savePathChannel);
+            }
+        }
     }
 }

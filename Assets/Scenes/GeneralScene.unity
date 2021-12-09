@@ -255,7 +255,7 @@ MonoBehaviour:
   comfortSpeedWeight: 0.1
   comfortDistance: 0
   comfortDistanceWeight: 0
-  saveTrajectory: 1
+  saveTrajectory: 0
   squashActions: 1
 --- !u!4 &218126829
 Transform:
@@ -2266,6 +2266,7 @@ MonoBehaviour:
   numAgents: 12
   mode: 3
   dataFileName: 12peds-1.json
+  savePath: 
   maxStep: 200
   decisionFrequency: 10
   statsCommunicator: {fileID: 2113393393}
