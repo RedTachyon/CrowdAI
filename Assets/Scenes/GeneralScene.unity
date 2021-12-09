@@ -250,12 +250,13 @@ MonoBehaviour:
   goal: 1
   collision: -0.3
   sightRadius: 5
-  sightAgents: 10
+  sightAgents: 12
   comfortSpeed: 1
   comfortSpeedWeight: 0.1
-  comfortDistance: 1.5
-  comfortDistanceWeight: 1
+  comfortDistance: 0
+  comfortDistanceWeight: 0
   saveTrajectory: 1
+  squashActions: 1
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0

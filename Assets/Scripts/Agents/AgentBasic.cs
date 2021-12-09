@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Dynamics;
 using Managers;
@@ -127,7 +128,10 @@ namespace Agents
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                force *= 1;
+                if (Params.SquashActions)
+                {
+                    force *= 5;
+                }
             }
             else
             {

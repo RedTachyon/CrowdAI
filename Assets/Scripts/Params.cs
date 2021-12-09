@@ -53,6 +53,9 @@ public class Params : MonoBehaviour
     public bool saveTrajectory = true;
     public static bool SaveTrajectory => Get("save_trajectory", Instance.saveTrajectory ? 1f : 0f) > 0.5f;
 
+    public bool squashActions = true;
+    public static bool SquashActions => Get("squash_actions", Instance.squashActions ? 1f : 0f) > 0.5f;
+
     private static float Get(string name, float defaultValue)
     {
         return Academy.Instance.EnvironmentParameters.GetWithDefault(name, defaultValue);

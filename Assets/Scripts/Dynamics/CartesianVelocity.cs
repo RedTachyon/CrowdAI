@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -16,9 +17,18 @@ namespace Dynamics
 
             var vectorAction = actions.ContinuousActions;
 
-            var xSpeed = Mathf.Clamp(vectorAction[0], -1f, 1f);
-            var zSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);        
+            float xSpeed, zSpeed;
 
+            if (Params.SquashActions)
+            {
+                xSpeed = MathF.Tanh(vectorAction[0]);
+                zSpeed = MathF.Tanh(vectorAction[1]);
+            } else
+            {
+                xSpeed = Mathf.Clamp(vectorAction[0], -1f, 1f);
+                zSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
+            }
+            
             var velocity = new Vector3(xSpeed, 0, zSpeed);
             velocity = Vector3.ClampMagnitude(velocity, 1) * moveSpeed;
             // velocity = velocity.normalized * moveSpeed;
