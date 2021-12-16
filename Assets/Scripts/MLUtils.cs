@@ -98,13 +98,22 @@ public class MLUtils
     
     // public static Vector3 gridPlacement
 
-    public static float[] GetColliderInfo(Transform baseTransform, Collider collider)
+    public static float[] GetColliderInfo(Transform baseTransform, Collider collider, bool relative = true)
     {
+        
         var rigidbody = collider.GetComponent<Rigidbody>();
         var transform = collider.transform;
-        var rotation = baseTransform.localRotation;
-        var pos = Quaternion.Inverse(rotation) * (transform.localPosition - baseTransform.localPosition);
-        var velocity = Quaternion.Inverse(rotation) * rigidbody.velocity;
+        
+        var pos = transform.localPosition;
+        var velocity = rigidbody.velocity;
+        
+        if (relative)
+        {
+            var rotation = baseTransform.localRotation;
+            pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
+            velocity = Quaternion.Inverse(rotation) * velocity;
+        }
+        
 
         return new[] {pos.x, pos.z, velocity.x, velocity.z};
     }
@@ -126,5 +135,30 @@ public class MLUtils
     {
         return Vector3.Min(x - xMin, Vector3.zero).magnitude
             + Vector3.Max(x - xMax, Vector3.zero).magnitude;
+    }
+
+    public static Func<Vector2, Vector2> Apply2(Func<float, float> func)
+    {
+        return v => new Vector2(func(v.x), func(v.y));
+    }
+
+    public static Func<Vector3, Vector3> Apply3(Func<float, float> func)
+    {
+        return v => new Vector3(func(v.x), func(v.y));
+    }
+    
+    public static Vector2 SquashUniform(Vector2 vector)
+    {
+        // var angle = Vector2.Angle(Vector2.right, vector);
+
+        // tanh(r) * R * e_1
+        var result = vector.normalized * MathF.Tanh(vector.magnitude);
+        // var result = MathF.Tanh(vector.magnitude) * (Quaternion.AngleAxis(angle, Vector3.forward) * Vector2.right);
+        
+        // var rotation = Quaternion.Euler(angle, 0, 0);
+        // // (R^T o Tanh. o R) (v)
+        // var result = Quaternion.Inverse(rotation) * Apply3(MathF.Tanh) (rotation * vector);
+        
+        return result;
     }
 }

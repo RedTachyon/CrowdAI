@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -5,17 +6,17 @@ namespace Dynamics
 {
     public class PolarAcceleration : IDynamics
     {
-        public void ProcessActions(
-            ActionBuffers actions,
+        public void ProcessActions(ActionBuffers actions,
             Rigidbody rigidbody,
-            float moveSpeed,
+            float maxSpeed, float maxAccel,
             float rotSpeed,
-            float dragFactor = 0f,
-            float maxSpeed = float.PositiveInfinity)
+            Func<Vector2, Vector2> squasher)
         {
 
             var vectorAction = actions.ContinuousActions;
             var transform = rigidbody.transform;
+
+            var dragFactor = maxAccel / maxSpeed;
         
             // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
 
@@ -31,7 +32,7 @@ namespace Dynamics
 
             // Apply the force
 
-            var force = transform.forward * linearForce * moveSpeed;
+            var force = transform.forward * linearForce * maxAccel;
             var drag = -dragFactor * velocity;
             rigidbody.AddForce(force + drag);
             

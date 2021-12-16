@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -5,7 +6,8 @@ namespace Dynamics
 {
     public interface IDynamics
     {
-        public void ProcessActions(ActionBuffers actions, Rigidbody rigidbody, float moveSpeed, float rotSpeed, float dragFactor, float maxSpeed);
+        public void ProcessActions(ActionBuffers actions, Rigidbody rigidbody, float maxSpeed, float maxAccel,
+            float rotSpeed, Func<Vector2, Vector2> squasher);
     }
 
     public enum DynamicsEnum

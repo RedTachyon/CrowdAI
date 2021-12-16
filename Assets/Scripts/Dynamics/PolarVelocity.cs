@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -5,13 +6,11 @@ namespace Dynamics
 {
     public class PolarVelocity : IDynamics
     {
-        public void ProcessActions(
-            ActionBuffers actions,
+        public void ProcessActions(ActionBuffers actions,
             Rigidbody rigidbody,
-            float moveSpeed,
+            float maxSpeed, float maxAccel,
             float rotSpeed,
-            float dragFactor = 0f,
-            float maxSpeed = float.PositiveInfinity)
+            Func<Vector2, Vector2> squasher)
         {
 
             var vectorAction = actions.ContinuousActions;
@@ -37,7 +36,7 @@ namespace Dynamics
             rigidbody.rotation = Quaternion.Euler(rotation);
             
             
-            var newVelocity = rigidbody.transform.forward * linearSpeed * moveSpeed; // Rough adjustment to a normal range
+            var newVelocity = rigidbody.transform.forward * linearSpeed * maxAccel; // Rough adjustment to a normal range
             rigidbody.velocity = newVelocity;
         
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Managers;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -43,6 +44,10 @@ public class Params : MonoBehaviour
     
     public float comfortSpeedWeight = 0.1f;
     public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
+
+    public float comfortSpeedExponent = 1.0f;
+    public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortDistanceWeight);
+
     
     public float comfortDistance = 1.5f;
     public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
@@ -50,14 +55,18 @@ public class Params : MonoBehaviour
     public float comfortDistanceWeight = 1.0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
     
-    public bool saveTrajectory = true;
-    public static bool SaveTrajectory => Get("save_trajectory", Instance.saveTrajectory ? 1f : 0f) > 0.5f;
 
-    public bool squashActions = true;
-    public static bool SquashActions => Get("squash_actions", Instance.squashActions ? 1f : 0f) > 0.5f;
+    public string savePath = "";
+    public static string SavePath => Get("save_path", Instance.savePath);
+    
 
     private static float Get(string name, float defaultValue)
     {
         return Academy.Instance.EnvironmentParameters.GetWithDefault(name, defaultValue);
+    }
+
+    private static string Get(string name, string defaultValue)
+    {
+        return Manager.Instance.StringChannel.GetWithDefault(name, defaultValue);
     }
 }

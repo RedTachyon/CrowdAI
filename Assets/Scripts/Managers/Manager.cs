@@ -19,7 +19,6 @@ namespace Managers
         public int numAgents = 1;
         public InitializerEnum mode;
         public string dataFileName;
-        public string savePath;
 
         [Range(1, 1000)]
         public int maxStep = 500;
@@ -30,7 +29,7 @@ namespace Managers
         internal int Timestep;
         public StatsCommunicator statsCommunicator;
 
-        private SavePathChannel _savePathChannel;
+        public StringChannel StringChannel;
 
         public Transform obstacles;
 
@@ -65,10 +64,17 @@ namespace Managers
                 _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
             }
             
-            _savePathChannel = new SavePathChannel();
-            SideChannelManager.RegisterSideChannel(_savePathChannel);
+            StringChannel = new StringChannel();
+            SideChannelManager.RegisterSideChannel(StringChannel);
 
             _episodeNum = 0;
+            
+            // Debug.Log(Quaternion.AngleAxis(90, Vector3.up));
+            // Debug.Log(MLUtils.SquashUniform(new Vector2(0f ,1f)));
+            // Debug.Log(MLUtils.SquashUniform(new Vector2(1f ,0f)));
+            //
+            // Debug.Log(MLUtils.SquashUniform(new Vector2(Mathf.Sqrt(2)/2 ,Mathf.Sqrt(2)/2)));
+
         }
 
         public void ResetEpisode()
@@ -157,9 +163,9 @@ namespace Managers
         {
             Debug.Log("Trying to save a trajectory");
             string fullSavePath;
-            if (savePath != null)
+            if (Params.SavePath != "DEFAULT")
             {
-                fullSavePath = savePath;
+                fullSavePath = Params.SavePath;
             }
             else
             {
@@ -175,7 +181,7 @@ namespace Managers
             Debug.Log($"Writing to {fullSavePath}");
             var data = new TrajectoryData(_timeMemory, _positionMemory);
             var json = JsonConvert.SerializeObject(data);
-            File.WriteAllText(savePath, json);
+            File.WriteAllText(fullSavePath, json);
         }
 
         private void FixedUpdate()
@@ -186,8 +192,9 @@ namespace Managers
             
             if (Timestep >= maxStep * decisionFrequency)
             {
-
-                if (Params.SaveTrajectory) WriteTrajectory();
+                
+                if (Params.SavePath != "") WriteTrajectory();
+                else Debug.Log("Oops, not saving anything");
 
                 Debug.Log("Resetting");
                 
@@ -328,7 +335,7 @@ namespace Managers
         {
             if (Academy.IsInitialized)
             {
-                SideChannelManager.UnregisterSideChannel(_savePathChannel);
+                SideChannelManager.UnregisterSideChannel(StringChannel);
             }
         }
     }

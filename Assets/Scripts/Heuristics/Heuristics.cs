@@ -21,7 +21,6 @@ namespace Heuristics
             IHeuristic heuristic = type switch
             {
                 HeuristicsEnum.Controls => new Controls(),
-                HeuristicsEnum.Chase => new Chase(),
                 _ => null
             };
 

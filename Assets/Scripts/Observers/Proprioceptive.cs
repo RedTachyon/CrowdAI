@@ -22,11 +22,6 @@ namespace Observers
             // Velocity: 2, up to ~5
             sensor.AddObservation(velocity.x / 5f);
             sensor.AddObservation(velocity.z / 5f);
-
-            var type = transform.GetComponent<Animal>().type == AnimalType.Predator;
-            
-            // Type of the animal
-            sensor.AddObservation(type);
         }
 
         public int Size => 6;

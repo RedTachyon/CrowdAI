@@ -24,7 +24,7 @@ namespace Rewards
             // Speed similarity
             var idealSpeed = Params.ComfortSpeed;
             var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
-            var speedDiff = Mathf.Abs(idealSpeed - currentSpeed);
+            var speedDiff = Mathf.Pow(Mathf.Abs(idealSpeed - currentSpeed), Params.ComfortSpeedExponent);
             
             // Debug.Log($"Current speed rmse: {speedDiff}");
 

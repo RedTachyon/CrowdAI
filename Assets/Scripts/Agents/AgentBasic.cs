@@ -31,6 +31,7 @@ namespace Agents
 
         // public bool velocityControl = false;
         public float moveSpeed = 25f;
+        public float accelerationMax = 5f;
         public float rotationSpeed = 3f;
         public float dragFactor = 5f;
 
@@ -42,6 +43,9 @@ namespace Agents
 
         public RewardersEnum rewarderType;
         private IRewarder _rewarder;
+
+        public Squasher.SquashersEnum squasherType;
+        private Func<Vector2, Vector2> _squasher;
 
 
         protected int Unfrozen = 1;
@@ -71,6 +75,7 @@ namespace Agents
             _dynamics = Dynamics.Mapper.GetDynamics(dynamicsType);
             _observer = Observers.Mapper.GetObserver(observerType);
             _rewarder = Rewards.Mapper.GetRewarder(rewarderType);
+            _squasher = Squasher.GetSquasher(squasherType);
 
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
         
@@ -93,10 +98,16 @@ namespace Agents
         {
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
-            _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, rotationSpeed, dragFactor, 3f);
+            
+            _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, moveSpeed, rotationSpeed, _squasher);
+            if (Rigidbody.velocity.magnitude > 1e-8)
+            {
+                Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity, Vector3.up);
+            }
+            
             var reward = _rewarder.ActionReward(transform, actions);
             AddReward(reward);
-            // Debug.Log(Rigidbody.velocity.magnitude);
+            Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -112,26 +123,20 @@ namespace Agents
             // Only for polar WASD controls
             // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
-            const float ratio = 1f;
+            // const float ratio = 1f;
         
             if (Input.GetKey(KeyCode.W)) zValue = 1f;
             if (Input.GetKey(KeyCode.S)) zValue = -1f;
-        
-            if (Input.GetKey(KeyCode.D)) xValue = 1f/ratio;
-            if (Input.GetKey(KeyCode.A)) xValue = -1f/ratio;
+
+            if (Input.GetKey(KeyCode.D)) xValue = 1f;///ratio;
+            if (Input.GetKey(KeyCode.A)) xValue = -1f;///ratio;
             
 
-            if (true)
-            {
-                force = new Vector3(xValue, 0, zValue);
-            }
+            force = new Vector3(xValue, 0, zValue).normalized;
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                if (Params.SquashActions)
-                {
-                    force *= 5;
-                }
+                force *= 2;
             }
             else
             {

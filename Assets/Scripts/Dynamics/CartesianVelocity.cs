@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -7,38 +8,29 @@ namespace Dynamics
     public class CartesianVelocity : IDynamics
     {
         public void ProcessActions(
+            // unused
             ActionBuffers actions,
             Rigidbody rigidbody,
-            float moveSpeed,
-            float rotSpeed,
-            float dragFactor = 0f,
-            float maxSpeed = float.PositiveInfinity)
+            float maxSpeed, 
+            float maxAccel, // unused
+            float rotSpeed, // unused
+            Func<Vector2, Vector2> squasher
+            // unused
+        )
         {
 
-            var vectorAction = actions.ContinuousActions;
-
-            float xSpeed, zSpeed;
-
-            if (Params.SquashActions)
-            {
-                xSpeed = MathF.Tanh(vectorAction[0]);
-                zSpeed = MathF.Tanh(vectorAction[1]);
-            } else
-            {
-                xSpeed = Mathf.Clamp(vectorAction[0], -1f, 1f);
-                zSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
-            }
+            var vectorAction = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
+            vectorAction = squasher(vectorAction);
             
-            var velocity = new Vector3(xSpeed, 0, zSpeed);
-            velocity = Vector3.ClampMagnitude(velocity, 1) * moveSpeed;
+            
+            var velocity = new Vector3(vectorAction.x, 0, vectorAction.y);
+            velocity = velocity * maxSpeed;
             // velocity = velocity.normalized * moveSpeed;
             // velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
             rigidbody.velocity = velocity;
-            if (velocity.magnitude > 1e-8)
-            {
-                rigidbody.rotation = Quaternion.LookRotation(velocity, Vector3.up);
-            }
+
         }
+        
     }
 }
