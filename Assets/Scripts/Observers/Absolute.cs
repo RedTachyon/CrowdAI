@@ -17,12 +17,13 @@ namespace Observers
             // n_tags: whether *something* was hit
             // n_tags + 1: normalized distance
 
-            Transform goal = transform.GetComponent<AgentBasic>().goal;
+            var agent = transform.GetComponent<AgentBasic>();
+            var goal = agent.goal;
         
-            Vector3 position = transform.localPosition;
-            Quaternion rotation = transform.localRotation;
-            Vector3 velocity = transform.GetComponent<Rigidbody>().velocity;
-            Vector3 goalPosition = goal.localPosition;
+            var position = transform.localPosition;
+            var rotation = transform.localRotation;
+            var velocity = transform.GetComponent<Rigidbody>().velocity;
+            var goalPosition = goal.localPosition;
             
             // Position: 2
             sensor.AddObservation(position.x / 10f); // 0
@@ -38,9 +39,11 @@ namespace Observers
             // Velocity: 2, up to ~2
             sensor.AddObservation(velocity.x / 2f); // 5
             sensor.AddObservation(velocity.z / 2f); // 6
+            
+            sensor.AddObservation(agent.CollectedGoal); // 7
         }
 
-        public int Size => 7;
+        public int Size => 8;
     }
 
 }

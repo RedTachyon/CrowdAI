@@ -46,7 +46,7 @@ public class Params : MonoBehaviour
     public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
 
     public float comfortSpeedExponent = 1.0f;
-    public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortDistanceWeight);
+    public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
 
     
     public float comfortDistance = 1.5f;

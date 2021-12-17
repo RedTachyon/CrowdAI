@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using UnityEngine;
 
 public interface ISquasher
@@ -12,6 +13,7 @@ public class Squasher
     {
         Clamp,
         TanhClamp,
+        Tanh,
         RadialTanh,
         Identity
     }
@@ -22,6 +24,7 @@ public class Squasher
         {
             SquashersEnum.Clamp => Clamp,
             SquashersEnum.TanhClamp => TanhClamp,
+            SquashersEnum.Tanh => Tanh,
             SquashersEnum.RadialTanh => RadialTanh,
             SquashersEnum.Identity => Identity,
             _ => null
@@ -40,6 +43,12 @@ public class Squasher
     {
         var velocity = new Vector2(MathF.Tanh(vector.x), MathF.Tanh(vector.y));
         velocity = Vector2.ClampMagnitude(velocity, 1f);
+        return velocity;
+    }
+
+    public static Vector2 Tanh(Vector2 vector)
+    {
+        var velocity = new Vector2(MathF.Tanh(vector.x), MathF.Tanh(vector.y));
         return velocity;
     }
 
