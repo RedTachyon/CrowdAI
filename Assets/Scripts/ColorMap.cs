@@ -44,11 +44,11 @@ public class ColorMap
         Color.magenta,
         Color.red,
         Color.yellow,
-        new Color(255, 127, 80)/255f, // Coral(
+        new Color(255, 127, 80)/255f, // Coral
         new Color(139, 0, 139)/255f, // DarkMagenta
-        new Color(40, 79, 79)/255f, // DarkSlateGrey(
+        new Color(40, 79, 79)/255f, // DarkSlateGrey
         new Color(255, 215, 0)/255f, // Gold
-        new Color(255, 182, 193)/255f // LightPink*
+        new Color(255, 182, 193)/255f // LightPink
     };
 
     private static int numColors = _colors.Count;

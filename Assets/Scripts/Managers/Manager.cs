@@ -160,6 +160,7 @@ namespace Managers
             foreach (Transform agent in transform)
             {
                 _finished[agent] = false;
+                agent.GetComponent<AgentBasic>().OnEpisodeBegin();
             }
 
         }

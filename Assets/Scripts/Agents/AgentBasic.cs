@@ -28,6 +28,7 @@ namespace Agents
         private BufferSensorComponent _bufferSensor;
     
         protected Rigidbody Rigidbody;
+        protected Collider Collider;
 
         // public bool velocityControl = false;
         public float moveSpeed = 25f;
@@ -68,6 +69,7 @@ namespace Agents
             base.Initialize();
         
             Rigidbody = GetComponent<Rigidbody>();
+            Collider = GetComponent<Collider>();
             // startY = transform.localPosition.y;
             startPosition = transform.localPosition;
             startRotation = transform.localRotation;
@@ -92,6 +94,11 @@ namespace Agents
             base.OnEpisodeBegin();
             CollectedGoal = false;
 
+            if (Params.EvaluationMode)
+            {
+                Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                Collider.enabled = true;
+            }
         }
 
         public override void OnActionReceived(ActionBuffers actions)
@@ -207,6 +214,12 @@ namespace Agents
         
             CollectedGoal = true;
             Manager.Instance.ReachGoal(this);
+
+            if (Params.EvaluationMode)
+            {
+                Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+                Collider.enabled = false;
+            }
             // Debug.Log("Trying to change color");
             // _material.color = Color.blue;
             

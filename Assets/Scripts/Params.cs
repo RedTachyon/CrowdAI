@@ -54,7 +54,9 @@ public class Params : MonoBehaviour
     
     public float comfortDistanceWeight = 1.0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
-    
+
+    public bool evaluationMode = false;
+    public static bool EvaluationMode => Convert.ToBoolean(Get("evaluation_mode", Instance.evaluationMode ? 1f : 0f));
 
     public string savePath = "";
     public static string SavePath => Get("save_path", Instance.savePath);

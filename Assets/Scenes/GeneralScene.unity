@@ -256,6 +256,7 @@ MonoBehaviour:
   comfortSpeedExponent: 1
   comfortDistance: 0
   comfortDistanceWeight: 0
+  evaluationMode: 1
   savePath: 
 --- !u!4 &218126829
 Transform:
@@ -1151,7 +1152,7 @@ Transform:
   m_GameObject: {fileID: 3898099998562990148}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 9, y: 0.15, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.3, z: 0.5}
+  m_LocalScale: {x: 0.25, y: 0.3, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1294497070975032864}
@@ -2394,7 +2395,7 @@ MonoBehaviour:
   accelerationMax: 5
   rotationSpeed: 3
   dragFactor: 5
-  dynamicsType: 0
+  dynamicsType: 1
   observerType: 0
   rewarderType: 0
   squasherType: 2
