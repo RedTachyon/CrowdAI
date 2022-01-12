@@ -143,6 +143,15 @@ namespace Managers
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
             initializer.PlaceAgents(transform);
 
+            // Give'em some color
+            int agentIdx = 0;
+            foreach (Transform agentTransform in transform)
+            {
+                var agent = agentTransform.GetComponent<AgentBasic>();
+                agent.SetColor(ColorMap.GetColor(agentIdx), true);
+                agentIdx++;
+            }
+            
             // Initialize stats
             _finished.Clear();
 

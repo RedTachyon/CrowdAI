@@ -107,7 +107,7 @@ namespace Agents
             
             var reward = _rewarder.ActionReward(transform, actions);
             AddReward(reward);
-            Debug.Log(Rigidbody.velocity.magnitude);
+            // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -191,7 +191,7 @@ namespace Agents
             // Final updates
             PreviousPosition = transform.localPosition;
             Collision = 0;
-            _material.color = _originalColor;
+            // _material.color = _originalColor;
 
         }
 
@@ -208,7 +208,7 @@ namespace Agents
             CollectedGoal = true;
             Manager.Instance.ReachGoal(this);
             // Debug.Log("Trying to change color");
-            _material.color = Color.blue;
+            // _material.color = Color.blue;
             
             // Debug.Log("Collecting a reward");
         }
@@ -218,7 +218,7 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
         
             AddReward(_rewarder.CollisionReward(transform, other, false));
@@ -230,12 +230,21 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
         
             AddReward(_rewarder.CollisionReward(transform, other, true));
         }
 
         public Vector3 PreviousPosition { get; set; }
+
+        public void SetColor(Color color, bool colorGoal = false)
+        {
+            _material.color = color;
+            if (colorGoal)
+            {
+                goal.GetComponent<Renderer>().material.color = color;
+            }
+        }
     }
 }
