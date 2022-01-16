@@ -36,10 +36,10 @@ namespace Agents
         public float rotationSpeed = 3f;
         public float dragFactor = 5f;
 
-        public DynamicsEnum dynamicsType;
+        // public DynamicsEnum dynamicsType;
         private IDynamics _dynamics;
 
-        public ObserversEnum observerType;
+        // public ObserversEnum observerType;
         private IObserver _observer;
 
         public RewardersEnum rewarderType;
@@ -74,10 +74,7 @@ namespace Agents
             startPosition = transform.localPosition;
             startRotation = transform.localRotation;
 
-            _dynamics = Dynamics.Mapper.GetDynamics(dynamicsType);
-            _observer = Observers.Mapper.GetObserver(observerType);
-            _rewarder = Rewards.Mapper.GetRewarder(rewarderType);
-            _squasher = Squasher.GetSquasher(squasherType);
+            UpdateParams();
 
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
         
@@ -93,6 +90,8 @@ namespace Agents
         {
             base.OnEpisodeBegin();
             CollectedGoal = false;
+            
+            UpdateParams();
 
             if (Params.EvaluationMode)
             {
@@ -112,8 +111,11 @@ namespace Agents
                 Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity, Vector3.up);
             }
             
-            var reward = _rewarder.ActionReward(transform, actions);
-            AddReward(reward);
+            if (!CollectedGoal)
+            {
+                var reward = _rewarder.ActionReward(transform, actions);
+                AddReward(reward);
+            }
             // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
@@ -160,28 +162,16 @@ namespace Agents
         {
             base.CollectObservations(sensor);
 
-            _observer.Observe(sensor, transform);
-        
-            var reward = _rewarder.ComputeReward(transform);
-            
-            AddReward(reward);
-        
-        
-            // Collect Buffer observations
-            var layerMask = 1 << 3; // Only look at the Agent layer
-            var nearbyObjects =
-                Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
-                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
-                    .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
-                    .Select(c => MLUtils.GetColliderInfo(transform, c))
-                    .Take(Params.SightAgents);
-        
-            // Debug.Log(nearbyObjects);
-            foreach (var agentInfo in nearbyObjects)
+            if (!CollectedGoal)
             {
-                // Debug.Log(String.Join(",", agentInfo));
-                _bufferSensor.AppendObservation(agentInfo);
+                var reward = _rewarder.ComputeReward(transform);
+                AddReward(reward);
             }
+            
+            _observer.Observe(sensor, transform);
+
+            _observer.ObserveAgents(_bufferSensor, transform);
+            
 
             // Draw some debugging lines
         
@@ -258,6 +248,17 @@ namespace Agents
             {
                 goal.GetComponent<Renderer>().material.color = color;
             }
+        }
+
+        private void UpdateParams()
+        {
+            _dynamics = Dynamics.Mapper.GetDynamics(Params.Dynamics);
+            _observer = Observers.Mapper.GetObserver(Params.Observer);
+            _rewarder = Rewards.Mapper.GetRewarder(rewarderType);
+            _squasher = Squasher.GetSquasher(squasherType);
+            
+            GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
+
         }
     }
 }

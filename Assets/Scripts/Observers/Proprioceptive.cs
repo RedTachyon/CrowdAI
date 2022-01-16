@@ -24,6 +24,11 @@ namespace Observers
             sensor.AddObservation(velocity.z / 5f);
         }
 
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        {
+            
+        }
+
         public int Size => 6;
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Dynamics;
 using Managers;
+using Observers;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -60,7 +62,12 @@ public class Params : MonoBehaviour
 
     public string savePath = "";
     public static string SavePath => Get("save_path", Instance.savePath);
-    
+
+    public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;
+    public static DynamicsEnum Dynamics => Enum.Parse<DynamicsEnum>(Get("dynamics", Instance.dynamics.ToString()));
+
+    public ObserversEnum observer = ObserversEnum.Absolute;
+    public static ObserversEnum Observer => Enum.Parse<ObserversEnum>(Get("observer", Instance.observer.ToString()));
 
     private static float Get(string name, float defaultValue)
     {

@@ -8,6 +8,8 @@ namespace Observers
     {
         public void Observe(VectorSensor sensor, Transform transform);
 
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform);
+
         public int Size
         {
             get;

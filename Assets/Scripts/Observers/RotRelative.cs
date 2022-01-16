@@ -1,5 +1,6 @@
 using System;
 using Agents;
+using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -15,8 +16,9 @@ namespace Observers
             // 0 - n_tags: one-hot encoding of what was hit
             // n_tags: whether *something* was hit
             // n_tags + 1: normalized distance
-            
-            Transform goal = transform.GetComponent<AgentBasic>().goal;
+
+            var agent = transform.GetComponent<AgentBasic>();
+            var goal = agent.goal;
 
         
             Vector3 position = transform.localPosition;
@@ -36,13 +38,39 @@ namespace Observers
             // var relPosition = goalPosition - position;
             sensor.AddObservation(relPosition.x / 20f);
             sensor.AddObservation(relPosition.z / 20f);
+
+            Debug.Log(relPosition);
             
 
             // Velocity: 2, up to ~5
             sensor.AddObservation(velocity.x / 5f);
             sensor.AddObservation(velocity.z / 5f);
+            
+            sensor.AddObservation(agent.CollectedGoal);
         }
 
-        public int Size => 7;
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        {
+            
+        }
+
+        public static float[] GetColliderInfo(Transform baseTransform, Collider collider)
+        {
+            
+            var rigidbody = collider.GetComponent<Rigidbody>();
+            var transform = collider.transform;
+            
+            var pos = transform.localPosition;
+            var velocity = rigidbody.velocity;
+
+            var rotation = baseTransform.localRotation;
+            pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
+            velocity = Quaternion.Inverse(rotation) * velocity;
+        
+            
+        
+            return new[] {pos.x, pos.z, velocity.x, velocity.z};
+        }
+        public int Size => 8;
     }
 }

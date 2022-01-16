@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Linq;
 using Agents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -43,6 +44,36 @@ namespace Observers
             sensor.AddObservation(agent.CollectedGoal); // 7
         }
 
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        {
+            
+            // Collect Buffer observations
+            const int layerMask = 1 << 3; // Only look at the Agent layer
+            var nearbyObjects =
+                Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
+                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                    .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
+                    .Select(GetColliderInfo)
+                    .Take(Params.SightAgents);
+        
+            // Debug.Log(nearbyObjects);
+            foreach (var agentInfo in nearbyObjects)
+            {
+                // Debug.Log(String.Join(",", agentInfo));
+                sensor.AppendObservation(agentInfo);
+            }
+        }
+
+        private static float[] GetColliderInfo(Collider collider)
+        {
+            var rigidbody = collider.GetComponent<Rigidbody>();
+            var transform = collider.transform;
+        
+            var pos = transform.localPosition;
+            var velocity = rigidbody.velocity;
+            
+            return new[] {pos.x, pos.z, velocity.x, velocity.z};
+        }
         public int Size => 8;
     }
 

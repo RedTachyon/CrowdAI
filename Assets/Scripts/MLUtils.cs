@@ -95,40 +95,40 @@ public class MLUtils
 
         return result;
     }
-    
+
     // public static Vector3 gridPlacement
 
-    public static float[] GetColliderInfo(Transform baseTransform, Collider collider, bool relative = true)
-    {
-        
-        var rigidbody = collider.GetComponent<Rigidbody>();
-        var transform = collider.transform;
-        
-        var pos = transform.localPosition;
-        var velocity = rigidbody.velocity;
-        
-        if (relative)
-        {
-            var rotation = baseTransform.localRotation;
-            pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
-            velocity = Quaternion.Inverse(rotation) * velocity;
-        }
-        
+    // public static float[] GetColliderInfo(Transform baseTransform, Collider collider, bool relative = true)
+    // {
+    //     
+    //     var rigidbody = collider.GetComponent<Rigidbody>();
+    //     var transform = collider.transform;
+    //     
+    //     var pos = transform.localPosition;
+    //     var velocity = rigidbody.velocity;
+    //     
+    //     if (relative)
+    //     {
+    //         var rotation = baseTransform.localRotation;
+    //         pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
+    //         velocity = Quaternion.Inverse(rotation) * velocity;
+    //     }
+    //     
+    //
+    //     return new[] {pos.x, pos.z, velocity.x, velocity.z};
+    // }
 
-        return new[] {pos.x, pos.z, velocity.x, velocity.z};
-    }
-
-    public static float[] GetPredatorPreyInfo(Transform baseTransform, Collider collider)
-    {
-        var rigidbody = collider.GetComponent<Rigidbody>();
-        var transform = collider.transform;
-        var rotation = baseTransform.localRotation;
-        var pos = Quaternion.Inverse(rotation) * (transform.localPosition - baseTransform.localPosition);
-        var velocity = Quaternion.Inverse(rotation) * rigidbody.velocity;
-        var type = Convert.ToSingle(collider.name.Contains("Predator"));
-
-        return new[] {pos.x, pos.z, velocity.x, velocity.z, type};
-    }
+    // public static float[] GetPredatorPreyInfo(Transform baseTransform, Collider collider)
+    // {
+    //     var rigidbody = collider.GetComponent<Rigidbody>();
+    //     var transform = collider.transform;
+    //     var rotation = baseTransform.localRotation;
+    //     var pos = Quaternion.Inverse(rotation) * (transform.localPosition - baseTransform.localPosition);
+    //     var velocity = Quaternion.Inverse(rotation) * rigidbody.velocity;
+    //     var type = Convert.ToSingle(collider.name.Contains("Predator"));
+    //
+    //     return new[] {pos.x, pos.z, velocity.x, velocity.z, type};
+    // }
 
     [Pure]
     public static float Flood(Vector3 x, Vector3 xMin, Vector3 xMax)
