@@ -9,6 +9,7 @@ using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.SideChannels;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Managers
 {
@@ -136,21 +137,29 @@ namespace Managers
                 newGoal.name = baseGoal.name + $" ({i})";
             }
         
-            
-            
-            // Find the right locations for all agents
-            Debug.Log($"Total agents: {transform.childCount}");
-            IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform);
-
             // Give'em some color
             int agentIdx = 0;
             foreach (Transform agentTransform in transform)
             {
                 var agent = agentTransform.GetComponent<AgentBasic>();
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
+                
+                // Choose a random mass
+                var mass = Random.Range(0.5f, 1.5f);
+                agent.mass = mass;
+                agentTransform.localScale *= Mathf.Pow(mass, 0.333333f);
+
+                agentTransform.position = new Vector3(0f, agentTransform.localScale.y, 0f);
+
                 agentIdx++;
             }
+            
+            // Find the right locations for all agents
+            Debug.Log($"Total agents: {transform.childCount}");
+            IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
+            initializer.PlaceAgents(transform);
+
+
             
             // Initialize stats
             _finished.Clear();

@@ -34,7 +34,8 @@ namespace Agents
         public float maxSpeed = 2f;
         public float maxAcceleration = 5f;
         public float rotationSpeed = 3f;
-        // public float dragFactor = 5f;
+
+        public float mass = 1f;
 
         // public DynamicsEnum dynamicsType;
         private IDynamics _dynamics;
