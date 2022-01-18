@@ -224,6 +224,7 @@ namespace Agents
 
         protected void OnCollisionEnter(Collision other)
         {
+            if (other.collider.CompareTag("Ground")) return;
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
@@ -236,13 +237,14 @@ namespace Agents
     
         protected void OnCollisionStay(Collision other)
         {
+            if (other.collider.CompareTag("Ground")) return;
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
                 // _material.color = Color.red;
             }
             
-            // Debug.Log(other.impulse.magnitude);
+            // Debug.Log(other.impulse.magnitude / Time.fixedDeltaTime);
         
             AddReward(_rewarder.CollisionReward(transform, other, true));
         }
