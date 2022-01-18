@@ -31,10 +31,10 @@ namespace Agents
         protected Collider Collider;
 
         // public bool velocityControl = false;
-        public float moveSpeed = 25f;
-        public float accelerationMax = 5f;
+        public float maxSpeed = 2f;
+        public float maxAcceleration = 5f;
         public float rotationSpeed = 3f;
-        public float dragFactor = 5f;
+        // public float dragFactor = 5f;
 
         // public DynamicsEnum dynamicsType;
         private IDynamics _dynamics;
@@ -49,7 +49,7 @@ namespace Agents
         private Func<Vector2, Vector2> _squasher;
 
 
-        protected int Unfrozen = 1;
+        // protected int Unfrozen = 1;
 
         internal int Collision = 0;
 
@@ -107,7 +107,7 @@ namespace Agents
             
             if (!CollectedGoal || !Params.EvaluationMode)
             {
-                _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, moveSpeed, rotationSpeed, _squasher);
+                _dynamics.ProcessActions(actions, Rigidbody, maxSpeed, maxAcceleration, rotationSpeed, _squasher);
             }
 
 
@@ -116,7 +116,7 @@ namespace Agents
                 var reward = _rewarder.ActionReward(transform, actions);
                 AddReward(reward);
             }
-            // Debug.Log(Rigidbody.velocity.magnitude);
+            Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
