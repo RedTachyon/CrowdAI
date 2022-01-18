@@ -48,7 +48,10 @@ namespace Observers
             sensor.AddObservation(velocity.z / 5f);
             
             sensor.AddObservation(agent.CollectedGoal);
+            sensor.AddObservation(agent.mass); // 8
+
         }
+        public int Size => 9;
 
         public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
         {
@@ -85,6 +88,5 @@ namespace Observers
         
             return new[] {pos.x, pos.z, velocity.x, velocity.z};
         }
-        public int Size => 8;
     }
 }

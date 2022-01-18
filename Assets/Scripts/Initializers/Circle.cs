@@ -18,7 +18,7 @@ namespace Initializers
             {  
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
-                const float r = 9;
+                const float r = 4;
                 var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
                 var z = r * Mathf.Sin((float) agentIdx / numAgents * Constants.Tau);
                 var newPosition = new Vector3(x, agent.localPosition.y, z);

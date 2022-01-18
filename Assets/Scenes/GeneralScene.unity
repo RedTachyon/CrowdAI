@@ -2266,7 +2266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 12
   mode: 3
   dataFileName: 12peds-1.json
   maxStep: 200
@@ -2393,9 +2393,11 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  controllable: 1
   maxSpeed: 2
   maxAcceleration: 10
   rotationSpeed: 1
+  mass: 1
   rewarderType: 0
   squasherType: 3
   goal: {fileID: 3898099998562990149}

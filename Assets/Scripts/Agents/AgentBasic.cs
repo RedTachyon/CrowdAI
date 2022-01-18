@@ -9,6 +9,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -29,6 +30,8 @@ namespace Agents
     
         protected Rigidbody Rigidbody;
         protected Collider Collider;
+
+        public bool controllable = true;
 
         // public bool velocityControl = false;
         public float maxSpeed = 2f;
@@ -117,13 +120,15 @@ namespace Agents
                 var reward = _rewarder.ActionReward(transform, actions);
                 AddReward(reward);
             }
-            Debug.Log(Rigidbody.velocity.magnitude);
+            // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             // base.Heuristic(in actionsOut);
 
+            if (!controllable) return;
+            
             var cActionsOut = actionsOut.ContinuousActions;
 
             var xValue = 0f;
@@ -236,6 +241,8 @@ namespace Agents
                 Collision = 1;
                 // _material.color = Color.red;
             }
+            
+            // Debug.Log(other.impulse.magnitude);
         
             AddReward(_rewarder.CollisionReward(transform, other, true));
         }
