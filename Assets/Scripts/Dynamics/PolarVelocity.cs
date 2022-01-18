@@ -6,33 +6,26 @@ namespace Dynamics
 {
     public class PolarVelocity : IDynamics
     {
-        public void ProcessActions(ActionBuffers actions,
+        public void ProcessActions(
+            ActionBuffers actions,
             Rigidbody rigidbody,
-            float maxSpeed, float maxAccel,
+            float maxSpeed, 
+            float maxAccel, // unused
             float rotSpeed,
             Func<Vector2, Vector2> squasher)
         {
 
             var vectorAction = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
-            vectorAction = squasher(vectorAction);
+            vectorAction = Squasher.Tanh(vectorAction);
             
 
-            var linearSpeed = vectorAction.x;
-            
-            var transform = rigidbody.transform;
-        
-            // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
+            var linearSpeed = Mathf.Max(vectorAction.y, 0f);
+            var angularSpeed = vectorAction.x;
 
-            var angularSpeed = Mathf.Clamp(vectorAction[0], -1f, 1f);
-            // var linearSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
-            
-            // Apply the rotation
-            // var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
-            Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotSpeed;
-            rigidbody.rotation = Quaternion.Euler(rotation);
+            rigidbody.MoveRotation(Quaternion.Euler(0, angularSpeed * rotSpeed, 0) * rigidbody.rotation);
             
             
-            var newVelocity = rigidbody.transform.forward * linearSpeed * maxAccel; // Rough adjustment to a normal range
+            var newVelocity = rigidbody.rotation * Vector3.forward * linearSpeed * maxSpeed;
             rigidbody.velocity = newVelocity;
         
         }

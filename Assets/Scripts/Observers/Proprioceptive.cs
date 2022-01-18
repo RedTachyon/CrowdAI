@@ -11,6 +11,8 @@ namespace Observers
             Vector3 position = transform.localPosition;
             Quaternion rotation = transform.localRotation;
             Vector3 velocity = transform.GetComponent<Rigidbody>().velocity;
+            var agent = transform.GetComponent<AgentBasic>();
+
             
             // Position: 2
             sensor.AddObservation(position.x / 10f);
@@ -22,6 +24,8 @@ namespace Observers
             // Velocity: 2, up to ~5
             sensor.AddObservation(velocity.x / 5f);
             sensor.AddObservation(velocity.z / 5f);
+            
+            sensor.AddObservation(agent.CollectedGoal);
         }
 
         public void ObserveAgents(BufferSensorComponent sensor, Transform transform)

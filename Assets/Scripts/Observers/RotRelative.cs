@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Agents;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
@@ -39,7 +40,7 @@ namespace Observers
             sensor.AddObservation(relPosition.x / 20f);
             sensor.AddObservation(relPosition.z / 20f);
 
-            Debug.Log(relPosition);
+            // Debug.Log(relPosition);
             
 
             // Velocity: 2, up to ~5
@@ -51,7 +52,20 @@ namespace Observers
 
         public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
         {
-            
+            const int layerMask = 1 << 3; // Only look at the Agent layer
+            var nearbyObjects =
+                Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
+                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                    .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
+                    .Select(c => GetColliderInfo(transform, c))
+                    .Take(Params.SightAgents);
+        
+            // Debug.Log(nearbyObjects);
+            foreach (var agentInfo in nearbyObjects)
+            {
+                // Debug.Log(String.Join(",", agentInfo));
+                sensor.AppendObservation(agentInfo);
+            }
         }
 
         public static float[] GetColliderInfo(Transform baseTransform, Collider collider)

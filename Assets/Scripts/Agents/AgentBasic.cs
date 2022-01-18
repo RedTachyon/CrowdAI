@@ -96,7 +96,7 @@ namespace Agents
             if (Params.EvaluationMode)
             {
                 Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                Collider.enabled = true;
+                // Collider.enabled = true;
             }
         }
 
@@ -105,12 +105,12 @@ namespace Agents
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
-            _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, moveSpeed, rotationSpeed, _squasher);
-            if (Rigidbody.velocity.magnitude > 1e-8)
+            if (!CollectedGoal || !Params.EvaluationMode)
             {
-                Rigidbody.rotation = Quaternion.LookRotation(Rigidbody.velocity, Vector3.up);
+                _dynamics.ProcessActions(actions, Rigidbody, moveSpeed, moveSpeed, rotationSpeed, _squasher);
             }
-            
+
+
             if (!CollectedGoal)
             {
                 var reward = _rewarder.ActionReward(transform, actions);
@@ -137,8 +137,8 @@ namespace Agents
             if (Input.GetKey(KeyCode.W)) zValue = 1f;
             if (Input.GetKey(KeyCode.S)) zValue = -1f;
 
-            if (Input.GetKey(KeyCode.D)) xValue = 1f;///ratio;
-            if (Input.GetKey(KeyCode.A)) xValue = -1f;///ratio;
+            if (Input.GetKey(KeyCode.D)) xValue = 1f;
+            if (Input.GetKey(KeyCode.A)) xValue = -1f;
             
 
             force = new Vector3(xValue, 0, zValue).normalized;
@@ -208,7 +208,7 @@ namespace Agents
             if (Params.EvaluationMode)
             {
                 Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-                Collider.enabled = false;
+                // Collider.enabled = false;
             }
             // Debug.Log("Trying to change color");
             // _material.color = Color.blue;

@@ -16,7 +16,7 @@ namespace Dynamics
         {
 
             var vectorAction = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
-            vectorAction = squasher(vectorAction);  // ||X|| <= 1
+            vectorAction = Squasher.RadialTanh(vectorAction);  // ||X|| <= 1
 
             // var xForce = Mathf.Clamp(vectorAction[0], -1f, 1f);
             // var zForce = Mathf.Clamp(vectorAction[1], -1f, 1f);        
@@ -30,6 +30,10 @@ namespace Dynamics
             
             rigidbody.velocity = newVelocity.magnitude > 1e-3f ? newVelocity : Vector3.zero; 
             
+            if (rigidbody.velocity.magnitude > 1e-6)
+            {
+                rigidbody.rotation = Quaternion.LookRotation(rigidbody.velocity, Vector3.up);
+            }
             
             // rigidbody.AddForce(force + drag);
             

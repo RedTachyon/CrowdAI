@@ -6,43 +6,35 @@ namespace Dynamics
 {
     public class PolarAcceleration : IDynamics
     {
-        public void ProcessActions(ActionBuffers actions,
+        public void ProcessActions(
+            ActionBuffers actions,
             Rigidbody rigidbody,
-            float maxSpeed, float maxAccel,
+            float maxSpeed, 
+            float maxAccel,
             float rotSpeed,
             Func<Vector2, Vector2> squasher)
         {
 
-            var vectorAction = actions.ContinuousActions;
-            var transform = rigidbody.transform;
+            var vectorAction = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
+            vectorAction = Squasher.Tanh(vectorAction);
+            
 
+            var linearSpeed = vectorAction.y;
+            var angularSpeed = vectorAction.x;
+
+            rigidbody.MoveRotation(Quaternion.Euler(0, angularSpeed * rotSpeed, 0) * rigidbody.rotation);
+            
+            var force = linearSpeed * maxAccel;
             var dragFactor = maxAccel / maxSpeed;
-        
-            // Debug.Log($"Taking action: {vectorAction[0]}, {vectorAction[1]}");
-
-            var linearForce = Mathf.Clamp(vectorAction[0], -0.5f, 1f);
-            var angularSpeed = Mathf.Clamp(vectorAction[1], -1f, 1f);
-
-            // var xSpeed = Unfrozen * Mathf.Clamp(vectorAction[0], -1f, 1f);
-            // var zSpeed = Unfrozen * Mathf.Clamp(vectorAction[1], -1f, 1f);        
-        
-            var velocity = rigidbody.velocity;
-        
-            // Debug.Log(velocity);
-
-            // Apply the force
-
-            var force = transform.forward * linearForce * maxAccel;
-            var drag = -dragFactor * velocity;
-            rigidbody.AddForce(force + drag);
             
-            // Apply the rotation
-            var timeFactor = Time.fixedDeltaTime / 0.02f; // Simulation is balanced around 0.02
+            var currentSpeed = rigidbody.velocity.magnitude;
+            var newSpeed = currentSpeed + (force - dragFactor * currentSpeed) * Time.fixedDeltaTime;
+            newSpeed = Mathf.Max(newSpeed, 0f);
             
-            Vector3 rotation = transform.rotation.eulerAngles + Vector3.up * angularSpeed * rotSpeed * timeFactor;
-            rigidbody.rotation = Quaternion.Euler(rotation);
-
-            rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxSpeed);
+            
+            var newVelocity = rigidbody.transform.forward * newSpeed;
+            rigidbody.velocity = newVelocity;
+            
         }
     }
 }
