@@ -145,7 +145,8 @@ namespace Managers
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
                 // Choose a random mass
-                var mass = Random.Range(0.5f, 1.5f);
+                // var mass = Random.Range(0.5f, 1.5f);
+                var mass = 1f;
                 agent.mass = mass;
                 agentTransform.localScale *= Mathf.Pow(mass, 0.333333f);
 

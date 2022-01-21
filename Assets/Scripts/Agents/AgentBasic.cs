@@ -102,6 +102,8 @@ namespace Agents
                 Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
                 // Collider.enabled = true;
             }
+
+            _originalColor = _material.color;
         }
 
         public override void OnActionReceived(ActionBuffers actions)
@@ -194,7 +196,7 @@ namespace Agents
             // Final updates
             PreviousPosition = transform.localPosition;
             Collision = 0;
-            // _material.color = _originalColor;
+            _material.color = _originalColor;
 
         }
 
@@ -228,8 +230,9 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                // _material.color = Color.red;
+                _material.color = Color.red;
             }
+            // Debug.Log("Collision");
         
             AddReward(_rewarder.CollisionReward(transform, other, false));
         }
@@ -241,8 +244,9 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                // _material.color = Color.red;
+                _material.color = Color.red;
             }
+            // Debug.Log("Collision");
             
             // Debug.Log(other.impulse.magnitude / Time.fixedDeltaTime);
         

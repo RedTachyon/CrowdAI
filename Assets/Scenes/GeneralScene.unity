@@ -252,14 +252,14 @@ MonoBehaviour:
   sightRadius: 5
   sightAgents: 12
   comfortSpeed: 1.5
-  comfortSpeedWeight: 0.1
+  comfortSpeedWeight: -0.5
   comfortSpeedExponent: 2
   comfortDistance: 0
   comfortDistanceWeight: 0
-  evaluationMode: 1
+  evaluationMode: 0
   savePath: 
-  dynamics: 3
-  observer: 2
+  dynamics: 2
+  observer: 0
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -2266,8 +2266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 2
-  mode: 1
+  numAgents: 12
+  mode: 3
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10
@@ -2395,7 +2395,7 @@ MonoBehaviour:
   MaxStep: 0
   controllable: 1
   maxSpeed: 2
-  maxAcceleration: 10
+  maxAcceleration: 5
   rotationSpeed: 1
   mass: 1
   rewarderType: 0
