@@ -10,6 +10,7 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.Reflection;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -64,9 +65,8 @@ namespace Agents
         [HideInInspector] public Vector3 startPosition;
 
         [HideInInspector] public Quaternion startRotation;
-    
-        // public Transform goal;
 
+        public bool debug;
 
         public override void Initialize()
         {
@@ -169,12 +169,15 @@ namespace Agents
         public override void CollectObservations(VectorSensor sensor)
         {
             base.CollectObservations(sensor);
+            
 
             if (!CollectedGoal)
             {
                 var reward = _rewarder.ComputeReward(transform);
                 AddReward(reward);
             }
+
+            DLog($"Current reward: {GetCurrentReward()}");
             
             _observer.Observe(sensor, transform);
 
@@ -183,13 +186,13 @@ namespace Agents
 
             // Draw some debugging lines
         
-            Debug.DrawLine(transform.position, goal.position, Color.red, Time.deltaTime*2);
+            // Debug.DrawLine(transform.position, goal.position, Color.red, Time.deltaTime*2);
         
             // Debug.Log($"Current position: {transform.position}. Previous position: {PreviousPosition}");
         
-            var parentPosition = transform.parent.position;
-            var absPrevPosition = PreviousPosition + parentPosition;
-            Debug.DrawLine(transform.position, absPrevPosition, Color.green, 20*Time.fixedDeltaTime);
+            // var parentPosition = transform.parent.position;
+            // var absPrevPosition = PreviousPosition + parentPosition;
+            // Debug.DrawLine(transform.position, absPrevPosition, Color.green, 20*Time.fixedDeltaTime);
 
 
         
@@ -232,7 +235,7 @@ namespace Agents
                 Collision = 1;
                 _material.color = Color.red;
             }
-            // Debug.Log("Collision");
+            Debug.Log("Collision");
         
             AddReward(_rewarder.CollisionReward(transform, other, false));
         }
@@ -246,7 +249,7 @@ namespace Agents
                 Collision = 1;
                 _material.color = Color.red;
             }
-            // Debug.Log("Collision");
+            Debug.Log("Collision");
             
             // Debug.Log(other.impulse.magnitude / Time.fixedDeltaTime);
         
@@ -273,6 +276,21 @@ namespace Agents
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
 
+        }
+
+        private void DLog(object message)
+        {
+            if (debug)
+            {
+                Debug.Log(message);
+            }
+        }
+
+        private float GetCurrentReward()
+        {
+            var reward = (float) typeof(Agent).GetField("m_Reward", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+            // Debug.Log(reward);
+            return reward;
         }
     }
 }
