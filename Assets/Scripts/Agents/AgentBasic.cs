@@ -211,9 +211,7 @@ namespace Agents
             if (other.name != goal.name) return;
         
             AddReward(_rewarder.TriggerReward(transform, other, true));
-        
-        
-            CollectedGoal = true;
+            
             Manager.Instance.ReachGoal(this);
 
             if (Params.EvaluationMode)

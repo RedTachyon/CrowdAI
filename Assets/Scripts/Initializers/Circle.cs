@@ -6,7 +6,7 @@ namespace Initializers
 {
     public class Circle : IInitializer
     {        
-        public void PlaceAgents(Transform baseTransform)
+        public void PlaceAgents(Transform baseTransform, float size)
         {
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();
@@ -18,7 +18,7 @@ namespace Initializers
             {  
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
-                const float r = 4;
+                float r = size / 2;
                 var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
                 var z = r * Mathf.Sin((float) agentIdx / numAgents * Constants.Tau);
                 var newPosition = new Vector3(x, agent.localPosition.y, z);

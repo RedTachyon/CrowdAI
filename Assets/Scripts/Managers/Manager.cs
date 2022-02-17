@@ -26,6 +26,8 @@ namespace Managers
 
         [Range(1, 10)] public int decisionFrequency = 1;
 
+        public float initSize = 9f;
+
         private Dictionary<Transform, bool> _finished;
         internal int Timestep;
         public StatsCommunicator statsCommunicator;
@@ -95,7 +97,10 @@ namespace Managers
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
 
-            obstacles.gameObject.SetActive(mode == InitializerEnum.Hallway);
+            if (mode == InitializerEnum.Hallway)
+            {
+                obstacles.gameObject.SetActive(true);
+            }
             Debug.Log($"Number of children: {currentNumAgents}");
 
             // Activate the right amount of agents
@@ -158,7 +163,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform);
+            initializer.PlaceAgents(transform, initSize);
 
 
             
@@ -174,9 +179,11 @@ namespace Managers
             }
 
         }
-        public void ReachGoal(Agent agent)
+        public virtual void ReachGoal(Agent agent)
         {
             _finished[agent.GetComponent<Transform>()] = true;
+            agent.GetComponent<AgentBasic>().CollectedGoal = true;
+
         }
 
         private void WriteTrajectory()

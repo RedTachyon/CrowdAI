@@ -6,7 +6,7 @@ namespace Initializers
 {
     public class Hallway : IInitializer
     {
-        public void PlaceAgents(Transform baseTransform)
+        public void PlaceAgents(Transform baseTransform, float size)
         {
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();

@@ -6,7 +6,7 @@ namespace Initializers
 {
     public class Random : IInitializer
     {
-        public void PlaceAgents(Transform baseTransform)
+        public void PlaceAgents(Transform baseTransform, float size)
         {
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();
@@ -16,18 +16,18 @@ namespace Initializers
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
                 var newPosition = MLUtils.NoncollidingPosition(
-                    -9f,
-                    9f,
-                    -9f,
-                    9f,
+                    -size,
+                    size,
+                    -size,
+                    size,
                     agent.localPosition.y,
                     placedAgents);
 
                 var goalPosition = MLUtils.NoncollidingPosition(
-                    -9f,
-                    9f,
-                    -9f,
-                    9f,
+                    -size,
+                    size,
+                    -size,
+                    size,
                     goal.localPosition.y,
                     placedGoals);
 
