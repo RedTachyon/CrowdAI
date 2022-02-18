@@ -5,7 +5,7 @@ namespace Initializers
 {
     public interface IInitializer
     {
-        public void PlaceAgents(Transform baseTransform, float size);
+        public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles);
     }
 
     public enum InitializerEnum

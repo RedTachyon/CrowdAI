@@ -28,7 +28,7 @@ namespace Managers
 
         public float initSize = 9f;
 
-        private Dictionary<Transform, bool> _finished;
+        protected Dictionary<Transform, bool> _finished;
         internal int Timestep;
         public StatsCommunicator statsCommunicator;
 
@@ -36,15 +36,15 @@ namespace Managers
 
         public Transform obstacles;
 
-        private SimpleMultiAgentGroup _agentGroup;
+        protected SimpleMultiAgentGroup _agentGroup;
 
-        private bool _initialized;
-        private int _episodeNum;
+        protected bool _initialized;
+        protected int _episodeNum;
 
-        private float[,,] _positionMemory;
-        private float[] _timeMemory;
+        protected float[,,] _positionMemory;
+        protected float[] _timeMemory;
 
-        private static Manager _instance;
+        protected static Manager _instance;
         public static Manager Instance => _instance;
 
         public void Awake()
@@ -80,7 +80,7 @@ namespace Managers
 
         }
 
-        public void ResetEpisode()
+        public virtual void ResetEpisode()
         {
 
             Debug.Log("ResetEpisode");
@@ -163,7 +163,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform, initSize);
+            initializer.PlaceAgents(transform, initSize, null);
 
 
             

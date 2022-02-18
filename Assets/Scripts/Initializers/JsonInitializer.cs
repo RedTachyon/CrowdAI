@@ -65,7 +65,7 @@ namespace Initializers
             // _spawnPoints.Add();
 
         }
-        public void PlaceAgents(Transform baseTransform, float size)
+        public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
         {
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();

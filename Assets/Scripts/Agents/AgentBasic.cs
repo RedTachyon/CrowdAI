@@ -177,7 +177,7 @@ namespace Agents
                 AddReward(reward);
             }
 
-            DLog($"Current reward: {GetCurrentReward()}");
+            // DLog($"Current reward: {GetCurrentReward()}");
             
             _observer.Observe(sensor, transform);
 
