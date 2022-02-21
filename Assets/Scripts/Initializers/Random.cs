@@ -8,11 +8,12 @@ namespace Initializers
     {
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
         {
-            var placedAgents = new List<Vector3>();
-            var placedGoals = new List<Vector3>();
+            var placedAgents = new List<Vector3>(obstacles);
+            var placedGoals = new List<Vector3>(obstacles);
 
             foreach (Transform agent in baseTransform)
             {
+                Debug.Log($"Forbidden positions: {placedAgents.Count}");
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
                 var newPosition = MLUtils.NoncollidingPosition(

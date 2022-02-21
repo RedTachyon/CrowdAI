@@ -163,7 +163,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform, initSize, null);
+            initializer.PlaceAgents(transform, initSize, new List<Vector3>());
 
 
             

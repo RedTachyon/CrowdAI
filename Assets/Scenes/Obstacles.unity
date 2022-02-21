@@ -2742,10 +2742,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388a3fcd7b545beae89dc1779173aed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 6
   mode: 0
   dataFileName: 
-  maxStep: 200
+  maxStep: 1000
   decisionFrequency: 10
   initSize: 4
   statsCommunicator: {fileID: 2113393393}

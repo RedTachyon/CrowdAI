@@ -29,6 +29,7 @@ public class MLUtils
         {
 
             var valid = excludes
+                .Select(v => new Vector3(v.x, yVal, v.z))
                 .All(p => (p - position).magnitude > threshold);
             
             // Debug.Log($"Comparing against {excludes.Count} agents");

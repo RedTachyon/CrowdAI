@@ -33,10 +33,10 @@ namespace Managers
                 4f,
                 -4f,
                 4f,
-                goal.localPosition.y,
+                goal.position.y,
                 _obstaclePositions
                 );
-            goal.localPosition = goalPosition;
+            goal.position = goalPosition;
 
         }
         
@@ -57,10 +57,7 @@ namespace Managers
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
 
-            if (mode == InitializerEnum.Hallway)
-            {
-                obstacles.gameObject.SetActive(true);
-            }
+
             Debug.Log($"Number of children: {currentNumAgents}");
 
             // Activate the right amount of agents

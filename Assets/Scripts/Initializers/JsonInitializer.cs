@@ -41,7 +41,7 @@ namespace Initializers
             Debug.Log($"Trying to read from {fullPath}");
             var data = JsonConvert.DeserializeObject<TrajectoryData>(File.ReadAllText(fullPath));
             
-            Debug.Log(data.position.GetLength(0));
+            Debug.Log($"Agents found in data: {data.position.GetLength(0)}");
             var numAgents = data.position.GetLength(0);
             var numTimesteps = data.position.GetLength(1);
 
