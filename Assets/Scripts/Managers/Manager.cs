@@ -219,7 +219,6 @@ namespace Managers
             
             if (Timestep >= maxStep * decisionFrequency)
             {
-                
                 if (Params.SavePath != "") WriteTrajectory();
                 else Debug.Log("Oops, not saving anything");
 

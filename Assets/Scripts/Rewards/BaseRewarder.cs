@@ -38,6 +38,7 @@ namespace Rewards
 
                 reward += Params.Potential * diff; // Add reward for getting closer to the goal
                 reward += Params.ComfortSpeedWeight * speedDiff;
+                reward += Params.StepReward;
             }
 
             return reward;
@@ -49,7 +50,7 @@ namespace Rewards
             AgentBasic agent = transform.GetComponent<AgentBasic>();
 
             // Penalty only if it's a collision with an obstacle or another agent
-            if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
+            if ((other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent")) && !agent.CollectedGoal)
             {
                 reward += Params.Collision;
             }

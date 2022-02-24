@@ -169,4 +169,11 @@ public class MLUtils
         var msg = string.Join('\n', statStrings);
         return msg;
     }
+
+    public static Vector3 GetNoise(float scale)
+    {
+        var x = Random.Range(-1f, 1f);
+        var z = Random.Range(-1f, 1f);
+        return new Vector3(x, 0, z) * scale;
+    }
 }

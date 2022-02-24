@@ -21,8 +21,10 @@ namespace Initializers
                 float r = size / 2;
                 var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
                 var z = r * Mathf.Sin((float) agentIdx / numAgents * Constants.Tau);
-                var newPosition = new Vector3(x, agent.localPosition.y, z);
-                var goalPosition = new Vector3(-x, goal.localPosition.y, -z);
+                var spawnNoise = MLUtils.GetNoise(Params.SpawnNoiseScale);
+                var goalNoise = MLUtils.GetNoise(Params.SpawnNoiseScale);
+                var newPosition = new Vector3(x, agent.localPosition.y, z) + spawnNoise;
+                var goalPosition = new Vector3(-x, goal.localPosition.y, -z) + goalNoise;
                 var newRotation = Quaternion.LookRotation(goalPosition, Vector3.up);
 
                 agent.localPosition = newPosition;

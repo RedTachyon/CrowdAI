@@ -49,18 +49,36 @@ public class Params : MonoBehaviour
     public float comfortSpeedExponent = 1.0f;
     public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
 
+    public float comfortDistance = 1.5f;
+    public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
+    
+    public float comfortDistanceWeight = 1.0f;
+    public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
 
+    public float stepReward = -0.05f;
+    public static float StepReward => Get("step_reward", Instance.stepReward);
+    
+    // Energy parameters
+    public float e_s = 1.26f;
+    public static float E_s => Get("e_s", Instance.e_s);
+
+    public float e_w = 2.23f;
+    public static float E_w => Get("e_w", Instance.e_w);
+    
+    // Everything else
+    
     public float sightRadius = 5f;
     public static float SightRadius => Get("radius", Instance.sightRadius);
     
     public int sightAgents = 10;
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
     
-    public float comfortDistance = 1.5f;
-    public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
+    // Spawn
     
-    public float comfortDistanceWeight = 1.0f;
-    public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
+    public float spawnNoiseScale = 0.5f;
+    public static float SpawnNoiseScale => Get("spawn_noise_scale", Instance.spawnNoiseScale);
+    
+    // Meta
 
     public bool evaluationMode = false;
     public static bool EvaluationMode => Convert.ToBoolean(Get("evaluation_mode", Instance.evaluationMode ? 1f : 0f));
