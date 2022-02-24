@@ -25,7 +25,9 @@ public class Params : MonoBehaviour
             _instance = this;
         }
     }
-
+      // // /// //  
+     // REWARD //
+    // // // //
     public float potential = 0.4f;
     public static float Potential => Get("potential", Instance.potential);
 
@@ -35,12 +37,9 @@ public class Params : MonoBehaviour
     public float collision = -0.3f;
     public static float Collision => Get("collision", Instance.collision);
     
-    public float sightRadius = 5f;
-    public static float SightRadius => Get("radius", Instance.sightRadius);
-    
-    public int sightAgents = 10;
-    public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
-    
+    public float goalSpeedThreshold = 1e-1f;
+    public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
+
     public float comfortSpeed = 1.0f;
     public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
     
@@ -50,6 +49,12 @@ public class Params : MonoBehaviour
     public float comfortSpeedExponent = 1.0f;
     public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
 
+
+    public float sightRadius = 5f;
+    public static float SightRadius => Get("radius", Instance.sightRadius);
+    
+    public int sightAgents = 10;
+    public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
     
     public float comfortDistance = 1.5f;
     public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);

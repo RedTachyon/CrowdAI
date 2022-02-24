@@ -13,7 +13,7 @@ namespace Initializers
 
             foreach (Transform agent in baseTransform)
             {
-                Debug.Log($"Forbidden positions: {placedAgents.Count}");
+                // Debug.Log($"Forbidden positions: {placedAgents.Count}");
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
                 var newPosition = MLUtils.NoncollidingPosition(

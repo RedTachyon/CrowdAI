@@ -35,13 +35,13 @@ namespace Observers
 
             // Relative position: 2
             var relPosition = goalPosition - position;
-            sensor.AddObservation(relPosition.x / 20f);  // 3
-            sensor.AddObservation(relPosition.z / 20f);  // 4
+            sensor.AddObservation(relPosition.x / 10f);  // 3
+            sensor.AddObservation(relPosition.z / 10f);  // 4
             
 
-            // Velocity: 2, up to ~5
-            sensor.AddObservation(velocity.x / 5f);  // 5
-            sensor.AddObservation(velocity.z / 5f);  // 6
+            // Velocity: 2, up to ~2
+            sensor.AddObservation(velocity.x / 2f);  // 5
+            sensor.AddObservation(velocity.z / 2f);  // 6
             
             sensor.AddObservation(agent.CollectedGoal); // 7
             sensor.AddObservation(agent.mass); // 8

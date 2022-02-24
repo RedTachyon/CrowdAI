@@ -366,7 +366,7 @@ PrefabInstance:
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1.16
       objectReference: {fileID: 0}
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
@@ -831,7 +831,7 @@ PrefabInstance:
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.14
+      value: -4.68
       objectReference: {fileID: 0}
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
@@ -929,7 +929,7 @@ PrefabInstance:
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.41
+      value: 2.57
       objectReference: {fileID: 0}
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
@@ -1631,7 +1631,7 @@ Transform:
   m_GameObject: {fileID: 3898099998562990148}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 9, y: 0.15, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.3, z: 0.25}
+  m_LocalScale: {x: 0.75, y: 0.3, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1294497070975032864}
@@ -2742,7 +2742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388a3fcd7b545beae89dc1779173aed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 6
+  numAgents: 1
   mode: 0
   dataFileName: 
   maxStep: 1000
@@ -2862,6 +2862,7 @@ MonoBehaviour:
   rewarderType: 0
   squasherType: 3
   goal: {fileID: 3898099998562990149}
+  distanceTraversed: 0
   startPosition: {x: 0, y: 0, z: 0}
   startRotation: {x: 0, y: 0, z: 0, w: 0}
   debug: 1
@@ -3071,4 +3072,4 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0

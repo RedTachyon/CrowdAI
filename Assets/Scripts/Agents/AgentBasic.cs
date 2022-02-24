@@ -61,12 +61,16 @@ namespace Agents
 
         public Transform goal;
 
+        public float distanceTraversed;
+
 
         [HideInInspector] public Vector3 startPosition;
 
         [HideInInspector] public Quaternion startRotation;
 
         public bool debug;
+
+        public Vector3 PreviousPosition { get; set; }
 
         public override void Initialize()
         {
@@ -169,13 +173,11 @@ namespace Agents
         public override void CollectObservations(VectorSensor sensor)
         {
             base.CollectObservations(sensor);
-            
+            // Debug.Log($"Collected goal? {CollectedGoal}");
 
-            if (!CollectedGoal)
-            {
-                var reward = _rewarder.ComputeReward(transform);
-                AddReward(reward);
-            }
+            var reward = _rewarder.ComputeReward(transform);
+            AddReward(reward);
+            
 
             // DLog($"Current reward: {GetCurrentReward()}");
             
@@ -209,11 +211,13 @@ namespace Agents
             // Debug.Log("Hitting a trigger");
         
             if (other.name != goal.name) return;
-        
-            AddReward(_rewarder.TriggerReward(transform, other, true));
-            
-            Manager.Instance.ReachGoal(this);
 
+            var currentSpeed = Rigidbody.velocity.magnitude;
+            
+            if (Params.GoalSpeedThreshold < 0f || currentSpeed < Params.GoalSpeedThreshold) {
+                AddReward(_rewarder.TriggerReward(transform, other, true));
+                Manager.Instance.ReachGoal(this);
+            }
             if (Params.EvaluationMode)
             {
                 Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
@@ -254,7 +258,6 @@ namespace Agents
             AddReward(_rewarder.CollisionReward(transform, other, true));
         }
 
-        public Vector3 PreviousPosition { get; set; }
 
         public void SetColor(Color color, bool colorGoal = false)
         {

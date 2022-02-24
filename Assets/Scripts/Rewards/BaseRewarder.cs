@@ -10,33 +10,44 @@ namespace Rewards
         public float ComputeReward(Transform transform)
         {
             var reward = 0f;
+            
             AgentBasic agent = transform.GetComponent<AgentBasic>();
             Transform goal = agent.goal;
-            
-            var prevDistance = Vector3.Distance(agent.PreviousPosition, goal.localPosition);
-            var currentDistance = Vector3.Distance(transform.localPosition, goal.localPosition);
-            
-            // Up to ~0.1
-            var diff = prevDistance - currentDistance;
-            
-            reward += Params.Potential * diff;  // Add reward for getting closer to the goal
-            
-            // Speed similarity
-            var idealSpeed = Params.ComfortSpeed;
-            var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
-            var speedDiff = Mathf.Pow(Mathf.Abs(idealSpeed - currentSpeed), Params.ComfortSpeedExponent);
-            
-            // Debug.Log($"Current speed rmse: {speedDiff}");
+            if (agent.CollectedGoal)
+            {
+                var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
+                var speedNorm = Mathf.Pow(currentSpeed, Params.ComfortSpeedExponent);
+                reward += Params.ComfortSpeedWeight * speedNorm;
+            }
+            else
+            {
+                var prevDistance = Vector3.Distance(agent.PreviousPosition, goal.localPosition);
+                var currentDistance = Vector3.Distance(transform.localPosition, goal.localPosition);
 
-            reward += Params.ComfortSpeedWeight * speedDiff;
-            
+                // Up to ~0.1
+                var diff = prevDistance - currentDistance;
+
+
+                // Speed similarity
+                var idealSpeed = Params.ComfortSpeed;
+                var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
+                var speedDiff = Mathf.Pow(Mathf.Abs(currentSpeed - idealSpeed), Params.ComfortSpeedExponent);
+
+                // Debug.Log($"Current speed rmse: {speedDiff}");
+
+
+                reward += Params.Potential * diff; // Add reward for getting closer to the goal
+                reward += Params.ComfortSpeedWeight * speedDiff;
+            }
+
             return reward;
         }
 
         public float CollisionReward(Transform transform, Collision other, bool stay)
         {
             float reward = 0;
-            
+            AgentBasic agent = transform.GetComponent<AgentBasic>();
+
             // Penalty only if it's a collision with an obstacle or another agent
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {

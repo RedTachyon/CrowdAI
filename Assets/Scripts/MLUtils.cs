@@ -162,4 +162,11 @@ public class MLUtils
         
         return result;
     }
+
+    public static string MakeMessage(Dictionary<string, float> stats)
+    {
+        var statStrings = stats.Select(kv => $"{kv.Key} {kv.Value}");
+        var msg = string.Join('\n', statStrings);
+        return msg;
+    }
 }

@@ -3,18 +3,18 @@ using Agents;
 using Initializers;
 using Unity.MLAgents;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Managers
 {
     public class GoalSeqManager : Manager
     {
-
         private List<Vector3> _obstaclePositions = new();
+        
 
         public new void Awake()
         {
             base.Awake();
-            // TODO: Make recursive
             
             foreach (Transform obstacle in obstacles.GetComponentsInChildren<Transform>())
             {
@@ -29,10 +29,10 @@ namespace Managers
             Debug.Log("Relocating the goal");
             var goal = agent.GetComponent<AgentBasic>().goal;
             var goalPosition = MLUtils.NoncollidingPosition(
-                -4f,
-                4f,
-                -4f,
-                4f,
+                -initSize,
+                initSize,
+                -initSize,
+                initSize,
                 goal.position.y,
                 _obstaclePositions
                 );

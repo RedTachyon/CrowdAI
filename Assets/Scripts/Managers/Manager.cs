@@ -312,11 +312,20 @@ namespace Managers
             var meanSpeed = speeds.Average();
             var finished =  dones.Average();
             var collision = (float) collisions.Average();
+
+            var stats = new Dictionary<string, float>()
+            {
+                ["mean_dist"] = meanDist,
+                ["mean_speed"] = meanSpeed,
+                ["mean_finish"] = finished,
+                ["mean_collision"] = collision
+            };
         
             // Debug.Log(collision);
 
-        
-            var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
+            var message = MLUtils.MakeMessage(stats);
+            
+            // var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
             statsCommunicator.StatsChannel.SendMessage(message);
             // Debug.Log("Message allegedly sent");
         }
