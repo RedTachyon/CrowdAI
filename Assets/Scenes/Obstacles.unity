@@ -282,11 +282,12 @@ MonoBehaviour:
   potential: 1
   goal: 1
   collision: -0.05
-  sightRadius: 5
-  sightAgents: 12
+  goalSpeedThreshold: 0.1
   comfortSpeed: 1.5
   comfortSpeedWeight: -0.5
   comfortSpeedExponent: 1
+  sightRadius: 5
+  sightAgents: 12
   comfortDistance: 0
   comfortDistanceWeight: 0
   evaluationMode: 0
@@ -1158,7 +1159,7 @@ PrefabInstance:
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 5722706001690020800, guid: 1d414abf2d495631abef2d01cf128762,
         type: 3}
@@ -2742,12 +2743,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388a3fcd7b545beae89dc1779173aed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 8
   mode: 0
   dataFileName: 
   maxStep: 1000
   decisionFrequency: 10
-  initSize: 4
+  initSize: 9
   statsCommunicator: {fileID: 2113393393}
   obstacles: {fileID: 3847628661276116675}
 --- !u!23 &6145786949588215223
