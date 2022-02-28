@@ -216,9 +216,10 @@ namespace Managers
             if (!_initialized) return;
             
             // Debug.Log(Time.fixedDeltaTime);
-            
+            Dictionary<string, float> episodeStats = null;
             if (Timestep >= maxStep * decisionFrequency)
             {
+                episodeStats = GetEpisodeStats();
                 if (Params.SavePath != "") WriteTrajectory();
                 else Debug.Log("Oops, not saving anything");
 
@@ -227,6 +228,8 @@ namespace Managers
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
+
+            CollectStats();
 
             ///////////////////////
             // Log the positions //
@@ -245,7 +248,7 @@ namespace Managers
 
             _timeMemory[Timestep] = Timestep * Time.fixedDeltaTime;
             
-            
+
             /////////////////////
             // Request actions //
             /////////////////////
@@ -270,15 +273,32 @@ namespace Managers
         
             // Debug.Log(Time);
 
-
-    
-            CollectStats();
-
+            
 
         }
-    
-    
-        private void CollectStats()
+
+        private Dictionary<string, float> GetEpisodeStats()
+        {
+            
+            var energies = new List<float>();
+            
+            foreach (Transform agent in transform)
+            {
+                energies.Add(agent.GetComponent<AgentBasic>().energySpent);
+            }
+
+            var stats = new Dictionary<string, float>
+            {
+                ["e_energy"] = 0,
+                ["e_distance"] = 0,
+                ["e_reward"] = 0,
+                ["e_success"] = 0
+            };
+            return stats;
+        }
+
+
+        private void CollectStats(Dictionary<string, float> episodeStats = null)
         {
             var distances = new List<float>();
             var speeds = new List<float>();
@@ -312,7 +332,7 @@ namespace Managers
             var finished =  dones.Average();
             var collision = (float) collisions.Average();
 
-            var stats = new Dictionary<string, float>()
+            var stats = new Dictionary<string, float>
             {
                 ["mean_dist"] = meanDist,
                 ["mean_speed"] = meanSpeed,

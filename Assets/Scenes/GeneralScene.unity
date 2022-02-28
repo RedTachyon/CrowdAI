@@ -256,8 +256,8 @@ MonoBehaviour:
   comfortDistance: 0
   comfortDistanceWeight: 0
   stepReward: -0.05
-  e_s: 1.26
-  e_w: 2.23
+  e_s: 2.23
+  e_w: 1.26
   sightRadius: 5
   sightAgents: 12
   spawnNoiseScale: 0.5
@@ -2408,6 +2408,7 @@ MonoBehaviour:
   squasherType: 3
   goal: {fileID: 3898099998562990149}
   distanceTraversed: 0
+  energySpent: 0
   startPosition: {x: 0, y: 0, z: 0}
   startRotation: {x: 0, y: 0, z: 0, w: 0}
   debug: 1

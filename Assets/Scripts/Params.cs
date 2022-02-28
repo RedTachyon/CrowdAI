@@ -59,10 +59,10 @@ public class Params : MonoBehaviour
     public static float StepReward => Get("step_reward", Instance.stepReward);
     
     // Energy parameters
-    public float e_s = 1.26f;
+    public float e_s = 2.23f;
     public static float E_s => Get("e_s", Instance.e_s);
 
-    public float e_w = 2.23f;
+    public float e_w = 1.26f;
     public static float E_w => Get("e_w", Instance.e_w);
     
     // Everything else

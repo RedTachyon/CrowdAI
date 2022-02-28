@@ -62,6 +62,7 @@ namespace Agents
         public Transform goal;
 
         public float distanceTraversed;
+        public float energySpent;
 
 
         [HideInInspector] public Vector3 startPosition;
@@ -98,6 +99,7 @@ namespace Agents
         {
             base.OnEpisodeBegin();
             CollectedGoal = false;
+            energySpent = 0f;
             
             UpdateParams();
 
@@ -126,6 +128,14 @@ namespace Agents
                 var reward = _rewarder.ActionReward(transform, actions);
                 AddReward(reward);
             }
+            
+            // Update measurements
+            energySpent += Params.E_s * Time.fixedDeltaTime;
+            energySpent += Params.E_w * Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
+            // energySpent += Params.E_a * Rigidbody.angularVelocity.sqrMagnitude * Time.fixedDeltaTime;
+            // TODO: rotational energy?
+
+
             // Debug.Log(Rigidbody.velocity.magnitude);
         }
 
