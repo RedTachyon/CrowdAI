@@ -28,6 +28,7 @@ namespace Managers
         {
             Debug.Log("Relocating the goal");
             var goal = agent.GetComponent<AgentBasic>().goal;
+            var initSize = Params.SpawnScale;
             var goalPosition = MLUtils.NoncollidingPosition(
                 -initSize,
                 initSize,
@@ -119,7 +120,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform, initSize, _obstaclePositions);
+            initializer.PlaceAgents(transform, Params.SpawnScale, _obstaclePositions);
 
 
             

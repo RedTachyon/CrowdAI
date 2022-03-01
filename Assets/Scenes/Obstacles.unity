@@ -286,10 +286,15 @@ MonoBehaviour:
   comfortSpeed: 1.5
   comfortSpeedWeight: -0.5
   comfortSpeedExponent: 1
-  sightRadius: 5
-  sightAgents: 12
   comfortDistance: 0
   comfortDistanceWeight: 0
+  stepReward: -0.05
+  e_s: 2.23
+  e_w: 1.26
+  sightRadius: 5
+  sightAgents: 12
+  spawnNoiseScale: 0.5
+  spawnScale: 4
   evaluationMode: 0
   savePath: 
   dynamics: 1
@@ -2743,12 +2748,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388a3fcd7b545beae89dc1779173aed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 8
+  numAgents: 1
   mode: 0
   dataFileName: 
   maxStep: 1000
   decisionFrequency: 10
-  initSize: 9
   statsCommunicator: {fileID: 2113393393}
   obstacles: {fileID: 3847628661276116675}
 --- !u!23 &6145786949588215223
@@ -2864,6 +2868,8 @@ MonoBehaviour:
   squasherType: 3
   goal: {fileID: 3898099998562990149}
   distanceTraversed: 0
+  energySpent: 0
+  totalReward: 0
   startPosition: {x: 0, y: 0, z: 0}
   startRotation: {x: 0, y: 0, z: 0, w: 0}
   debug: 1

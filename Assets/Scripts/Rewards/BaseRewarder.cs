@@ -64,7 +64,6 @@ namespace Rewards
             
             AgentBasic agent = transform.GetComponent<AgentBasic>();
 
-            
             // Give the goal reward at most only once per episode
             if (!agent.CollectedGoal)
             {

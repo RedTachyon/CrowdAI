@@ -37,6 +37,9 @@ public class Params : MonoBehaviour
     public float collision = -0.3f;
     public static float Collision => Get("collision", Instance.collision);
     
+    public float stepReward = -0.005f;
+    public static float StepReward => Get("step_reward", Instance.stepReward);    
+    
     public float goalSpeedThreshold = 1e-1f;
     public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
 
@@ -54,9 +57,6 @@ public class Params : MonoBehaviour
     
     public float comfortDistanceWeight = 1.0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
-
-    public float stepReward = -0.05f;
-    public static float StepReward => Get("step_reward", Instance.stepReward);
     
     // Energy parameters
     public float e_s = 2.23f;
@@ -77,7 +77,10 @@ public class Params : MonoBehaviour
     
     public float spawnNoiseScale = 0.5f;
     public static float SpawnNoiseScale => Get("spawn_noise_scale", Instance.spawnNoiseScale);
-    
+
+    public float spawnScale = 4f;
+    public static float SpawnScale => Get("spawn_scale", Instance.spawnScale);
+
     // Meta
 
     public bool evaluationMode = false;

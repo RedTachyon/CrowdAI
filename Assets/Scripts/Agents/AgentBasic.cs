@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dynamics;
 using Managers;
@@ -25,7 +26,6 @@ namespace Agents
     
         private Material _material;
         private Color _originalColor;
-        internal bool CollectedGoal;
 
         private BufferSensorComponent _bufferSensor;
     
@@ -61,8 +61,13 @@ namespace Agents
 
         public Transform goal;
 
+        // Metrics
+        public bool CollectedGoal;
         public float distanceTraversed;
         public float energySpent;
+        public float totalReward;
+
+        public Dictionary<string, float> rewardParts;
 
 
         [HideInInspector] public Vector3 startPosition;
@@ -100,6 +105,8 @@ namespace Agents
             base.OnEpisodeBegin();
             CollectedGoal = false;
             energySpent = 0f;
+            totalReward = 0f;
+            distanceTraversed = 0f;
             
             UpdateParams();
 
@@ -130,10 +137,14 @@ namespace Agents
             }
             
             // Update measurements
-            energySpent += Params.E_s * Time.fixedDeltaTime;
-            energySpent += Params.E_w * Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
-            // energySpent += Params.E_a * Rigidbody.angularVelocity.sqrMagnitude * Time.fixedDeltaTime;
-            // TODO: rotational energy?
+            if (!CollectedGoal)
+            {
+                energySpent += Params.E_s * Time.fixedDeltaTime;
+                energySpent += Params.E_w * Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
+                // energySpent += Params.E_a * Rigidbody.angularVelocity.sqrMagnitude * Time.fixedDeltaTime;
+                // TODO: rotational energy?
+            }
+
 
 
             // Debug.Log(Rigidbody.velocity.magnitude);
@@ -226,6 +237,7 @@ namespace Agents
             
             if (Params.GoalSpeedThreshold < 0f || currentSpeed < Params.GoalSpeedThreshold) {
                 AddReward(_rewarder.TriggerReward(transform, other, true));
+                CollectedGoal = true;
                 Manager.Instance.ReachGoal(this);
             }
             if (Params.EvaluationMode)
@@ -302,6 +314,18 @@ namespace Agents
             var reward = (float) typeof(Agent).GetField("m_Reward", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
             // Debug.Log(reward);
             return reward;
+        }
+
+        private new void AddReward(float reward)
+        {
+            base.AddReward(reward);
+            totalReward += reward;
+        }
+        
+        private void AddReward(float coeff, float reward, string type = "")
+        {
+            AddReward(coeff * reward);
+            totalReward += reward;
         }
     }
 }

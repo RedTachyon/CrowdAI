@@ -25,9 +25,7 @@ namespace Managers
         public int maxStep = 500;
 
         [Range(1, 10)] public int decisionFrequency = 1;
-
-        public float initSize = 9f;
-
+        
         protected Dictionary<Transform, bool> _finished;
         internal int Timestep;
         public StatsCommunicator statsCommunicator;
@@ -163,7 +161,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform, initSize, new List<Vector3>());
+            initializer.PlaceAgents(transform, Params.SpawnScale, new List<Vector3>());
 
 
             
@@ -182,7 +180,7 @@ namespace Managers
         public virtual void ReachGoal(Agent agent)
         {
             _finished[agent.GetComponent<Transform>()] = true;
-            agent.GetComponent<AgentBasic>().CollectedGoal = true;
+            // agent.GetComponent<AgentBasic>().CollectedGoal = true;
 
         }
 
@@ -281,18 +279,24 @@ namespace Managers
         {
             
             var energies = new List<float>();
+            var distances = new List<float>();
+            var successes = new List<float>();
+            var rewards = new List<float>();
             
             foreach (Transform agent in transform)
             {
                 energies.Add(agent.GetComponent<AgentBasic>().energySpent);
+                distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
+                successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1 : 0);
+                rewards.Add(agent.GetComponent<AgentBasic>().totalReward);
             }
 
             var stats = new Dictionary<string, float>
             {
-                ["e_energy"] = 0,
-                ["e_distance"] = 0,
-                ["e_reward"] = 0,
-                ["e_success"] = 0
+                ["e_energy"] = energies.Average(),
+                ["e_distance"] = distances.Average(),
+                ["e_success"] = successes.Average(),
+                ["e_reward"] = rewards.Average()
             };
             return stats;
         }
