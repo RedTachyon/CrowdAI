@@ -38,7 +38,13 @@ public class Params : MonoBehaviour
     public static float Collision => Get("collision", Instance.collision);
     
     public float stepReward = -0.005f;
-    public static float StepReward => Get("step_reward", Instance.stepReward);    
+    public static float StepReward => Get("step_reward", Instance.stepReward);
+    
+    public float standstillWeight = -0.1f;
+    public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
+
+    public float standstillExponent = 1f;
+    public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
     
     public float goalSpeedThreshold = 1e-1f;
     public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);

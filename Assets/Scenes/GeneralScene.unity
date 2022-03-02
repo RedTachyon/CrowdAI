@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -250,6 +250,8 @@ MonoBehaviour:
   goal: 10
   collision: -0.05
   stepReward: -0.005
+  standstillWeight: -0.75
+  standstillExponent: 1
   goalSpeedThreshold: 0.1
   comfortSpeed: 1.33
   comfortSpeedWeight: -0.75
@@ -2272,8 +2274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
-  mode: 1
+  numAgents: 12
+  mode: 3
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10
@@ -2410,6 +2412,7 @@ MonoBehaviour:
   CollectedGoal: 0
   distanceTraversed: 0
   energySpent: 0
+  totalDistance: 0
   collisionReward: 0
   goalReward: 0
   potentialReward: 0

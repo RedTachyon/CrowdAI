@@ -17,8 +17,8 @@ namespace Rewards
             if (agent.CollectedGoal)
             {
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
-                var speedNorm = Mathf.Pow(currentSpeed, Params.ComfortSpeedExponent);
-                reward += Params.ComfortSpeedWeight * speedNorm;
+                var speedNorm = Mathf.Pow(currentSpeed, Params.StandstillExponent);
+                reward += Params.StandstillWeight * speedNorm;
                 agent.AddRewardPart(-speedNorm, "standstill");
             }
             else
