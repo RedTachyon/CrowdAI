@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -247,12 +247,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   potential: 1
-  goal: 1
+  goal: 10
   collision: -0.05
   stepReward: -0.005
   goalSpeedThreshold: 0.1
   comfortSpeed: 1.33
-  comfortSpeedWeight: -0.5
+  comfortSpeedWeight: -0.75
   comfortSpeedExponent: 1
   comfortDistance: 0
   comfortDistanceWeight: 0
@@ -264,7 +264,7 @@ MonoBehaviour:
   spawnScale: 6
   evaluationMode: 0
   savePath: 
-  dynamics: 2
+  dynamics: 0
   observer: 0
 --- !u!4 &218126829
 Transform:
@@ -2410,9 +2410,15 @@ MonoBehaviour:
   CollectedGoal: 0
   distanceTraversed: 0
   energySpent: 0
+  collisionReward: 0
+  goalReward: 0
+  potentialReward: 0
+  speedReward: 0
+  timeReward: 0
+  standstillReward: 0
   totalReward: 0
-  startPosition: {x: 0, y: 0, z: 0}
-  startRotation: {x: 0, y: 0, z: 0, w: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  speed: 0
   debug: 1
 --- !u!1 &6760597447151538785
 GameObject:

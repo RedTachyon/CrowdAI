@@ -280,12 +280,14 @@ namespace Managers
             var energies = new List<float>();
             var distances = new List<float>();
             var successes = new List<float>();
+            var numAgents = 0;
             
             foreach (Transform agent in transform)
             {
                 energies.Add(agent.GetComponent<AgentBasic>().energySpent);
                 distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
                 successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
+                numAgents++;
             }
 
             var stats = new Dictionary<string, float>
@@ -304,10 +306,10 @@ namespace Managers
                     var keyname= $"e_reward_{rewardPart.Key}";
                     if (stats.ContainsKey(keyname))
                     {
-                        stats[keyname] += rewardPart.Value;
+                        stats[keyname] += rewardPart.Value / numAgents;
                     } else
                     {
-                        stats[keyname] = rewardPart.Value;
+                        stats[keyname] = rewardPart.Value / numAgents;
                     }
                 }
             }

@@ -12,6 +12,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Reflection;
+using UnityEngine.PlayerLoop;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -60,18 +61,30 @@ namespace Agents
 
 
         public Transform goal;
-
+        
+        [Space(10)]
+        [Header("Debug metrics")]
+        [Space(10)]
+        
         // Metrics
         public bool CollectedGoal;
         public float distanceTraversed;
         public float energySpent;
+        public float totalDistance;
 
         public Dictionary<string, float> rewardParts;
 
+        // Debug variables
 
-        [HideInInspector] public Vector3 startPosition;
-
-        [HideInInspector] public Quaternion startRotation;
+        public float collisionReward;
+        public float goalReward;
+        public float potentialReward;
+        public float speedReward;
+        public float timeReward;
+        public float standstillReward;
+        public float totalReward;
+        public Vector3 velocity;
+        public float speed;
 
         public bool debug;
 
@@ -84,8 +97,7 @@ namespace Agents
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
             // startY = transform.localPosition.y;
-            startPosition = transform.localPosition;
-            startRotation = transform.localRotation;
+
 
             UpdateParams();
 
@@ -105,6 +117,8 @@ namespace Agents
             CollectedGoal = false;
             energySpent = 0f;
             distanceTraversed = 0f;
+            totalDistance = 0f;
+            totalReward = 0f;
             rewardParts = new Dictionary<string, float>
             {
                 ["collision"] = 0f,
@@ -113,7 +127,6 @@ namespace Agents
                 ["speed"] = 0f,
                 ["time"] = 0f,
                 ["standstill"] = 0f,
-                ["total"] = 0f
             };
             
             UpdateParams();
@@ -125,6 +138,21 @@ namespace Agents
             }
 
             _originalColor = _material.color;
+        }
+
+        public void FixedUpdate()
+        {
+            if (debug)
+            {
+                collisionReward = rewardParts["collision"];
+                goalReward = rewardParts["goal"];
+                potentialReward = rewardParts["potential"];
+                speedReward = rewardParts["speed"];
+                timeReward = rewardParts["time"];
+                standstillReward = rewardParts["standstill"];
+                velocity = Rigidbody.velocity;
+                speed = Rigidbody.velocity.magnitude;
+            }
         }
 
         public override void OnActionReceived(ActionBuffers actions)
@@ -174,7 +202,9 @@ namespace Agents
             // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
             // const float ratio = 1f;
-        
+
+            const float baseSpeed = 1.7f;
+            
             if (Input.GetKey(KeyCode.W)) zValue = 1f;
             if (Input.GetKey(KeyCode.S)) zValue = -1f;
 
@@ -182,7 +212,7 @@ namespace Agents
             if (Input.GetKey(KeyCode.A)) xValue = -1f;
             
 
-            force = new Vector3(xValue, 0, zValue).normalized;
+            force = new Vector3(xValue, 0, zValue).normalized * baseSpeed;
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -225,7 +255,11 @@ namespace Agents
             // var absPrevPosition = PreviousPosition + parentPosition;
             // Debug.DrawLine(transform.position, absPrevPosition, Color.green, 20*Time.fixedDeltaTime);
 
-
+            if (!CollectedGoal)
+            {
+                distanceTraversed += Vector3.Distance(transform.position, PreviousPosition);
+            }
+            totalDistance += Vector3.Distance(transform.position, PreviousPosition);
         
             // Final updates
             PreviousPosition = transform.localPosition;
@@ -324,15 +358,14 @@ namespace Agents
             return reward;
         }
 
-        // private new void AddReward(float reward)
-        // {
-        //     base.AddReward(reward);
-        //     totalReward += reward;
-        // }
+        private new void AddReward(float reward)
+        {
+            base.AddReward(reward);
+            totalReward += reward;
+        }
         
         public void AddRewardPart(float reward, string type)
         {
-            rewardParts["total"] += reward;
             rewardParts[type] += reward;
         }
     }

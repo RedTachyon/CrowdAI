@@ -19,7 +19,7 @@ namespace Rewards
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
                 var speedNorm = Mathf.Pow(currentSpeed, Params.ComfortSpeedExponent);
                 reward += Params.ComfortSpeedWeight * speedNorm;
-                agent.AddRewardPart(speedNorm, "standstill");
+                agent.AddRewardPart(-speedNorm, "standstill");
             }
             else
             {
@@ -41,9 +41,9 @@ namespace Rewards
                 reward += Params.Potential * diff; // Add reward for getting closer to the goal
                 agent.AddRewardPart(diff, "potential");
                 reward += Params.ComfortSpeedWeight * speedDiff;
-                agent.AddRewardPart(speedDiff, "speed");
+                agent.AddRewardPart(-speedDiff, "speed");
                 reward += Params.StepReward;
-                agent.AddRewardPart(1, "time");
+                agent.AddRewardPart(-1, "time");
             }
 
             return reward;
@@ -58,7 +58,7 @@ namespace Rewards
             if ((other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent")) && !agent.CollectedGoal)
             {
                 reward += Params.Collision;
-                agent.AddRewardPart(1, "collision");
+                agent.AddRewardPart(-1, "collision");
             }
 
             return reward;

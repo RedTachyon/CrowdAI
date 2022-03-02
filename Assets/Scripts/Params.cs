@@ -46,7 +46,7 @@ public class Params : MonoBehaviour
     public float comfortSpeed = 1.0f;
     public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
     
-    public float comfortSpeedWeight = 0.1f;
+    public float comfortSpeedWeight = -0.75f;
     public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
 
     public float comfortSpeedExponent = 1.0f;
@@ -68,7 +68,7 @@ public class Params : MonoBehaviour
     // Everything else
     
     public float sightRadius = 5f;
-    public static float SightRadius => Get("radius", Instance.sightRadius);
+    public static float SightRadius => Get("sight_radius", Instance.sightRadius);
     
     public int sightAgents = 10;
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
