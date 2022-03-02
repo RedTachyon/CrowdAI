@@ -1,2 +1,17 @@
-- name: Unity - Builder
-  uses: game-ci/unity-builder@v2.0.0-alpha-14
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: crowdai build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Unity - Builder
+        uses: game-ci/unity-builder@v2.0.0-alpha-14
