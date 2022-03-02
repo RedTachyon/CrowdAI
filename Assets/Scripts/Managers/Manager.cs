@@ -226,7 +226,7 @@ namespace Managers
                 ResetEpisode();
             }
 
-            CollectStats();
+            CollectStats(episodeStats);
 
             ///////////////////////
             // Log the positions //
@@ -297,7 +297,6 @@ namespace Managers
                 ["e_success"] = successes.Average(),
             };
             
-            // TODO: Finish this
             foreach (Transform agentTransform in transform)
             {
                 var agent = agentTransform.GetComponent<AgentBasic>();
@@ -315,7 +314,7 @@ namespace Managers
             }
 
             return stats;
-        }
+        } 
 
 
         private void CollectStats(Dictionary<string, float> episodeStats = null)
@@ -351,18 +350,17 @@ namespace Managers
             var meanSpeed = speeds.Average();
             var finished =  dones.Average();
             var collision = (float) collisions.Average();
-
-            var stats = new Dictionary<string, float>
-            {
-                ["mean_dist"] = meanDist,
-                ["mean_speed"] = meanSpeed,
-                ["mean_finish"] = finished,
-                ["mean_collision"] = collision
-            };
+            // TODO: at some point uniformize e_name and m_name
+            episodeStats ??= new Dictionary<string, float>();
+            episodeStats["mean_distance"] = meanDist;
+            episodeStats["mean_speed"] = meanSpeed;
+            episodeStats["mean_finished"] = finished;
+            episodeStats["mean_collision"] = collision;
+            
         
             // Debug.Log(collision);
 
-            var message = MLUtils.MakeMessage(stats);
+            var message = MLUtils.MakeMessage(episodeStats);
             
             // var message = $"mean_dist {meanDist}\nmean_speed {meanSpeed}\nmean_finish {finished}\nmean_collision {collision}";
             statsCommunicator.StatsChannel.SendMessage(message);

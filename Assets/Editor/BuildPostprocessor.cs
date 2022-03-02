@@ -11,8 +11,14 @@ namespace Editor
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            var projectPath = Path.GetDirectoryName(pathToBuiltProject);
-
+            string projectPath;
+            if (target == BuildTarget.StandaloneOSX)
+            {
+                projectPath = pathToBuiltProject;
+            } else
+            {
+                projectPath = Path.GetDirectoryName(pathToBuiltProject);
+            }
             var mapDirPath = Directory.GetParent(Application.dataPath)?.FullName;
         
         
@@ -26,7 +32,7 @@ namespace Editor
                     return;
                 }
             
-                var newMapPath = Path.Combine(projectPath, "data");
+                var newMapPath = Path.Combine(projectPath, "data"); // TODO: Fix this on Mac
                 Debug.Log($"Data path: {pathToMapsFolder}. Copying data from there to the built project.");
                 DirectoryCopy(pathToMapsFolder, newMapPath, true);
             }
