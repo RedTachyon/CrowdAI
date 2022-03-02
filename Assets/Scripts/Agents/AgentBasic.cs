@@ -65,7 +65,6 @@ namespace Agents
         public bool CollectedGoal;
         public float distanceTraversed;
         public float energySpent;
-        public float totalReward;
 
         public Dictionary<string, float> rewardParts;
 
@@ -105,8 +104,17 @@ namespace Agents
             base.OnEpisodeBegin();
             CollectedGoal = false;
             energySpent = 0f;
-            totalReward = 0f;
             distanceTraversed = 0f;
+            rewardParts = new Dictionary<string, float>
+            {
+                ["collision"] = 0f,
+                ["goal"] = 0f,
+                ["potential"] = 0f,
+                ["speed"] = 0f,
+                ["time"] = 0f,
+                ["standstill"] = 0f,
+                ["total"] = 0f
+            };
             
             UpdateParams();
 
@@ -316,16 +324,16 @@ namespace Agents
             return reward;
         }
 
-        private new void AddReward(float reward)
-        {
-            base.AddReward(reward);
-            totalReward += reward;
-        }
+        // private new void AddReward(float reward)
+        // {
+        //     base.AddReward(reward);
+        //     totalReward += reward;
+        // }
         
-        private void AddReward(float coeff, float reward, string type = "")
+        public void AddRewardPart(float reward, string type)
         {
-            AddReward(coeff * reward);
-            totalReward += reward;
+            rewardParts["total"] += reward;
+            rewardParts[type] += reward;
         }
     }
 }

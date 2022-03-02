@@ -112,7 +112,6 @@ namespace Managers
 
                 Agent agent = currentAgent.GetComponent<Agent>();
 
-                // TODO: this will crash?
                 if (active)
                 {
                     _agentGroup.RegisterAgent(agent);
@@ -281,14 +280,12 @@ namespace Managers
             var energies = new List<float>();
             var distances = new List<float>();
             var successes = new List<float>();
-            var rewards = new List<float>();
             
             foreach (Transform agent in transform)
             {
                 energies.Add(agent.GetComponent<AgentBasic>().energySpent);
                 distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
-                successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1 : 0);
-                rewards.Add(agent.GetComponent<AgentBasic>().totalReward);
+                successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
             }
 
             var stats = new Dictionary<string, float>
@@ -296,8 +293,25 @@ namespace Managers
                 ["e_energy"] = energies.Average(),
                 ["e_distance"] = distances.Average(),
                 ["e_success"] = successes.Average(),
-                ["e_reward"] = rewards.Average()
             };
+            
+            // TODO: Finish this
+            foreach (Transform agentTransform in transform)
+            {
+                var agent = agentTransform.GetComponent<AgentBasic>();
+                foreach (var rewardPart in agent.rewardParts)
+                {
+                    var keyname= $"e_reward_{rewardPart.Key}";
+                    if (stats.ContainsKey(keyname))
+                    {
+                        stats[keyname] += rewardPart.Value;
+                    } else
+                    {
+                        stats[keyname] = rewardPart.Value;
+                    }
+                }
+            }
+
             return stats;
         }
 
