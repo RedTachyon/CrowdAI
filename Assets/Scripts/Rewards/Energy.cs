@@ -1,3 +1,4 @@
+using Agents;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 
@@ -22,7 +23,11 @@ namespace Rewards
 
         public float ActionReward(Transform transform, ActionBuffers actions)
         {
-            throw new System.NotImplementedException();
+            var energySpent = 0f;
+            var agent = transform.GetComponent<AgentBasic>();
+            energySpent += Params.E_s * Time.fixedDeltaTime;
+            energySpent += Params.E_w * agent.Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
+            return energySpent;
         }
     }
 }

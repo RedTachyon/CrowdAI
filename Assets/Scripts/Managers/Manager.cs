@@ -302,7 +302,7 @@ namespace Managers
                 var agent = agentTransform.GetComponent<AgentBasic>();
                 foreach (var rewardPart in agent.rewardParts)
                 {
-                    var keyname= $"e_reward_{rewardPart.Key}";
+                    var keyname = $"e_reward_{rewardPart.Key}";
                     if (stats.ContainsKey(keyname))
                     {
                         stats[keyname] += rewardPart.Value / numAgents;

@@ -30,8 +30,8 @@ namespace Agents
 
         private BufferSensorComponent _bufferSensor;
     
-        protected Rigidbody Rigidbody;
-        protected Collider Collider;
+        [HideInInspector] public Rigidbody Rigidbody;
+        [HideInInspector] public Collider Collider;
 
         public bool controllable = true;
 
@@ -166,11 +166,9 @@ namespace Agents
             }
 
 
-            if (!CollectedGoal)
-            {
-                var reward = _rewarder.ActionReward(transform, actions);
-                AddReward(reward);
-            }
+            var reward = _rewarder.ActionReward(transform, actions);
+            AddReward(reward);
+            
             
             // Update measurements
             if (!CollectedGoal)
