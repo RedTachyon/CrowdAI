@@ -33,6 +33,9 @@ namespace Initializers
                         placedAgents
                     );
 
+                    goalPosition = newPosition;
+                    goalPosition.x = -goalPosition.x;
+
                 }
                 else
                 {
@@ -45,11 +48,13 @@ namespace Initializers
                         placedAgents
                     );
 
+                    goalPosition = newPosition;
+                    goalPosition.z = -goalPosition.z;
                 }
 
 
-                goalPosition = Quaternion.AngleAxis(180, Vector3.up) * newPosition;
-                goalPosition.y = goal.localPosition.y;
+                // goalPosition = Quaternion.AngleAxis(180, Vector3.up) * newPosition;
+                // goalPosition.y = goal.localPosition.y;
                 newRotation = Quaternion.LookRotation(goalPosition, Vector3.up);
 
                 agent.localPosition = newPosition;

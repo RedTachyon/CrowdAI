@@ -14,6 +14,7 @@ namespace Initializers
         Circle,
         Hallway,
         JsonInitializer,
+        Corridor,
     }
     
     public static class Mapper
@@ -26,6 +27,7 @@ namespace Initializers
                 InitializerEnum.Circle => new Circle(),
                 InitializerEnum.Hallway => new Hallway(),
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
+                InitializerEnum.Corridor => new Corridor(),
                 _ => null
             };
 
