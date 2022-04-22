@@ -30,25 +30,50 @@ namespace Initializers
 
                         Vector3 newPosition;
                         Vector3 goalPosition;
+                        Vector3 goalOffset;
                         Quaternion newRotation;
-
-                        newPosition = MLUtils.NoncollidingPosition(
-                            -6f,
-                            -9f,
-                            -3f,
-                            3f,
-                            agent.localPosition.y,
-                            placedAgents
-                        );
-
-                        goalPosition = newPosition;
-                        goalPosition.x += 15f;
                         
+                        float xMin, xMax, zMin, zMax;
 
-                        // goalPosition = Quaternion.AngleAxis(180, Vector3.up) * newPosition;
-                        // goalPosition.y = goal.localPosition.y;
-                        newRotation = Quaternion.LookRotation(Vector3.right, Vector3.up);
+                        if (agentIdx < numAgents / 2)
+                        {
+                            xMin = -9f;
+                            xMax = -6f;
+                            zMin = -1.5f;
+                            zMax = 1.5f;
+                            goalOffset = new Vector3(15f, 0, 0);
+                            newRotation = Quaternion.LookRotation(Vector3.right);
+                        }
+                        else
+                        {
+                            xMin = 6f;
+                            xMax = 9f;
+                            zMin = -1.5f;
+                            zMax = 1.5f;
+                            goalOffset = new Vector3(-15f, 0, 0);
+                            newRotation = Quaternion.LookRotation(Vector3.left);
+                        }
 
+                        if (Params.GridSpawn)
+                        {
+                            var gridSize = numAgents / 2;
+                            if (numAgents % 2 == 1)
+                            {
+                                gridSize++;
+                            }
+                            var idx = agentIdx % gridSize;
+                            newPosition = 
+                                MLUtils.GridPosition(xMin, xMax, zMin, zMax, agent.localPosition.y, idx, gridSize);
+
+                        }
+                        else
+                        {
+                            newPosition =
+                                MLUtils.NoncollidingPosition(xMin, xMax, zMin, zMax, agent.localPosition.y, placedAgents);
+                        }
+
+                        goalPosition = newPosition + goalOffset;
+                        
                         agent.localPosition = newPosition;
                         agent.localRotation = newRotation;
                         goal.localPosition = goalPosition;

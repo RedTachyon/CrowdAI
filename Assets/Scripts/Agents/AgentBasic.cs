@@ -282,6 +282,8 @@ namespace Agents
             }
             if (Params.EvaluationMode)
             {
+                // TODO: After reaching the goal, send the agent into the hell dimension? (y=100 or something)
+                
                 Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
                 Collider.enabled = false;
             }

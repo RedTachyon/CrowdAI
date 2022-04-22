@@ -2535,8 +2535,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 32
-  mode: 2
+  numAgents: 2
+  mode: 4
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10
