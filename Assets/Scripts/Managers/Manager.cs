@@ -31,9 +31,7 @@ namespace Managers
         public StatsCommunicator statsCommunicator;
 
         public StringChannel StringChannel;
-
-        public Transform obstacles;
-
+        
         protected SimpleMultiAgentGroup _agentGroup;
 
         protected bool _initialized;
@@ -41,6 +39,8 @@ namespace Managers
 
         protected float[,,] _positionMemory;
         protected float[] _timeMemory;
+
+        public Transform AllObstacles;
 
         protected static Manager _instance;
         public static Manager Instance => _instance;
@@ -70,6 +70,8 @@ namespace Managers
 
             _episodeNum = 0;
             
+            // AllObstacles = GameObject.Find("ObstacleSets").transform;
+            
             // Debug.Log(Quaternion.AngleAxis(90, Vector3.up));
             // Debug.Log(MLUtils.SquashUniform(new Vector2(0f ,1f)));
             // Debug.Log(MLUtils.SquashUniform(new Vector2(1f ,0f)));
@@ -94,11 +96,7 @@ namespace Managers
 
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
-
-            if (mode == InitializerEnum.Hallway)
-            {
-                obstacles.gameObject.SetActive(true);
-            }
+            
             Debug.Log($"Number of children: {currentNumAgents}");
 
             // Activate the right amount of agents
@@ -155,6 +153,12 @@ namespace Managers
                 agentTransform.position = new Vector3(0f, agentTransform.localScale.y, 0f);
 
                 agentIdx++;
+            }
+            
+            // Remove all obstacles
+            foreach (Transform obstacle in AllObstacles)
+            {
+                obstacle.gameObject.SetActive(false);
             }
             
             // Find the right locations for all agents

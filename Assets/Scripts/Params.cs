@@ -87,6 +87,9 @@ public class Params : MonoBehaviour
     public float spawnScale = 4f;
     public static float SpawnScale => Get("spawn_scale", Instance.spawnScale);
 
+    public bool gridSpawn = false;
+    public static bool GridSpawn => Convert.ToBoolean(Get("grid_spawn", Instance.gridSpawn ? 1f : 0f));
+
     // Meta
 
     public bool evaluationMode = false;

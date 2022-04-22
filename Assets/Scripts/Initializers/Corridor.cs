@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using Agents;
+using Managers;
 using UnityEngine;
 
 namespace Initializers
 {
     public class Corridor : IInitializer
     {
+        private readonly Transform _ownObstacles;
+        
+        public Corridor()
+        {
+            _ownObstacles = Manager.Instance.AllObstacles.Find("Corridor");
+        }
         
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
                 {
+                    _ownObstacles.gameObject.SetActive(true);
+                    
                     var placedAgents = new List<Vector3>();
                     var placedGoals = new List<Vector3>();
                     var agentIdx = 0;
@@ -25,7 +34,7 @@ namespace Initializers
 
                         newPosition = MLUtils.NoncollidingPosition(
                             -6f,
-                            -9.4f,
+                            -9f,
                             -3f,
                             3f,
                             agent.localPosition.y,
@@ -33,7 +42,7 @@ namespace Initializers
                         );
 
                         goalPosition = newPosition;
-                        goalPosition.x = -goalPosition.x;
+                        goalPosition.x += 15f;
                         
 
                         // goalPosition = Quaternion.AngleAxis(180, Vector3.up) * newPosition;

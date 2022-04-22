@@ -264,7 +264,8 @@ MonoBehaviour:
   sightAgents: 12
   spawnNoiseScale: 0.5
   spawnScale: 16
-  evaluationMode: 0
+  gridSpawn: 1
+  evaluationMode: 1
   savePath: 
   dynamics: 2
   observer: 0
@@ -560,7 +561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &917619868
 Transform:
   m_ObjectHideFlags: 0
@@ -592,7 +593,7 @@ GameObject:
   - component: {fileID: 1102273610}
   m_Layer: 0
   m_Name: UnitObstacle
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -846,7 +847,7 @@ GameObject:
   - component: {fileID: 2032840003}
   m_Layer: 0
   m_Name: UnitObstacle (1)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1212,7 +1213,7 @@ GameObject:
   - component: {fileID: 8459943505659559072}
   m_Layer: 0
   m_Name: UnitObstacle (1)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1298,8 +1299,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2477817714858005410}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.5, y: 1, z: -7.5}
-  m_LocalScale: {x: 5, y: 2, z: 5}
+  m_LocalPosition: {x: -6, y: 1, z: -6}
+  m_LocalScale: {x: 8, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 554176723367476335}
@@ -1422,7 +1423,7 @@ Transform:
   m_GameObject: {fileID: 3898099998562990148}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 9, y: 0.15, z: 0}
-  m_LocalScale: {x: 1, y: 0.3, z: 1}
+  m_LocalScale: {x: 0.75, y: 0.3, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1294497070975032864}
@@ -2380,8 +2381,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5212524008924935514}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5, y: 1, z: 7.5}
-  m_LocalScale: {x: 5, y: 2, z: 5}
+  m_LocalPosition: {x: 6, y: 1, z: 6}
+  m_LocalScale: {x: 8, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 554176723367476335}
@@ -2456,7 +2457,7 @@ GameObject:
   - component: {fileID: 2257325026411256408}
   m_Layer: 0
   m_Name: UnitObstacle (2)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2498,8 +2499,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6602892965448074654}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.5, y: 1, z: 7.5}
-  m_LocalScale: {x: 5, y: 2, z: 5}
+  m_LocalPosition: {x: -6, y: 1, z: 6}
+  m_LocalScale: {x: 8, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 554176723367476335}
@@ -2534,13 +2535,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 20
-  mode: 4
+  numAgents: 32
+  mode: 2
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10
   statsCommunicator: {fileID: 2113393393}
-  obstacles: {fileID: 554176723367476335}
+  AllObstacles: {fileID: 1990633735}
 --- !u!4 &6068148285703966662
 Transform:
   m_ObjectHideFlags: 0
@@ -2632,7 +2633,7 @@ GameObject:
   - component: {fileID: 911710599774775964}
   m_Layer: 0
   m_Name: UnitObstacle
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2760,7 +2761,7 @@ GameObject:
   - component: {fileID: 3914745107296019103}
   m_Layer: 0
   m_Name: UnitObstacle (3)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2799,8 +2800,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7014017983864245661}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5, y: 1, z: -7.5}
-  m_LocalScale: {x: 5, y: 2, z: 5}
+  m_LocalPosition: {x: 6, y: 1, z: -6}
+  m_LocalScale: {x: 8, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 554176723367476335}

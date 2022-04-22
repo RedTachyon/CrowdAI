@@ -16,12 +16,12 @@ namespace Managers
         {
             base.Awake();
             
-            foreach (Transform obstacle in obstacles.GetComponentsInChildren<Transform>())
-            {
-                if (obstacle.childCount > 0) continue;
-                _obstaclePositions.Add(obstacle.position);
-                // Debug.Log(obstacle.name);
-            }
+            // foreach (Transform obstacle in obstacles.GetComponentsInChildren<Transform>())
+            // {
+            //     if (obstacle.childCount > 0) continue;
+            //     _obstaclePositions.Add(obstacle.position);
+            //     // Debug.Log(obstacle.name);
+            // }
             
         }
         public override void ReachGoal(Agent agent)

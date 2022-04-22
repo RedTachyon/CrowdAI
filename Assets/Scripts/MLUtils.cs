@@ -58,6 +58,32 @@ public class MLUtils
         return position;
 
     }
+
+    public static Vector3 GridPosition(
+        float xMin,
+        float xMax,
+        float zMin,
+        float zMax,
+        float yVal,
+        int index,
+        int numAgents
+        )
+    { // Untested copilot code
+        if (numAgents == 1)
+        {
+            return new Vector3(
+                (xMin + xMax) / 2, 
+                yVal,
+                (zMin + zMax) / 2
+            );
+        }
+        int gridSide = Mathf.CeilToInt(Mathf.Sqrt(numAgents));
+        var x = xMin + (index % gridSide) * (xMax - xMin) / (gridSide - 1);
+        var z = zMin + (index / gridSide) * (zMax - zMin) / (gridSide - 1);
+        var pos = new Vector3(x, yVal, z);
+        Debug.Log($"Grid position: {pos} with gridside {gridSide}, index {index}, numAgents {numAgents}, single diff {(xMax - xMin)}");
+        return pos;
+    }
     
     /// <summary>
     /// Converts the given decimal number to the numeral system with the
