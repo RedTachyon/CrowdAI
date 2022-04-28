@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -555,7 +555,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 917619868}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Corridor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -591,7 +591,7 @@ GameObject:
   - component: {fileID: 1102273612}
   - component: {fileID: 1102273611}
   - component: {fileID: 1102273610}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -606,8 +606,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102273608}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 7}
-  m_LocalScale: {x: 20, y: 2, z: 7}
+  m_LocalPosition: {x: 0, y: 1, z: 6}
+  m_LocalScale: {x: 20, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 917619868}
@@ -809,7 +809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1990633735}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ObstacleSets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -845,7 +845,7 @@ GameObject:
   - component: {fileID: 2032840005}
   - component: {fileID: 2032840004}
   - component: {fileID: 2032840003}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -860,8 +860,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2032840001}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -7}
-  m_LocalScale: {x: 20, y: 2, z: 7}
+  m_LocalPosition: {x: 0, y: 1, z: -6}
+  m_LocalScale: {x: 20, y: 2, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 917619868}
@@ -1211,7 +1211,7 @@ GameObject:
   - component: {fileID: 6617349291640259216}
   - component: {fileID: 6842669949219245246}
   - component: {fileID: 8459943505659559072}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -1580,7 +1580,7 @@ GameObject:
   - component: {fileID: 4071786924737370578}
   - component: {fileID: 4071786924737370577}
   - component: {fileID: 4071786924737370576}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall0
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -1651,7 +1651,7 @@ GameObject:
   - component: {fileID: 4071786925094919879}
   - component: {fileID: 4071786925094919878}
   - component: {fileID: 4071786925094919877}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall3
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -1748,7 +1748,7 @@ GameObject:
   - component: {fileID: 4071786925253156888}
   - component: {fileID: 4071786925253156887}
   - component: {fileID: 4071786925253156886}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall2
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -1845,7 +1845,7 @@ GameObject:
   - component: {fileID: 4071786925576767014}
   - component: {fileID: 4071786925576767013}
   - component: {fileID: 4071786925576767012}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall1
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2037,7 +2037,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4071786926469267096}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Borders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2149,7 +2149,7 @@ GameObject:
   - component: {fileID: 4071786926523291311}
   - component: {fileID: 2114891919452053196}
   - component: {fileID: 1291936535}
-  - component: {fileID: 4071786926523291308}
+  - component: {fileID: 6668392869924176160}
   m_Layer: 3
   m_Name: Person
   m_TagString: Agent
@@ -2173,19 +2173,6 @@ Transform:
   m_Father: {fileID: 6068148285703966662}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!135 &4071786926523291308
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4071786926523291306}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.3
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4071786926523291311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2213,7 +2200,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Person
   TeamId: 0
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!4 &4071786926725622368
@@ -2311,7 +2298,7 @@ GameObject:
   - component: {fileID: 4439940551566821894}
   - component: {fileID: 4997921226992512882}
   - component: {fileID: 7256297855709865554}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall0 (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2330,7 +2317,7 @@ GameObject:
   - component: {fileID: 1826403697570675937}
   - component: {fileID: 6145786949588215223}
   - component: {fileID: 7413968175732646275}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall1 (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2455,7 +2442,7 @@ GameObject:
   - component: {fileID: 3594414509219177576}
   - component: {fileID: 3801720873381423686}
   - component: {fileID: 2257325026411256408}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle (2)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2471,7 +2458,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 554176723367476335}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hallway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2535,7 +2522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 2
+  numAgents: 98
   mode: 4
   dataFileName: 12peds-1.json
   maxStep: 200
@@ -2612,7 +2599,7 @@ GameObject:
   - component: {fileID: 1806381217855852781}
   - component: {fileID: 404995168097974378}
   - component: {fileID: 4486911921814487055}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall3 (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2631,7 +2618,7 @@ GameObject:
   - component: {fileID: 2455946277970236588}
   - component: {fileID: 2825663720872041090}
   - component: {fileID: 911710599774775964}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2686,6 +2673,32 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   speed: 0
   debug: 1
+--- !u!114 &6668392869924176160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4071786926523291306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3cadac055d346539ee8912c090f9691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: RaySensor
+  m_DetectableTags: []
+  m_RaysPerDirection: 7
+  m_MaxRayDegrees: 90
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967240
+  m_ObservationStacks: 4
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6760597447151538785
 GameObject:
   m_ObjectHideFlags: 0
@@ -2698,7 +2711,7 @@ GameObject:
   - component: {fileID: 3742207805760025318}
   - component: {fileID: 7586955577687341226}
   - component: {fileID: 4857331206657724154}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall2 (1)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -2759,7 +2772,7 @@ GameObject:
   - component: {fileID: 1792918887000480943}
   - component: {fileID: 2144340368505836161}
   - component: {fileID: 3914745107296019103}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: UnitObstacle (3)
   m_TagString: Obstacle
   m_Icon: {fileID: 0}

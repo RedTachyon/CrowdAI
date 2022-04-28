@@ -12,7 +12,10 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Reflection;
+using JetBrains.Annotations;
+using Sensors;
 using UnityEngine.PlayerLoop;
+// using RayPerceptionSensorComponent3D = Sensors.RaySensorComponent3D;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -87,6 +90,9 @@ namespace Agents
         public float speed;
 
         public bool debug;
+        
+        
+        [CanBeNull] private RaySensorComponent _rayPerceptionSensor;
 
         public Vector3 PreviousPosition { get; set; }
 
@@ -108,6 +114,13 @@ namespace Agents
             _originalColor = _material.color;
             _bufferSensor = GetComponent<BufferSensorComponent>();
             _bufferSensor.MaxNumObservables = Params.SightAgents;
+            
+            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
+            
+            // Debug.Log($"Ray perception sensor: {_rayPerceptionSensor}");
+            // Destroy(_rayPerceptionSensor);
+            // Destroy(_bufferSensor);
+            // _rayPerceptionSensor = null;
 
         }
 
@@ -220,6 +233,12 @@ namespace Agents
             {
                 force *= 0.5f;
             }
+            
+            if (Input.GetKey(KeyCode.Space))
+            {
+                Debug.Log("Disabling");
+            }
+            
             
             // Debug.Log(force.magnitude);
             

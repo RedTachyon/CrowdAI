@@ -81,7 +81,7 @@ public class MLUtils
         var x = xMin + (index % gridSide) * (xMax - xMin) / (gridSide - 1);
         var z = zMin + (index / gridSide) * (zMax - zMin) / (gridSide - 1);
         var pos = new Vector3(x, yVal, z);
-        Debug.Log($"Grid position: {pos} with gridside {gridSide}, index {index}, numAgents {numAgents}, single diff {(xMax - xMin)}");
+        // Debug.Log($"Grid position: {pos} with gridside {gridSide}, index {index}, numAgents {numAgents}, single diff {(xMax - xMin)}");
         return pos;
     }
     
