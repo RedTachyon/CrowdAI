@@ -102,7 +102,7 @@ public class Params : MonoBehaviour
     public bool enableObstacles = true;
     public static bool EnableObstacles => Convert.ToBoolean(Get("enable_obstacles", Instance.enableObstacles ? 1f : 0f));
     
-    public bool sharedGoal = true;
+    public bool sharedGoal;
     public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
 
     // Meta

@@ -64,6 +64,9 @@ namespace Agents
 
 
         public Transform goal;
+        public Vector3 goalScale;
+
+        private float _originalHeight;
         
         [Space(10)]
         [Header("Debug metrics")]
@@ -106,6 +109,7 @@ namespace Agents
             _bufferSensor = GetComponent<BufferSensorComponent>();
             _material = GetComponent<Renderer>().material;
             _originalColor = _material.color;
+            _originalHeight = transform.localScale.y;
 
             // startY = transform.localPosition.y;
             
@@ -115,8 +119,10 @@ namespace Agents
         
 
             _bufferSensor.MaxNumObservables = Params.SightAgents;
-            
-            
+
+            goalScale = goal.localScale;
+
+
             // Debug.Log($"Ray perception sensor: {_rayPerceptionSensor}");
             // Destroy(_rayPerceptionSensor);
             // Destroy(_bufferSensor);
@@ -127,6 +133,7 @@ namespace Agents
         public override void OnEpisodeBegin()
         {
             base.OnEpisodeBegin();
+            TeleportBack();
             CollectedGoal = false;
             energySpent = 0f;
             distanceTraversed = 0f;
@@ -173,7 +180,7 @@ namespace Agents
             base.OnActionReceived(actions);
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
-            if (!CollectedGoal || !Params.EvaluationMode)
+            if (!CollectedGoal)
             {
                 _dynamics.ProcessActions(actions, Rigidbody, maxSpeed, maxAcceleration, rotationSpeed, _squasher);
             }
@@ -294,17 +301,9 @@ namespace Agents
 
             var currentSpeed = Rigidbody.velocity.magnitude;
             
-            if (Params.GoalSpeedThreshold < 0f || currentSpeed < Params.GoalSpeedThreshold) {
+            if (Params.GoalSpeedThreshold <= 0f || currentSpeed < Params.GoalSpeedThreshold) {
                 AddReward(_rewarder.TriggerReward(transform, other, true));
-                CollectedGoal = true;
-                Manager.Instance.ReachGoal(this);
-            }
-            if (Params.EvaluationMode)
-            {
-                // TODO: After reaching the goal, send the agent into the hell dimension? (y=100 or something)
-                
-                Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-                Collider.enabled = false;
+                FinishEpisode();
             }
             // Debug.Log("Trying to change color");
             // _material.color = Color.blue;
@@ -360,7 +359,6 @@ namespace Agents
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
             
-            Debug.Log($"Sensor: {_rayPerceptionSensor}");
 
             _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
             if (Params.RayAgentVision) {
@@ -395,5 +393,36 @@ namespace Agents
         {
             rewardParts[type] += reward;
         }
+
+        public void FinishEpisode()
+        {
+            CollectedGoal = true;
+            Manager.Instance.ReachGoal(this);
+            Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            Collider.enabled = false;
+
+            if (!Params.EvaluationMode)
+            {
+                TeleportAway();
+            }
+        }
+        public void TeleportAway()
+        {
+            // Debug.Log("Teleporting away");
+            var newPosition = transform.localPosition;
+            newPosition.y = -10f;
+            transform.localPosition = newPosition;
+            // Debug.Log("New position: " + transform.localPosition);
+        }
+        
+        public void TeleportBack()
+        {
+            // Debug.Log("Teleporting back");
+            var newPosition = transform.localPosition;
+            newPosition.y = _originalHeight;
+            transform.localPosition = newPosition;
+            // Debug.Log("New position: " + transform.localPosition);
+        }
+        
     }
 }

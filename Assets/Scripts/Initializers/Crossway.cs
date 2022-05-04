@@ -26,7 +26,8 @@ namespace Initializers
 
             foreach (Transform agent in baseTransform)
             {
-                var goal = agent.GetComponent<AgentBasic>().goal;
+                var agentBasic = agent.GetComponent<AgentBasic>();
+                var goal = agentBasic.goal;
 
                 Vector3 newPosition;
                 Vector3 goalPosition;
@@ -72,8 +73,18 @@ namespace Initializers
                         MLUtils.NoncollidingPosition(xMin, xMax, zMin, zMax, agent.localPosition.y, placedAgents);
                 }
 
-                goalPosition = newPosition + goalOffset;
-                
+                if (Params.SharedGoal)
+                {
+                    goalPosition = goalOffset.normalized * 10f;
+                    goal.localScale = new Vector3(3, 1, 3);
+                }
+                else
+                {
+                    goalPosition = newPosition + goalOffset;
+                    goal.localScale = agentBasic.goalScale;
+
+                }
+
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
@@ -86,7 +97,7 @@ namespace Initializers
                 agent.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-                agent.GetComponent<AgentBasic>().PreviousPosition = agent.localPosition;
+                agentBasic.PreviousPosition = agent.localPosition;
 
                 agentIdx++;
             }

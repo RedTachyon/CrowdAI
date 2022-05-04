@@ -2664,6 +2664,7 @@ MonoBehaviour:
   rewarderType: 0
   squasherType: 3
   goal: {fileID: 3898099998562990149}
+  goalScale: {x: 0, y: 0, z: 0}
   CollectedGoal: 0
   distanceTraversed: 0
   energySpent: 0

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Observers
 {
-    public class RotRelative : IObserver
+    public class Egocentric : IObserver
     {
         public void Observe(VectorSensor sensor, Transform transform)
         {
