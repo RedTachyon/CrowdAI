@@ -12,7 +12,7 @@ namespace Initializers
     {
         Random,
         Circle,
-        Hallway,
+        Crossway,
         JsonInitializer,
         Corridor,
     }
@@ -25,7 +25,7 @@ namespace Initializers
             {
                 InitializerEnum.Random => new Random(),
                 InitializerEnum.Circle => new Circle(),
-                InitializerEnum.Hallway => new Hallway(),
+                InitializerEnum.Crossway => new Crossway(),
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
                 InitializerEnum.Corridor => new Corridor(),
                 _ => null

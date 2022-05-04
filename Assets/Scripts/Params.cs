@@ -28,6 +28,8 @@ public class Params : MonoBehaviour
       // // /// //  
      // REWARD //
     // // // //
+    
+    [Header("Reward settings")]
     public float potential = 0.4f;
     public static float Potential => Get("potential", Instance.potential);
 
@@ -65,6 +67,7 @@ public class Params : MonoBehaviour
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
     
     // Energy parameters
+    [Header("Energy parameters")]
     public float e_s = 2.23f;
     public static float E_s => Get("e_s", Instance.e_s);
 
@@ -72,31 +75,45 @@ public class Params : MonoBehaviour
     public static float E_w => Get("e_w", Instance.e_w);
     
     // Everything else
-    
+    [Header("Observation settings")]
     public float sightRadius = 5f;
     public static float SightRadius => Get("sight_radius", Instance.sightRadius);
     
     public int sightAgents = 10;
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
     
-    // Spawn
+    public bool rayAgentVision = false;
+    public static bool RayAgentVision => Convert.ToBoolean(Get("ray_agent_vision", Instance.rayAgentVision ? 1f : 0f));
     
+    // Spawn
+    [Header("Spawn settings")]
     public float spawnNoiseScale = 0.5f;
     public static float SpawnNoiseScale => Get("spawn_noise_scale", Instance.spawnNoiseScale);
 
     public float spawnScale = 4f;
     public static float SpawnScale => Get("spawn_scale", Instance.spawnScale);
 
-    public bool gridSpawn = false;
+    public bool gridSpawn = true;
     public static bool GridSpawn => Convert.ToBoolean(Get("grid_spawn", Instance.gridSpawn ? 1f : 0f));
 
-    // Meta
+    public float groupSpawnScale = 1.5f;
+    public static float GroupSpawnScale => Get("group_spawn_scale", Instance.groupSpawnScale);
+    
+    public bool enableObstacles = true;
+    public static bool EnableObstacles => Convert.ToBoolean(Get("enable_obstacles", Instance.enableObstacles ? 1f : 0f));
+    
+    public bool sharedGoal = true;
+    public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
 
+    // Meta
+    [Header("Meta settings")]
     public bool evaluationMode = false;
     public static bool EvaluationMode => Convert.ToBoolean(Get("evaluation_mode", Instance.evaluationMode ? 1f : 0f));
 
     public string savePath = "";
     public static string SavePath => Get("save_path", Instance.savePath);
+    
+    [Header("Agent settings")]
 
     public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;
     public static DynamicsEnum Dynamics => Enum.Parse<DynamicsEnum>(Get("dynamics", Instance.dynamics.ToString()));

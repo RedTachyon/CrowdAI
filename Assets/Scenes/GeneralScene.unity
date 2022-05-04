@@ -262,9 +262,13 @@ MonoBehaviour:
   e_w: 1.26
   sightRadius: 5
   sightAgents: 12
+  rayAgentVision: 0
   spawnNoiseScale: 0.5
   spawnScale: 16
   gridSpawn: 1
+  groupSpawnScale: 1.25
+  enableObstacles: 1
+  sharedGoal: 1
   evaluationMode: 1
   savePath: 
   dynamics: 2
@@ -2202,6 +2206,7 @@ MonoBehaviour:
   TeamId: 0
   m_UseChildSensors: 0
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
 --- !u!4 &4071786926725622368
 Transform:
@@ -2522,7 +2527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 98
+  numAgents: 18
   mode: 4
   dataFileName: 12peds-1.json
   maxStep: 200

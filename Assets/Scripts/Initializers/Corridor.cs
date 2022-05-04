@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Agents;
 using Managers;
 using Unity.MLAgents.Sensors;
@@ -17,14 +18,16 @@ namespace Initializers
         
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
         {
-            const float zVal = -1.5f;
-            _ownObstacles.gameObject.SetActive(true);
+            var zVal = Params.GroupSpawnScale;
+            _ownObstacles.gameObject.SetActive(Params.EnableObstacles);
             
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();
             var agentIdx = 0;
 
-            var numAgents = baseTransform.childCount;
+            var numAgents = baseTransform
+                .Cast<Transform>()
+                .Count(t => t.gameObject.activeInHierarchy);
 
             foreach (Transform agent in baseTransform)
             {
@@ -40,7 +43,7 @@ namespace Initializers
                 if (agentIdx < numAgents / 2)
                 {
                     xMin = -9f;
-                    xMax = -6f;
+                    xMax = -9f + zVal * 2;
                     zMin = -zVal;
                     zMax = zVal;
                     goalOffset = new Vector3(15f, 0, 0);
@@ -49,7 +52,7 @@ namespace Initializers
                 else
                 {
                     xMin = 6f;
-                    xMax = 9f;
+                    xMax = 6f + zVal * 2;
                     zMin = -zVal;
                     zMax = zVal;
                     goalOffset = new Vector3(-15f, 0, 0);

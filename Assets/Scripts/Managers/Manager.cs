@@ -87,8 +87,9 @@ namespace Managers
 
             _episodeNum++;
             _initialized = true;
+            
+            // TODO: integrate this into Params.cs
             mode = GetMode();
-        
             numAgents = GetNumAgents();
 
             _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
@@ -240,6 +241,8 @@ namespace Managers
             // var decisionTime = Time / decisionFrequency;
             foreach (Transform agent in transform)
             {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                
                 var localPosition = agent.localPosition;
                 _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
                 _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
@@ -389,7 +392,7 @@ namespace Managers
             }
             else if (val < 2.5f) // == 2f
             {
-                currentMode = InitializerEnum.Hallway;
+                currentMode = InitializerEnum.Crossway;
             }
             else
             {

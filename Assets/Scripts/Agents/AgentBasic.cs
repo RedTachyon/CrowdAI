@@ -92,7 +92,7 @@ namespace Agents
         public bool debug;
         
         
-        [CanBeNull] private RaySensorComponent _rayPerceptionSensor;
+        private RaySensorComponent _rayPerceptionSensor;
 
         public Vector3 PreviousPosition { get; set; }
 
@@ -102,20 +102,20 @@ namespace Agents
         
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
+            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
+            _bufferSensor = GetComponent<BufferSensorComponent>();
+            _material = GetComponent<Renderer>().material;
+            _originalColor = _material.color;
+
             // startY = transform.localPosition.y;
-
-
+            
             UpdateParams();
 
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
         
 
-            _material = GetComponent<Renderer>().material;
-            _originalColor = _material.color;
-            _bufferSensor = GetComponent<BufferSensorComponent>();
             _bufferSensor.MaxNumObservables = Params.SightAgents;
             
-            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
             
             // Debug.Log($"Ray perception sensor: {_rayPerceptionSensor}");
             // Destroy(_rayPerceptionSensor);
@@ -359,6 +359,14 @@ namespace Agents
             _squasher = Squasher.GetSquasher(squasherType);
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
+            
+            Debug.Log($"Sensor: {_rayPerceptionSensor}");
+
+            _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
+            if (Params.RayAgentVision) {
+                _rayPerceptionSensor.RayLayerMask |= (1 << LayerMask.NameToLayer("Agent"));
+            }
+            
 
         }
 

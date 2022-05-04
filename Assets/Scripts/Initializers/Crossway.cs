@@ -5,17 +5,18 @@ using UnityEngine;
 
 namespace Initializers
 {
-    public class Hallway : IInitializer
+    public class Crossway : IInitializer
     {
         private readonly Transform _ownObstacles;
         
-        public Hallway()
+        public Crossway()
         {
             _ownObstacles = Manager.Instance.AllObstacles.Find("Hallway");
         }
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
         {
-            _ownObstacles.gameObject.SetActive(true);
+            var squareSize = Params.GroupSpawnScale;
+            _ownObstacles.gameObject.SetActive(Params.EnableObstacles);
             
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();
@@ -37,18 +38,18 @@ namespace Initializers
                 if (agentIdx < numAgents / 2)
                 {
                     xMin = -9f;
-                    xMax = -6f;
-                    zMin = -1.5f;
-                    zMax = 1.5f;
+                    xMax = -9f + 2 * squareSize;
+                    zMin = -squareSize;
+                    zMax = squareSize;
                     goalOffset = new Vector3(15f, 0, 0);
                     newRotation = Quaternion.LookRotation(Vector3.right);
                 }
                 else
                 {
-                    xMin = -1.5f;
-                    xMax = 1.5f;
+                    xMin = -squareSize;
+                    xMax = squareSize;
                     zMin = -9f;
-                    zMax = -6f;
+                    zMax = -9f + 2 * squareSize;
                     goalOffset = new Vector3(0, 0, 15f);
                     newRotation = Quaternion.LookRotation(Vector3.forward);
                 }
