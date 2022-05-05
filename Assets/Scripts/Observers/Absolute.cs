@@ -50,10 +50,10 @@ namespace Observers
         {
             
             // Collect Buffer observations
-            const int layerMask = 1 << 3; // Only look at the Agent layer
+            LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
-                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                    .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents 
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
                     .Select(GetColliderInfo)
                     .Take(Params.SightAgents);
@@ -69,10 +69,14 @@ namespace Observers
         private static float[] GetColliderInfo(Collider collider)
         {
             var rigidbody = collider.GetComponent<Rigidbody>();
+            var agent = collider.GetComponent<AgentBasic>();
             var transform = collider.transform;
         
             var pos = transform.localPosition;
             var velocity = rigidbody.velocity;
+
+            var acceleration = velocity - agent.PreviousVelocity;
+            // TODO: add acceleration info, make it switchable
             
             return new[] {pos.x, pos.z, velocity.x, velocity.z};
         }

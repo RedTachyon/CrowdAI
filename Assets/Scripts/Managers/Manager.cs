@@ -165,7 +165,7 @@ namespace Managers
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
             IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
-            initializer.PlaceAgents(transform, Params.SpawnScale, new List<Vector3>());
+            initializer.PlaceAgents(transform, Params.SpawnScale, initializer.GetObstacles());
 
 
             
@@ -219,7 +219,8 @@ namespace Managers
             
             // Debug.Log(Time.fixedDeltaTime);
             Dictionary<string, float> episodeStats = null;
-            if (Timestep >= maxStep * decisionFrequency)
+            // Reset the episode if time runs out, or if all agents have reached their goals (and early finish is enabled)
+            if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
             {
                 episodeStats = GetEpisodeStats();
                 if (Params.SavePath != "") WriteTrajectory();
@@ -408,7 +409,7 @@ namespace Managers
             int agents;
             agents = val < 0 ? numAgents : Mathf.RoundToInt(val);
 
-            return agents;
+            return Math.Max(agents, 1);
         }
 
         private void OnDestroy()

@@ -113,6 +113,9 @@ public class Params : MonoBehaviour
     public string savePath = "";
     public static string SavePath => Get("save_path", Instance.savePath);
     
+    public bool earlyFinish = false;
+    public static bool EarlyFinish => Convert.ToBoolean(Get("early_finish", Instance.earlyFinish ? 1f : 0f));
+    
     [Header("Agent settings")]
 
     public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;

@@ -54,10 +54,10 @@ namespace Observers
         {
             
             // Collect Buffer observations
-            const int layerMask = 1 << 3; // Only look at the Agent layer
+            LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
-                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                    .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents 
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
                     .Select(c => GetColliderInfo(transform, c))
                     .Take(Params.SightAgents);

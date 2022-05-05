@@ -22,7 +22,7 @@ namespace Dynamics
             
             
             var velocity = new Vector3(vectorAction.x, 0, vectorAction.y);
-            velocity = velocity * maxSpeed;
+            velocity *= maxSpeed;
             // velocity = velocity.normalized * moveSpeed;
             // velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 

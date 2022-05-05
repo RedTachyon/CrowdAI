@@ -6,6 +6,7 @@ namespace Initializers
     public interface IInitializer
     {
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles);
+        public List<Vector3> GetObstacles();
     }
 
     public enum InitializerEnum
@@ -19,15 +20,21 @@ namespace Initializers
     
     public static class Mapper
     {
+        // Cache the dataless initializers
+        private static IInitializer _random = new Random();
+        private static IInitializer _circle = new Circle();
+        private static IInitializer _crossway = new Crossway();
+        private static IInitializer _corridor = new Corridor();
+        
         public static IInitializer GetInitializer(InitializerEnum initializerType, string path = null)
         {
             IInitializer initializer = initializerType switch
             {
-                InitializerEnum.Random => new Random(),
-                InitializerEnum.Circle => new Circle(),
-                InitializerEnum.Crossway => new Crossway(),
+                InitializerEnum.Random => _random,
+                InitializerEnum.Circle => _circle,
+                InitializerEnum.Crossway => _crossway,
+                InitializerEnum.Corridor => _corridor,
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
-                InitializerEnum.Corridor => new Corridor(),
                 _ => null
             };
 

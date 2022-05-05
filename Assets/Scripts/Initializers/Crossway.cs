@@ -76,7 +76,7 @@ namespace Initializers
                 if (Params.SharedGoal)
                 {
                     goalPosition = goalOffset.normalized * 10f;
-                    goal.localScale = new Vector3(3, 1, 3);
+                    goal.localScale = new Vector3(3.5f, 1, 3.5f);
                 }
                 else
                 {
@@ -102,6 +102,11 @@ namespace Initializers
                 agentIdx++;
             }
 
+        }
+
+        public List<Vector3> GetObstacles()
+        {
+            return new List<Vector3>();
         }
     }
 }

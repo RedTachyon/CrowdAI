@@ -67,6 +67,7 @@ namespace Agents
         public Vector3 goalScale;
 
         private float _originalHeight;
+        private float _originalGoalHeight;
         
         [Space(10)]
         [Header("Debug metrics")]
@@ -98,6 +99,7 @@ namespace Agents
         private RaySensorComponent _rayPerceptionSensor;
 
         public Vector3 PreviousPosition { get; set; }
+        public Vector3 PreviousVelocity { get; set; }
 
         public override void Initialize()
         {
@@ -109,7 +111,9 @@ namespace Agents
             _bufferSensor = GetComponent<BufferSensorComponent>();
             _material = GetComponent<Renderer>().material;
             _originalColor = _material.color;
-            _originalHeight = transform.localScale.y;
+            _originalHeight = transform.localPosition.y;
+            _originalGoalHeight = goal.localPosition.y;
+            PreviousVelocity = Vector3.zero;
 
             // startY = transform.localPosition.y;
             
@@ -134,6 +138,8 @@ namespace Agents
         {
             base.OnEpisodeBegin();
             TeleportBack();
+            PreviousVelocity = Vector3.zero;
+
             CollectedGoal = false;
             energySpent = 0f;
             distanceTraversed = 0f;
@@ -150,12 +156,9 @@ namespace Agents
             };
             
             UpdateParams();
-
-            if (Params.EvaluationMode)
-            {
-                Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                Collider.enabled = true;
-            }
+            
+            Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+            Collider.enabled = true;
 
             _originalColor = _material.color;
         }
@@ -178,6 +181,8 @@ namespace Agents
         public override void OnActionReceived(ActionBuffers actions)
         {
             base.OnActionReceived(actions);
+            PreviousVelocity = Rigidbody.velocity;
+
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
             if (!CollectedGoal)
@@ -288,7 +293,7 @@ namespace Agents
             // Final updates
             PreviousPosition = transform.localPosition;
             Collision = 0;
-            _material.color = _originalColor;
+            // _material.color = _originalColor;
 
         }
 
@@ -317,7 +322,7 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
             // Debug.Log("Collision");
         
@@ -331,7 +336,7 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
             // Debug.Log("Collision");
             
@@ -412,6 +417,13 @@ namespace Agents
             var newPosition = transform.localPosition;
             newPosition.y = -10f;
             transform.localPosition = newPosition;
+            
+            transform.localRotation *= Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
+            
+            var newGoalPosition = goal.transform.localPosition;
+            newGoalPosition.y = -10f;
+            goal.transform.localPosition = newGoalPosition;
+            
             // Debug.Log("New position: " + transform.localPosition);
         }
         
@@ -421,6 +433,11 @@ namespace Agents
             var newPosition = transform.localPosition;
             newPosition.y = _originalHeight;
             transform.localPosition = newPosition;
+            
+            var newGoalPosition = goal.transform.localPosition;
+            newGoalPosition.y = _originalGoalHeight;
+            goal.transform.localPosition = newGoalPosition;
+
             // Debug.Log("New position: " + transform.localPosition);
         }
         

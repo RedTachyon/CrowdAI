@@ -107,5 +107,10 @@ namespace Initializers
             }
 
         }
+
+        public List<Vector3> GetObstacles()
+        {
+            return new List<Vector3>();
+        }
     }
 }
