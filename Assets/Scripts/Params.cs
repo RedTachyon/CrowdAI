@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dynamics;
+using Initializers;
 using Managers;
 using Observers;
 using Unity.MLAgents;
@@ -82,6 +83,12 @@ public class Params : MonoBehaviour
     public int sightAgents = 10;
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
     
+    public float rayLength = 40f;
+    public static float RayLength => Get("ray_length", Instance.rayLength);
+    
+    public float rayDegrees = 90f;
+    public static float RayDegrees => Get("ray_degrees", Instance.rayDegrees);
+    
     public bool rayAgentVision = false;
     public static bool RayAgentVision => Convert.ToBoolean(Get("ray_agent_vision", Instance.rayAgentVision ? 1f : 0f));
     
@@ -123,6 +130,9 @@ public class Params : MonoBehaviour
 
     public ObserversEnum observer = ObserversEnum.Absolute;
     public static ObserversEnum Observer => Enum.Parse<ObserversEnum>(Get("observer", Instance.observer.ToString()));
+    
+    public InitializerEnum initializer = InitializerEnum.Random; // TODO: uniformize mode and initializer
+    public static InitializerEnum Initializer => Enum.Parse<InitializerEnum>(Get("mode", Instance.initializer.ToString()));
 
     private static float Get(string name, float defaultValue)
     {

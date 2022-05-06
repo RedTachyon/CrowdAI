@@ -246,11 +246,21 @@ namespace Agents
                 force *= 0.5f;
             }
             
-            if (Input.GetKey(KeyCode.Space))
-            {
-                Debug.Log("Disabling");
-            }
-            
+            // if (Input.GetKey(KeyCode.Space))
+            // {
+            //     Debug.Log("Hippity Hoppity");
+            //     // Debug.Log(transform.localRotation);
+            //     hopped = !hopped;
+            //     if (hopped)
+            //     {
+            //         TeleportAway();
+            //     }
+            //     else
+            //     {
+            //         TeleportBack();
+            //     }
+            // }
+            //
             
             // Debug.Log(force.magnitude);
             
@@ -363,13 +373,15 @@ namespace Agents
             _squasher = Squasher.GetSquasher(squasherType);
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
-            
 
             _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
             if (Params.RayAgentVision) {
                 _rayPerceptionSensor.RayLayerMask |= (1 << LayerMask.NameToLayer("Agent"));
             }
-            
+
+            _rayPerceptionSensor.RayLength = Params.RayLength;
+            _rayPerceptionSensor.MaxRayDegrees = Params.RayDegrees;
+
 
         }
 
@@ -413,12 +425,12 @@ namespace Agents
         }
         public void TeleportAway()
         {
-            // Debug.Log("Teleporting away");
+            Debug.Log("Teleporting away");
             var newPosition = transform.localPosition;
             newPosition.y = -10f;
             transform.localPosition = newPosition;
             
-            transform.localRotation *= Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
+            transform.localRotation *= Quaternion.Euler(90f, 0f, 0f);
             
             var newGoalPosition = goal.transform.localPosition;
             newGoalPosition.y = -10f;
@@ -429,10 +441,16 @@ namespace Agents
         
         public void TeleportBack()
         {
-            // Debug.Log("Teleporting back");
+            Debug.Log("Teleporting back");
             var newPosition = transform.localPosition;
             newPosition.y = _originalHeight;
             transform.localPosition = newPosition;
+            
+            var newRotation = transform.localRotation;
+            newRotation.x = 0f;
+            newRotation.z = 0f;
+            transform.localRotation = newRotation;
+
             
             var newGoalPosition = goal.transform.localPosition;
             newGoalPosition.y = _originalGoalHeight;

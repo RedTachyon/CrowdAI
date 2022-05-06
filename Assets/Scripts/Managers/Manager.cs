@@ -18,7 +18,6 @@ namespace Managers
     {
         [Range(1, 100)]
         public int numAgents = 1;
-        public InitializerEnum mode;
         public string dataFileName;
 
         [Range(1, 1000)]
@@ -89,7 +88,6 @@ namespace Managers
             _initialized = true;
             
             // TODO: integrate this into Params.cs
-            mode = GetMode();
             numAgents = GetNumAgents();
 
             _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
@@ -164,7 +162,7 @@ namespace Managers
             
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
-            IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
+            IInitializer initializer = Mapper.GetInitializer(Params.Initializer, dataFileName);
             initializer.PlaceAgents(transform, Params.SpawnScale, initializer.GetObstacles());
 
 
@@ -375,33 +373,33 @@ namespace Managers
             // Debug.Log("Message allegedly sent");
         }
 
-        public InitializerEnum GetMode()
-        {
-            var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1f);
-            InitializerEnum currentMode;
-            if (val < -0.5f) // == -1f 
-            {
-                currentMode = mode;
-            }
-            else if (val < 0.5f) // == 0f
-            {
-                currentMode = InitializerEnum.Random;
-            } 
-            else if (val < 1.5f) // == 1f
-            {
-                currentMode = InitializerEnum.Circle;
-            }
-            else if (val < 2.5f) // == 2f
-            {
-                currentMode = InitializerEnum.Crossway;
-            }
-            else
-            {
-                currentMode = InitializerEnum.JsonInitializer;
-            }
-
-            return currentMode;
-        }
+        // public InitializerEnum GetMode()
+        // {
+        //     var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1f);
+        //     InitializerEnum currentMode;
+        //     if (val < -0.5f) // == -1f 
+        //     {
+        //         currentMode = mode;
+        //     }
+        //     else if (val < 0.5f) // == 0f
+        //     {
+        //         currentMode = InitializerEnum.Random;
+        //     } 
+        //     else if (val < 1.5f) // == 1f
+        //     {
+        //         currentMode = InitializerEnum.Circle;
+        //     }
+        //     else if (val < 2.5f) // == 2f
+        //     {
+        //         currentMode = InitializerEnum.Crossway;
+        //     }
+        //     else
+        //     {
+        //         currentMode = InitializerEnum.JsonInitializer;
+        //     }
+        //
+        //     return currentMode;
+        // }
 
         public int GetNumAgents()
         {

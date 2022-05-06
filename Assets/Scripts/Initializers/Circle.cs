@@ -27,8 +27,9 @@ namespace Initializers
             var numAgents = baseTransform.childCount;
 
             foreach (Transform agent in baseTransform)
-            {  
-                var goal = agent.GetComponent<AgentBasic>().goal;
+            {
+                var agentBasic = agent.GetComponent<AgentBasic>();
+                var goal = agentBasic.goal;
 
                 float r = size;
                 var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
@@ -42,6 +43,7 @@ namespace Initializers
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
+                goal.localScale = agentBasic.goalScale;
             
                 // Save the placed agents
                 placedAgents.Add(newPosition);

@@ -607,10 +607,12 @@ MonoBehaviour:
   e_w: 1.26
   sightRadius: 5
   sightAgents: 12
-  rayAgentVision: 0
+  rayLength: 10
+  rayDegrees: 90
+  rayAgentVision: 1
   spawnNoiseScale: 0.5
   spawnScale: 8
-  gridSpawn: 0
+  gridSpawn: 1
   groupSpawnScale: 1.5
   enableObstacles: 1
   sharedGoal: 1
@@ -619,6 +621,7 @@ MonoBehaviour:
   earlyFinish: 1
   dynamics: 2
   observer: 2
+  initializer: 4
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -5376,8 +5379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 18
-  mode: 0
+  numAgents: 32
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10
@@ -5542,10 +5544,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RaySensor
   m_DetectableTags: []
-  m_RaysPerDirection: 7
-  m_MaxRayDegrees: 90
+  m_RaysPerDirection: 50
+  m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
-  m_RayLength: 20
+  m_RayLength: 40
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967240

@@ -238,21 +238,6 @@ namespace Sensors
         /// Greater than 90 degrees will go backwards.
         /// </param>
         /// <returns></returns>
-        internal static float[] GetRayAnglesOld(int raysPerDirection, float maxRayDegrees)
-        {
-            // Example:
-            // { 90, 90 - delta, 90 + delta, 90 - 2*delta, 90 + 2*delta }
-            var anglesOut = new float[2 * raysPerDirection + 1];
-            var delta = maxRayDegrees / raysPerDirection;
-            anglesOut[0] = 90f;
-            for (var i = 0; i < raysPerDirection; i++)
-            {
-                anglesOut[2 * i + 1] = 90 - (i + 1) * delta;
-                anglesOut[2 * i + 2] = 90 + (i + 1) * delta;
-            }
-            return anglesOut;
-        }
-        
         internal static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
         {
             // Example:

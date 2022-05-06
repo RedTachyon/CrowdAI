@@ -26,8 +26,9 @@ namespace Initializers
             foreach (Transform agent in baseTransform)
             {
                 // Debug.Log($"Forbidden positions: {placedAgents.Count}");
-                var goal = agent.GetComponent<AgentBasic>().goal;
-
+                var agentBasic = agent.GetComponent<AgentBasic>();
+                var goal = agentBasic.goal;
+                
                 var newPosition = MLUtils.NoncollidingPosition(
                     -size,
                     size,
@@ -49,6 +50,7 @@ namespace Initializers
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
+                goal.localScale = agentBasic.goalScale;
             
                 // Save the placed agents
                 placedAgents.Add(newPosition);

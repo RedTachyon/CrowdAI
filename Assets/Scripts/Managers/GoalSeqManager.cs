@@ -48,7 +48,6 @@ namespace Managers
 
             _episodeNum++;
             _initialized = true;
-            mode = GetMode();
         
             numAgents = GetNumAgents();
 
@@ -119,7 +118,7 @@ namespace Managers
             
             // Find the right locations for all agents
             Debug.Log($"Total agents: {transform.childCount}");
-            IInitializer initializer = Mapper.GetInitializer(mode, dataFileName);
+            IInitializer initializer = Mapper.GetInitializer(Params.Initializer, dataFileName);
             initializer.PlaceAgents(transform, Params.SpawnScale, _obstaclePositions);
 
 

@@ -224,8 +224,8 @@ namespace Sensors
                 {
                     buffer[bufferOffset + HitTagIndex] = 1f;
                 }
-                buffer[bufferOffset + numDetectableTags] = HasHit ? 0f : 1f;
-                buffer[bufferOffset + numDetectableTags + 1] = HitFraction;
+                buffer[bufferOffset + numDetectableTags] = HasHit ? 1f : 0f;
+                buffer[bufferOffset + numDetectableTags + 1] = 1 - HitFraction;
             }
         }
 
