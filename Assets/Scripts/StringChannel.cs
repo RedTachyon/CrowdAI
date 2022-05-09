@@ -20,7 +20,7 @@ public class StringChannel : SideChannel
         var key = msg.ReadString();
         var value = msg.ReadString();
         _values[key] = value;
-        Debug.Log($"Received message: {key}: {value}");
+        // Debug.Log($"Received message: {key}: {value}");
         // Manager.Instance.savePath = receivedString;
     }
 

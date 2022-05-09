@@ -31,7 +31,7 @@ namespace Managers
 
         public StringChannel StringChannel;
         
-        // protected SimpleMultiAgentGroup _agentGroup;
+        protected SimpleMultiAgentGroup _agentGroup;
 
         protected bool _initialized;
         protected int _episodeNum;
@@ -63,12 +63,12 @@ namespace Managers
 
             var agent = GetComponentInChildren<AgentBasic>();
             goalScale = agent.goal.localScale;
-            // _agentGroup = new SimpleMultiAgentGroup();
+            _agentGroup = new SimpleMultiAgentGroup();
 
-            // foreach (Transform agent in transform)
-            // {
-            //     _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
-            // }
+            foreach (Transform _agent in transform)
+            {
+                _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
+            }
             
             StringChannel = new StringChannel();
             SideChannelManager.RegisterSideChannel(StringChannel);
@@ -98,8 +98,7 @@ namespace Managers
             _episodeNum++;
             _initialized = true;
             
-            // TODO: integrate this into Params.cs
-            numAgents = GetNumAgents();
+            numAgents = Params.NumAgents;
 
             _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
             _timeMemory = new float[maxStep * decisionFrequency];
@@ -118,16 +117,16 @@ namespace Managers
                 var currentGoal = currentAgent.GetComponent<AgentBasic>().goal;
                 currentGoal.gameObject.SetActive(active);
 
-                // Agent agent = currentAgent.GetComponent<Agent>();
+                Agent agent = currentAgent.GetComponent<Agent>();
 
-                // if (active)
-                // {
-                //     _agentGroup.RegisterAgent(agent);
-                // }
-                // else
-                // {
-                //     _agentGroup.UnregisterAgent(agent);
-                // }
+                if (active)
+                {
+                    _agentGroup.RegisterAgent(agent);
+                }
+                else
+                {
+                    _agentGroup.UnregisterAgent(agent);
+                }
             
             }
         
@@ -237,7 +236,7 @@ namespace Managers
 
                 Debug.Log("Resetting");
                 
-                // _agentGroup.EndGroupEpisode();
+                _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
 
@@ -412,14 +411,17 @@ namespace Managers
         //     return currentMode;
         // }
 
-        public int GetNumAgents()
-        {
-            var val = Academy.Instance.EnvironmentParameters.GetWithDefault("agents", -1f);
-            int agents;
-            agents = val < 0 ? numAgents : Mathf.RoundToInt(val);
-
-            return Math.Max(agents, 1);
-        }
+        // public int GetNumAgents()
+        // {
+        //     var val = Academy.Instance.EnvironmentParameters.GetWithDefault("agents", -1f);
+        //     Debug.Log("Requested number of agents: " + val);
+        //     int agents;
+        //     agents = val < 0 ? numAgents : Mathf.RoundToInt(val);
+        //
+        //     var newNumAgents = Math.Max(agents, 1);
+        //     Debug.Log("New number of agents: " + newNumAgents);
+        //     return newNumAgents;
+        // }
 
         private void OnDestroy()
         {

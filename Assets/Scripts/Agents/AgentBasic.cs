@@ -109,7 +109,7 @@ namespace Agents
             
             if (Params.DestroyRaycasts)
             {
-                Debug.Log("Destroying");
+                // Debug.Log("Destroying");
                 DestroyImmediate(_rayPerceptionSensor);
                 _rayPerceptionSensor = null;
             }
@@ -161,7 +161,7 @@ namespace Agents
         public override void OnEpisodeBegin()
         {
             base.OnEpisodeBegin();
-            Debug.Log("Starting episode");
+            // Debug.Log("Starting episode");
             TeleportBack();
             PreviousVelocity = Vector3.zero;
 

@@ -139,6 +139,9 @@ public class Params : MonoBehaviour
     public static bool EarlyFinish => Convert.ToBoolean(Get("early_finish", Instance.earlyFinish ? 1f : 0f));
     
     [Header("Agent settings")]
+    
+    public int numAgents = 10;
+    public static int NumAgents => Mathf.RoundToInt(Get("num_agents", Instance.numAgents));
 
     public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;
     public static DynamicsEnum Dynamics => Enum.Parse<DynamicsEnum>(Get("dynamics", Instance.dynamics.ToString()));
