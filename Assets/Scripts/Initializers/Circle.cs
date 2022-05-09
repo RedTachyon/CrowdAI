@@ -24,8 +24,10 @@ namespace Initializers
             var placedGoals = new List<Vector3>();
             var agentIdx = 0;
 
-            var numAgents = baseTransform.childCount;
-
+            var numAgents = baseTransform
+                .Cast<Transform>()
+                .Count(t => t.gameObject.activeInHierarchy);
+            
             foreach (Transform agent in baseTransform)
             {
                 var agentBasic = agent.GetComponent<AgentBasic>();
