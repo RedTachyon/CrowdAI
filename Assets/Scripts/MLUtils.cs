@@ -203,11 +203,11 @@ public class MLUtils
         return new Vector3(x, 0, z) * scale;
     }
 
-    public static bool Visible(Transform baseTransform, Transform targetTransform, float maxCosine)
+    public static bool Visible(Transform baseTransform, Transform targetTransform, float minCosine)
     {
         var direction = targetTransform.localPosition - baseTransform.localPosition;
         var cosine = Vector3.Dot(baseTransform.forward, direction.normalized);
-        return cosine >= maxCosine;
+        return cosine >= minCosine;
     }
     
 }

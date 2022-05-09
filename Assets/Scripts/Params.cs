@@ -86,8 +86,14 @@ public class Params : MonoBehaviour
     
     public float sightAngle = 180f;
     public static float SightAngle => Get("sight_angle", Instance.sightAngle);
-    public static float MaxCosine => Mathf.Cos(SightAngle * Mathf.Deg2Rad);
+    public static float MinCosine => Mathf.Cos(SightAngle * Mathf.Deg2Rad);
+    
+    public bool sightAcceleration = false;
+    public static bool SightAcceleration => Convert.ToBoolean(Get("sight_acceleration", Instance.sightAcceleration ? 1f : 0f));
 
+    public int raysPerDirection = 10; // Only at launch
+    public static int RaysPerDirection => Mathf.RoundToInt(Get("rays_per_direction", Instance.raysPerDirection));
+    
     public float rayLength = 40f;
     public static float RayLength => Get("ray_length", Instance.rayLength);
     
@@ -97,12 +103,8 @@ public class Params : MonoBehaviour
     // Whether rays should hit agents
     public bool rayAgentVision = false;
     public static bool RayAgentVision => Convert.ToBoolean(Get("ray_agent_vision", Instance.rayAgentVision ? 1f : 0f));
-
-
     
-
-    // WARNING! Not reversible
-    public bool destroyRaycasts = false;
+    public bool destroyRaycasts = false; // Only at launch
     public static bool DestroyRaycasts => Convert.ToBoolean(Get("destroy_raycasts", Instance.destroyRaycasts ? 1f : 0f));
     
     // Spawn

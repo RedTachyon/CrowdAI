@@ -47,7 +47,7 @@ namespace Observers
         }
         public int Size => 9;
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
         {
             // Collect Buffer observations
             LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
@@ -55,9 +55,9 @@ namespace Observers
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
                     .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents
-                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MaxCosine)) // Cone of vision
+                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MinCosine)) // Cone of vision
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
-                    .Select(GetColliderInfo)
+                    .Select(c => GetColliderInfo(c, useAcceleration))
                     .Take(Params.SightAgents);
         
             // Debug.Log(nearbyObjects);
@@ -68,19 +68,31 @@ namespace Observers
             }
         }
 
-        private static float[] GetColliderInfo(Collider collider)
+        private static float[] GetColliderInfo(Collider collider, bool useAcceleration)
         {
             var rigidbody = collider.GetComponent<Rigidbody>();
-            var agent = collider.GetComponent<AgentBasic>();
             var transform = collider.transform;
         
             var pos = transform.localPosition;
             var velocity = rigidbody.velocity;
 
-            var acceleration = velocity - agent.PreviousVelocity;
-            // TODO: add acceleration info, make it switchable
-            
-            return new[] {pos.x, pos.z, velocity.x, velocity.z};
+            float[] obs;
+            if (useAcceleration)
+            {
+                var agent = collider.GetComponent<AgentBasic>();
+                var acceleration = agent == null
+                    ? Vector3.zero
+                    : velocity - agent.PreviousVelocity;
+
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, acceleration.x, acceleration.z};
+            }
+            else
+            {
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z};
+            }
+
+
+            return obs;
         }
     }
 

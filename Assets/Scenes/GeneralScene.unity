@@ -608,6 +608,8 @@ MonoBehaviour:
   sightRadius: 5
   sightAgents: 12
   sightAngle: 180
+  sightAcceleration: 1
+  raysPerDirection: 10
   rayLength: 10
   rayDegrees: 90
   rayAgentVision: 1
@@ -5764,7 +5766,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &8842830052760705007
 MeshRenderer:
   m_ObjectHideFlags: 0

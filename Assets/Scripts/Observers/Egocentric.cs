@@ -53,15 +53,15 @@ namespace Observers
         }
         public int Size => 9;
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
         {
             LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
                     .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents
-                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MaxCosine)) // Cone of vision
+                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MinCosine)) // Cone of vision
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
-                    .Select(c => GetColliderInfo(transform, c))
+                    .Select(c => GetColliderInfo(transform, c, useAcceleration))
                     .Take(Params.SightAgents);
         
             // Debug.Log(nearbyObjects);
@@ -72,7 +72,7 @@ namespace Observers
             }
         }
 
-        public static float[] GetColliderInfo(Transform baseTransform, Collider collider)
+        public static float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
         {
             
             var rigidbody = collider.GetComponent<Rigidbody>();
@@ -84,10 +84,25 @@ namespace Observers
             var rotation = baseTransform.localRotation;
             pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
             velocity = Quaternion.Inverse(rotation) * velocity;
-        
-            
-        
-            return new[] {pos.x, pos.z, velocity.x, velocity.z};
+
+            float[] obs;
+
+            if (useAcceleration)
+            {
+                var agent = collider.GetComponent<AgentBasic>();
+                var acceleration = agent == null
+                    ? Vector3.zero
+                    : Quaternion.Inverse(rotation) * (velocity - agent.PreviousVelocity);
+
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, acceleration.x, acceleration.z};
+            }
+            else
+            {
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z};
+            }
+
+
+            return obs;
         }
     }
 }

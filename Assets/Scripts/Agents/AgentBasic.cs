@@ -81,6 +81,8 @@ namespace Agents
 
         public Dictionary<string, float> rewardParts;
 
+        private bool _observeAcceleration = false;
+
         // Debug variables
 
         public float collisionReward;
@@ -105,14 +107,26 @@ namespace Agents
         {
             _rayPerceptionSensor = GetComponent<RaySensorComponent>();
             
-            // NOTE: problem is with the OnInspectorGUI thing
-
             if (Params.DestroyRaycasts)
             {
                 Debug.Log("Destroying");
                 DestroyImmediate(_rayPerceptionSensor);
                 _rayPerceptionSensor = null;
             }
+
+            if (_rayPerceptionSensor != null)
+                _rayPerceptionSensor.RaysPerDirection = Params.RaysPerDirection;
+            
+
+            _observeAcceleration = Params.SightAcceleration;
+            _bufferSensor = GetComponent<BufferSensorComponent>();
+            
+            if (_observeAcceleration)
+                _bufferSensor.ObservableSize = 6;
+            else 
+                _bufferSensor.ObservableSize = 4;
+
+
         }
 
         public override void Initialize()
@@ -121,23 +135,12 @@ namespace Agents
         
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
-            _bufferSensor = GetComponent<BufferSensorComponent>();
             _material = GetComponent<Renderer>().material;
             _originalColor = _material.color;
             _originalHeight = transform.localPosition.y;
             _originalGoalHeight = goal.localPosition.y;
             PreviousVelocity = Vector3.zero;
-            // _rayPerceptionSensor = GetComponent<RaySensorComponent>();
-            //
-            // if (Params.DestroyRaycasts)
-            // {
-            //     Debug.Log("Destroying");
-            //     Destroy(_rayPerceptionSensor);
-            //     _rayPerceptionSensor = null;
-            // }
 
-            // startY = transform.localPosition.y;
-            
             UpdateParams();
 
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
@@ -203,7 +206,6 @@ namespace Agents
         public override void OnActionReceived(ActionBuffers actions)
         {
             base.OnActionReceived(actions);
-            PreviousVelocity = Rigidbody.velocity;
 
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
@@ -292,7 +294,7 @@ namespace Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            base.CollectObservations(sensor);
+
             // Debug.Log($"Collected goal? {CollectedGoal}");
 
             var reward = _rewarder.ComputeReward(transform);
@@ -303,7 +305,9 @@ namespace Agents
             
             _observer.Observe(sensor, transform);
 
-            _observer.ObserveAgents(_bufferSensor, transform);
+            _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            // Debug.Log($"Previous velocity: {PreviousVelocity}");
+            // Debug.Log($"Current velocity: {Rigidbody.velocity}");
             
 
             // Draw some debugging lines
@@ -324,6 +328,8 @@ namespace Agents
         
             // Final updates
             PreviousPosition = transform.localPosition;
+            PreviousVelocity = Rigidbody.velocity;
+
             Collision = 0;
             // _material.color = _originalColor;
 
