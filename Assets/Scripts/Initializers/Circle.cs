@@ -43,7 +43,7 @@ namespace Initializers
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
-                goal.localScale = agentBasic.goalScale;
+                goal.localScale = Manager.Instance.goalScale;
             
                 // Save the placed agents
                 placedAgents.Add(newPosition);

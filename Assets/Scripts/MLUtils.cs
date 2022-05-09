@@ -202,4 +202,12 @@ public class MLUtils
         var z = Random.Range(-1f, 1f);
         return new Vector3(x, 0, z) * scale;
     }
+
+    public static bool Visible(Transform baseTransform, Transform targetTransform, float maxCosine)
+    {
+        var direction = targetTransform.localPosition - baseTransform.localPosition;
+        var cosine = Vector3.Dot(baseTransform.forward, direction.normalized);
+        return cosine >= maxCosine;
+    }
+    
 }

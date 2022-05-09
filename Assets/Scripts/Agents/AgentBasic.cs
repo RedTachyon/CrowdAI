@@ -96,10 +96,24 @@ namespace Agents
         public bool debug;
         
         
-        private RaySensorComponent _rayPerceptionSensor;
+        [CanBeNull] private RaySensorComponent _rayPerceptionSensor;
 
         public Vector3 PreviousPosition { get; set; }
         public Vector3 PreviousVelocity { get; set; }
+
+        private void Awake()
+        {
+            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
+            
+            // NOTE: problem is with the OnInspectorGUI thing
+
+            if (Params.DestroyRaycasts)
+            {
+                Debug.Log("Destroying");
+                DestroyImmediate(_rayPerceptionSensor);
+                _rayPerceptionSensor = null;
+            }
+        }
 
         public override void Initialize()
         {
@@ -107,13 +121,20 @@ namespace Agents
         
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
-            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
             _bufferSensor = GetComponent<BufferSensorComponent>();
             _material = GetComponent<Renderer>().material;
             _originalColor = _material.color;
             _originalHeight = transform.localPosition.y;
             _originalGoalHeight = goal.localPosition.y;
             PreviousVelocity = Vector3.zero;
+            // _rayPerceptionSensor = GetComponent<RaySensorComponent>();
+            //
+            // if (Params.DestroyRaycasts)
+            // {
+            //     Debug.Log("Destroying");
+            //     Destroy(_rayPerceptionSensor);
+            //     _rayPerceptionSensor = null;
+            // }
 
             // startY = transform.localPosition.y;
             
@@ -137,6 +158,7 @@ namespace Agents
         public override void OnEpisodeBegin()
         {
             base.OnEpisodeBegin();
+            Debug.Log("Starting episode");
             TeleportBack();
             PreviousVelocity = Vector3.zero;
 
@@ -374,15 +396,20 @@ namespace Agents
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
 
-            _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
-            if (Params.RayAgentVision) {
-                _rayPerceptionSensor.RayLayerMask |= (1 << LayerMask.NameToLayer("Agent"));
+            if (_rayPerceptionSensor != null)
+            {
+
+                _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
+
+                if (Params.RayAgentVision)
+                {
+                    _rayPerceptionSensor.RayLayerMask |= (1 << LayerMask.NameToLayer("Agent"));
+
+                    _rayPerceptionSensor.RayLength = Params.RayLength;
+                    _rayPerceptionSensor.MaxRayDegrees = Params.RayDegrees;
+
+                }
             }
-
-            _rayPerceptionSensor.RayLength = Params.RayLength;
-            _rayPerceptionSensor.MaxRayDegrees = Params.RayDegrees;
-
-
         }
 
         private void DLog(object message)
@@ -425,7 +452,7 @@ namespace Agents
         }
         public void TeleportAway()
         {
-            Debug.Log("Teleporting away");
+            // Debug.Log("Teleporting away");
             var newPosition = transform.localPosition;
             newPosition.y = -10f;
             transform.localPosition = newPosition;
@@ -441,7 +468,7 @@ namespace Agents
         
         public void TeleportBack()
         {
-            Debug.Log("Teleporting back");
+            // Debug.Log("Teleporting back");
             var newPosition = transform.localPosition;
             newPosition.y = _originalHeight;
             transform.localPosition = newPosition;

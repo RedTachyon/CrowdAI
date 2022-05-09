@@ -31,7 +31,7 @@ namespace Managers
 
         public StringChannel StringChannel;
         
-        protected SimpleMultiAgentGroup _agentGroup;
+        // protected SimpleMultiAgentGroup _agentGroup;
 
         protected bool _initialized;
         protected int _episodeNum;
@@ -40,6 +40,9 @@ namespace Managers
         protected float[] _timeMemory;
 
         public Transform AllObstacles;
+
+        [NonSerialized]
+        public Vector3 goalScale;
 
         protected static Manager _instance;
         public static Manager Instance => _instance;
@@ -57,26 +60,34 @@ namespace Managers
             
             _finished = new Dictionary<Transform, bool>();
             Academy.Instance.OnEnvironmentReset += ResetEpisode;
-            _agentGroup = new SimpleMultiAgentGroup();
 
-            foreach (Transform agent in transform)
-            {
-                _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
-            }
+            var agent = GetComponentInChildren<AgentBasic>();
+            goalScale = agent.goal.localScale;
+            // _agentGroup = new SimpleMultiAgentGroup();
+
+            // foreach (Transform agent in transform)
+            // {
+            //     _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
+            // }
             
             StringChannel = new StringChannel();
             SideChannelManager.RegisterSideChannel(StringChannel);
 
             _episodeNum = 0;
             
-            // AllObstacles = GameObject.Find("ObstacleSets").transform;
-            
-            // Debug.Log(Quaternion.AngleAxis(90, Vector3.up));
-            // Debug.Log(MLUtils.SquashUniform(new Vector2(0f ,1f)));
-            // Debug.Log(MLUtils.SquashUniform(new Vector2(1f ,0f)));
-            //
-            // Debug.Log(MLUtils.SquashUniform(new Vector2(Mathf.Sqrt(2)/2 ,Mathf.Sqrt(2)/2)));
 
+        }
+
+        private void Start()
+        {
+            if (false)
+            {
+                // This is disabled for deployment, but it's useful to run sometimes during development
+                var jsonParams = JsonUtility.ToJson(Params.Instance);
+                Debug.Log("Writing default params to file");
+                Debug.Log(jsonParams);
+                File.WriteAllText("params.json", jsonParams);
+            }
         }
 
         public virtual void ResetEpisode()
@@ -107,16 +118,16 @@ namespace Managers
                 var currentGoal = currentAgent.GetComponent<AgentBasic>().goal;
                 currentGoal.gameObject.SetActive(active);
 
-                Agent agent = currentAgent.GetComponent<Agent>();
+                // Agent agent = currentAgent.GetComponent<Agent>();
 
-                if (active)
-                {
-                    _agentGroup.RegisterAgent(agent);
-                }
-                else
-                {
-                    _agentGroup.UnregisterAgent(agent);
-                }
+                // if (active)
+                // {
+                //     _agentGroup.RegisterAgent(agent);
+                // }
+                // else
+                // {
+                //     _agentGroup.UnregisterAgent(agent);
+                // }
             
             }
         
@@ -126,7 +137,7 @@ namespace Managers
             // If necessary, add some more agents
             if (agentsToAdd > 0) Debug.Log($"Creating {agentsToAdd} new agents");
         
-            for (var i = 0; i < agentsToAdd; i++)
+            for (var i = currentNumAgents; i < numAgents; i++)
             {
                 var newAgent = Instantiate(baseAgent, transform);
                 var newGoal = Instantiate(baseGoal, baseGoal.parent);
@@ -226,7 +237,7 @@ namespace Managers
 
                 Debug.Log("Resetting");
                 
-                _agentGroup.EndGroupEpisode();
+                // _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }
 

@@ -71,14 +71,14 @@ namespace Managers
 
                 Agent agent = currentAgent.GetComponent<Agent>();
 
-                if (active)
-                {
-                    _agentGroup.RegisterAgent(agent);
-                }
-                else
-                {
-                    _agentGroup.UnregisterAgent(agent);
-                }
+                // if (active)
+                // {
+                //     _agentGroup.RegisterAgent(agent);
+                // }
+                // else
+                // {
+                //     _agentGroup.UnregisterAgent(agent);
+                // }
             
             }
         

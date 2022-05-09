@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -607,9 +607,11 @@ MonoBehaviour:
   e_w: 1.26
   sightRadius: 5
   sightAgents: 12
+  sightAngle: 180
   rayLength: 10
   rayDegrees: 90
   rayAgentVision: 1
+  destroyRaycasts: 0
   spawnNoiseScale: 0.5
   spawnScale: 8
   gridSpawn: 1
@@ -5544,7 +5546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RaySensor
   m_DetectableTags: []
-  m_RaysPerDirection: 50
+  m_RaysPerDirection: 10
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
   m_RayLength: 40

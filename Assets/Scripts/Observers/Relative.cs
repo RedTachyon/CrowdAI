@@ -57,7 +57,8 @@ namespace Observers
             LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
-                    .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents 
+                    .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents
+                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MaxCosine)) // Cone of vision
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
                     .Select(c => GetColliderInfo(transform, c))
                     .Take(Params.SightAgents);

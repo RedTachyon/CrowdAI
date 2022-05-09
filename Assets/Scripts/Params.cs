@@ -7,7 +7,7 @@ using Observers;
 using Unity.MLAgents;
 using UnityEngine;
 
-
+[Serializable]
 public class Params : MonoBehaviour
 {
 
@@ -17,6 +17,7 @@ public class Params : MonoBehaviour
     
     private void Awake()
     {
+        Debug.Log("Awaking params");
         if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
@@ -77,20 +78,32 @@ public class Params : MonoBehaviour
     
     // Everything else
     [Header("Observation settings")]
-    public float sightRadius = 5f;
+    public float sightRadius = 10f;
     public static float SightRadius => Get("sight_radius", Instance.sightRadius);
     
     public int sightAgents = 10;
     public static int SightAgents => Mathf.RoundToInt(Get("sight_agents", Instance.sightAgents));
     
+    public float sightAngle = 180f;
+    public static float SightAngle => Get("sight_angle", Instance.sightAngle);
+    public static float MaxCosine => Mathf.Cos(SightAngle * Mathf.Deg2Rad);
+
     public float rayLength = 40f;
     public static float RayLength => Get("ray_length", Instance.rayLength);
     
     public float rayDegrees = 90f;
     public static float RayDegrees => Get("ray_degrees", Instance.rayDegrees);
     
+    // Whether rays should hit agents
     public bool rayAgentVision = false;
     public static bool RayAgentVision => Convert.ToBoolean(Get("ray_agent_vision", Instance.rayAgentVision ? 1f : 0f));
+
+
+    
+
+    // WARNING! Not reversible
+    public bool destroyRaycasts = false;
+    public static bool DestroyRaycasts => Convert.ToBoolean(Get("destroy_raycasts", Instance.destroyRaycasts ? 1f : 0f));
     
     // Spawn
     [Header("Spawn settings")]
