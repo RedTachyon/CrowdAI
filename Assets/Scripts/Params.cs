@@ -140,6 +140,7 @@ public class Params : MonoBehaviour
     
     [Header("Agent settings")]
     
+    [Range(1, 100)]
     public int numAgents = 10;
     public static int NumAgents => Mathf.RoundToInt(Get("num_agents", Instance.numAgents));
 

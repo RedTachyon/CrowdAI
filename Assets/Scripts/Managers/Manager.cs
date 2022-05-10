@@ -16,8 +16,7 @@ namespace Managers
 
     public class Manager : MonoBehaviour
     {
-        [Range(1, 100)]
-        public int numAgents = 1;
+        private int numAgents = 1;
         public string dataFileName;
 
         [Range(1, 1000)]
@@ -61,11 +60,11 @@ namespace Managers
             _finished = new Dictionary<Transform, bool>();
             Academy.Instance.OnEnvironmentReset += ResetEpisode;
 
-            var agent = GetComponentInChildren<AgentBasic>();
-            goalScale = agent.goal.localScale;
+            goalScale = GetComponentInChildren<AgentBasic>().goal.localScale;
+            // goalScale = agent.goal.localScale;
             _agentGroup = new SimpleMultiAgentGroup();
 
-            foreach (Transform _agent in transform)
+            foreach (Transform agent in transform)
             {
                 _agentGroup.RegisterAgent(agent.GetComponent<Agent>());
             }
@@ -106,12 +105,15 @@ namespace Managers
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
             
+            _agentGroup.Dispose();
+            
             Debug.Log($"Number of children: {currentNumAgents}");
 
-            // Activate the right amount of agents
+            // Go through all existing agents, activate just enough of them
             for (var i = 0; i < currentNumAgents; i++)
             {
                 var active = i < numAgents;
+                
                 var currentAgent = transform.GetChild(i);
                 currentAgent.gameObject.SetActive(active);
                 var currentGoal = currentAgent.GetComponent<AgentBasic>().goal;
@@ -123,11 +125,7 @@ namespace Managers
                 {
                     _agentGroup.RegisterAgent(agent);
                 }
-                else
-                {
-                    _agentGroup.UnregisterAgent(agent);
-                }
-            
+
             }
         
             var baseAgent = GetComponentInChildren<AgentBasic>();
@@ -171,7 +169,7 @@ namespace Managers
             }
             
             // Find the right locations for all agents
-            Debug.Log($"Total agents: {transform.childCount}");
+            Debug.Log($"Total agents: {transform.Cast<Transform>().Count()}");
             IInitializer initializer = Mapper.GetInitializer(Params.Initializer, dataFileName);
             initializer.PlaceAgents(transform, Params.SpawnScale, initializer.GetObstacles());
 
@@ -240,7 +238,6 @@ namespace Managers
                 ResetEpisode();
             }
 
-            CollectStats(episodeStats);
 
             ///////////////////////
             // Log the positions //
@@ -269,6 +266,9 @@ namespace Managers
             if (Timestep % decisionFrequency == 0)
             {
                 // Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
+                
+                // Collect stats only when requesting a decision
+                CollectStats(episodeStats);
 
                 foreach (Transform agent in transform)
                 {
@@ -300,12 +300,14 @@ namespace Managers
             
             foreach (Transform agent in transform)
             {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                
                 energies.Add(agent.GetComponent<AgentBasic>().energySpent);
                 distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
                 successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
                 numAgents++;
             }
-
+            Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
             var stats = new Dictionary<string, float>
             {
                 ["e_energy"] = energies.Average(),
@@ -315,6 +317,8 @@ namespace Managers
             
             foreach (Transform agentTransform in transform)
             {
+                if (!agentTransform.gameObject.activeInHierarchy) continue;
+
                 var agent = agentTransform.GetComponent<AgentBasic>();
                 foreach (var rewardPart in agent.rewardParts)
                 {
@@ -342,7 +346,7 @@ namespace Managers
         
             foreach (Transform agent in transform)
             {
-                if (!agent.gameObject.activeSelf) continue;
+                if (!agent.gameObject.activeInHierarchy) continue;
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
                 var goalPosition = agent.GetComponent<AgentBasic>().goal.localPosition;
@@ -362,10 +366,13 @@ namespace Managers
                 collisions.Add(agent.GetComponent<AgentBasic>().Collision);
 
             }
+            
             var meanDist = distances.Average();
             var meanSpeed = speeds.Average();
             var finished =  dones.Average();
             var collision = (float) collisions.Average();
+            
+            // Debug.Log($"Mean distance count: {distances.Count}");
             // TODO: at some point uniformize e_name and m_name
             episodeStats ??= new Dictionary<string, float>();
             episodeStats["mean_distance"] = meanDist;
@@ -382,47 +389,7 @@ namespace Managers
             statsCommunicator.StatsChannel.SendMessage(message);
             // Debug.Log("Message allegedly sent");
         }
-
-        // public InitializerEnum GetMode()
-        // {
-        //     var val = Academy.Instance.EnvironmentParameters.GetWithDefault("mode", -1f);
-        //     InitializerEnum currentMode;
-        //     if (val < -0.5f) // == -1f 
-        //     {
-        //         currentMode = mode;
-        //     }
-        //     else if (val < 0.5f) // == 0f
-        //     {
-        //         currentMode = InitializerEnum.Random;
-        //     } 
-        //     else if (val < 1.5f) // == 1f
-        //     {
-        //         currentMode = InitializerEnum.Circle;
-        //     }
-        //     else if (val < 2.5f) // == 2f
-        //     {
-        //         currentMode = InitializerEnum.Crossway;
-        //     }
-        //     else
-        //     {
-        //         currentMode = InitializerEnum.JsonInitializer;
-        //     }
-        //
-        //     return currentMode;
-        // }
-
-        // public int GetNumAgents()
-        // {
-        //     var val = Academy.Instance.EnvironmentParameters.GetWithDefault("agents", -1f);
-        //     Debug.Log("Requested number of agents: " + val);
-        //     int agents;
-        //     agents = val < 0 ? numAgents : Mathf.RoundToInt(val);
-        //
-        //     var newNumAgents = Math.Max(agents, 1);
-        //     Debug.Log("New number of agents: " + newNumAgents);
-        //     return newNumAgents;
-        // }
-
+        
         private void OnDestroy()
         {
             if (Academy.IsInitialized)

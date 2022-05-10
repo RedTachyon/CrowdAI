@@ -25,6 +25,8 @@ namespace Initializers
 
             foreach (Transform agent in baseTransform)
             {
+                if (!agent.gameObject.activeInHierarchy) continue;
+
                 // Debug.Log($"Forbidden positions: {placedAgents.Count}");
                 var agentBasic = agent.GetComponent<AgentBasic>();
                 var goal = agentBasic.goal;

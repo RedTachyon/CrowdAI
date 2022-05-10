@@ -76,6 +76,8 @@ namespace Initializers
 
             foreach (Transform agent in baseTransform)
             {  
+                if (!agent.gameObject.activeInHierarchy) continue;
+
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
                 // var xSpawn = _spawnPoints[agentIdx];

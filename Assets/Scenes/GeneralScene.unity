@@ -623,9 +623,10 @@ MonoBehaviour:
   evaluationMode: 0
   savePath: 
   earlyFinish: 1
+  numAgents: 12
   dynamics: 2
   observer: 2
-  initializer: 4
+  initializer: 1
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -5383,7 +5384,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b537b241bda44de1acd4106f68171efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 32
   dataFileName: 12peds-1.json
   maxStep: 200
   decisionFrequency: 10

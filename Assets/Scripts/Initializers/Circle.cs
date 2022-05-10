@@ -30,6 +30,8 @@ namespace Initializers
             
             foreach (Transform agent in baseTransform)
             {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                
                 var agentBasic = agent.GetComponent<AgentBasic>();
                 var goal = agentBasic.goal;
 
@@ -59,6 +61,7 @@ namespace Initializers
                 
                 agentIdx++;
             }
+            Debug.Log($"Placed {agentIdx} agents");
             
         }
 
