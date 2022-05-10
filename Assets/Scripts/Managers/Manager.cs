@@ -346,7 +346,11 @@ namespace Managers
         
             foreach (Transform agent in transform)
             {
+                // Ignore inactive agents - not participating in the scene
                 if (!agent.gameObject.activeInHierarchy) continue;
+                // Ignore agents that reached the goal
+                if (agent.GetComponent<AgentBasic>().CollectedGoal) continue;
+                
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
                 var goalPosition = agent.GetComponent<AgentBasic>().goal.localPosition;
@@ -371,6 +375,8 @@ namespace Managers
             var meanSpeed = speeds.Average();
             var finished =  dones.Average();
             var collision = (float) collisions.Average();
+            
+            // TODO: Do not count metrics for inactive agents?
             
             // Debug.Log($"Mean distance count: {distances.Count}");
             // TODO: at some point uniformize e_name and m_name

@@ -346,7 +346,7 @@ namespace Agents
             
             if (Params.GoalSpeedThreshold <= 0f || currentSpeed < Params.GoalSpeedThreshold) {
                 AddReward(_rewarder.TriggerReward(transform, other, true));
-                FinishEpisode();
+                CollectGoal();
             }
             // Debug.Log("Trying to change color");
             // _material.color = Color.blue;
@@ -444,7 +444,7 @@ namespace Agents
             rewardParts[type] += reward;
         }
 
-        public void FinishEpisode()
+        public void CollectGoal()
         {
             CollectedGoal = true;
             Manager.Instance.ReachGoal(this);
