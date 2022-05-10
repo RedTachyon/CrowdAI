@@ -342,14 +342,17 @@ namespace Managers
             var distances = new List<float>();
             var speeds = new List<float>();
             var dones = new List<float>();
-            var collisions = new List<int>();
-        
+            var collisions = new List<float>();
+
+            var activeSpeeds = new List<float>();
+            
             foreach (Transform agent in transform)
             {
                 // Ignore inactive agents - not participating in the scene
                 if (!agent.gameObject.activeInHierarchy) continue;
                 // Ignore agents that reached the goal
-                if (agent.GetComponent<AgentBasic>().CollectedGoal) continue;
+                var agentBasic = agent.GetComponent<AgentBasic>();
+                // if (agentBasic.CollectedGoal) continue;
                 
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
@@ -361,6 +364,11 @@ namespace Managers
                 // Get speed
                 var speed = agent.GetComponent<Rigidbody>().velocity.magnitude;
                 speeds.Add(speed);
+                
+                if (!agentBasic.CollectedGoal)
+                {
+                    activeSpeeds.Add(speed);
+                }
             
                 // Debug.Log($"Stats from agent {agent.name}");
                 // Fraction of agents  that finished already
@@ -368,25 +376,24 @@ namespace Managers
                 // Debug.Log(_finished[agent]);
             
                 collisions.Add(agent.GetComponent<AgentBasic>().Collision);
-
             }
             
-            var meanDist = distances.Average();
-            var meanSpeed = speeds.Average();
-            var finished =  dones.Average();
-            var collision = (float) collisions.Average();
-            
-            // TODO: Do not count metrics for inactive agents?
-            
-            // Debug.Log($"Mean distance count: {distances.Count}");
             // TODO: at some point uniformize e_name and m_name
+
             episodeStats ??= new Dictionary<string, float>();
-            episodeStats["mean_distance"] = meanDist;
-            episodeStats["mean_speed"] = meanSpeed;
-            episodeStats["mean_finished"] = finished;
-            episodeStats["mean_collision"] = collision;
+
+            episodeStats["mean_distance"] = distances.Average();
+            episodeStats["mean_speed"] = speeds.Average();
+            episodeStats["mean_done"] = dones.Average();
+            episodeStats["mean_collision"] = collisions.Average();
+
+            if (activeSpeeds.Count > 0)
+                episodeStats["mean_active_speed"] = activeSpeeds.Average();
+
             
-        
+            
+
+
             // Debug.Log(collision);
 
             var message = MLUtils.MakeMessage(episodeStats);
