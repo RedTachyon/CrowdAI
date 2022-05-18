@@ -64,7 +64,7 @@ namespace Observers
                     .Select(c => GetColliderInfo(transform, c, useAcceleration))
                     .Take(Params.SightAgents);
         
-            // Debug.Log(nearbyObjects);
+            // Debug.Log($"Visible objects: {nearbyObjects.Count()}");
             foreach (var agentInfo in nearbyObjects)
             {
                 // Debug.Log(String.Join(",", agentInfo));

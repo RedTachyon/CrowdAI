@@ -185,6 +185,8 @@ namespace Managers
                 _finished[agent] = false;
                 agent.GetComponent<AgentBasic>().OnEpisodeBegin();
             }
+            Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
+            ScreenCapture.CaptureScreenshot("LastScreenshot.png");
 
         }
         public virtual void ReachGoal(Agent agent)
