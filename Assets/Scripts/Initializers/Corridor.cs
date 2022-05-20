@@ -85,7 +85,7 @@ namespace Initializers
                 if (Params.SharedGoal)
                 {
                     goalPosition = goalOffset.normalized * 10f;
-                    goal.localScale = new Vector3(3.5f, 1f, 3.5f);
+                    goal.localScale = new Vector3(4f, 1f, 4f);
                 }
                 else
                 {

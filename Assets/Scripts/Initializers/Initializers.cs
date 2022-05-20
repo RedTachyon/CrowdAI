@@ -15,8 +15,8 @@ namespace Initializers
         Circle,
         CircleBlock,
         Crossway,
-        JsonInitializer,
         Corridor,
+        JsonInitializer,
     }
     
     public static class Mapper
