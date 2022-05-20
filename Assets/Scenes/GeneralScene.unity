@@ -617,7 +617,7 @@ MonoBehaviour:
   spawnNoiseScale: 0
   spawnScale: 6
   gridSpawn: 1
-  groupSpawnScale: 1
+  groupSpawnScale: 1.5
   enableObstacles: 1
   blockScale: 3
   sharedGoal: 1
@@ -625,10 +625,10 @@ MonoBehaviour:
   savePath: 
   earlyFinish: 0
   niceColors: 1
-  numAgents: 70
+  numAgents: 72
   dynamics: 2
   observer: 2
-  initializer: 2
+  initializer: 3
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -694,10 +694,10 @@ Camera:
     width: 1
     height: 1
   near clip plane: 10
-  far clip plane: 1000
-  field of view: 44.3
-  orthographic: 0
-  orthographic size: 60
+  far clip plane: 30
+  field of view: 40
+  orthographic: 1
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
