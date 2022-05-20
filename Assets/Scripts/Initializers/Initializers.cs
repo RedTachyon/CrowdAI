@@ -13,6 +13,7 @@ namespace Initializers
     {
         Random,
         Circle,
+        CircleBlock,
         Crossway,
         JsonInitializer,
         Corridor,
@@ -23,6 +24,7 @@ namespace Initializers
         // Cache the dataless initializers
         private static IInitializer _random = new Random();
         private static IInitializer _circle = new Circle();
+        private static IInitializer _circleBlock = new CircleBlock();
         private static IInitializer _crossway = new Crossway();
         private static IInitializer _corridor = new Corridor();
         
@@ -32,6 +34,7 @@ namespace Initializers
             {
                 InitializerEnum.Random => _random,
                 InitializerEnum.Circle => _circle,
+                InitializerEnum.CircleBlock => _circleBlock,
                 InitializerEnum.Crossway => _crossway,
                 InitializerEnum.Corridor => _corridor,
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),

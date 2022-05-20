@@ -124,6 +124,10 @@ public class Params : MonoBehaviour
     public bool enableObstacles = true;
     public static bool EnableObstacles => Convert.ToBoolean(Get("enable_obstacles", Instance.enableObstacles ? 1f : 0f));
     
+    public float blockScale = 1f;
+    public static float BlockScale => Get("block_scale", Instance.blockScale);
+    
+    
     public bool sharedGoal;
     public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
 
@@ -137,7 +141,10 @@ public class Params : MonoBehaviour
     
     public bool earlyFinish = false;
     public static bool EarlyFinish => Convert.ToBoolean(Get("early_finish", Instance.earlyFinish ? 1f : 0f));
-    
+
+    public bool niceColors = true;
+    public static bool NiceColors => Convert.ToBoolean(Get("nice_colors", Instance.niceColors ? 1f : 0f));
+        
     [Header("Agent settings")]
     
     [Range(1, 100)]

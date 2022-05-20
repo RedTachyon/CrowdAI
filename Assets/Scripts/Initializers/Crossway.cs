@@ -49,7 +49,7 @@ namespace Initializers
                     zMax = squareSize;
                     goalOffset = new Vector3(15f, 0, 0);
                     newRotation = Quaternion.LookRotation(Vector3.right);
-                    agentBasic.SetColor(Color.green, true);
+                    if (Params.NiceColors) agentBasic.SetColor(Color.green, true);
                 }
                 else
                 {
@@ -59,7 +59,7 @@ namespace Initializers
                     zMax = -9f + 2 * squareSize;
                     goalOffset = new Vector3(0, 0, 15f);
                     newRotation = Quaternion.LookRotation(Vector3.forward);
-                    agentBasic.SetColor(Color.blue, true);
+                    if (Params.NiceColors) agentBasic.SetColor(Color.blue, true);
                 }
 
                 if (Params.GridSpawn)
