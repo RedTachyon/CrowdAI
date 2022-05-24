@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Agents;
+using Managers;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -75,6 +76,8 @@ namespace Initializers
 
             foreach (Transform agent in baseTransform)
             {  
+                if (!agent.gameObject.activeInHierarchy) continue;
+
                 var goal = agent.GetComponent<AgentBasic>().goal;
 
                 // var xSpawn = _spawnPoints[agentIdx];
@@ -92,6 +95,7 @@ namespace Initializers
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
+                goal.localScale = Manager.Instance.goalScale;
             
                 // Save the placed agents
                 placedAgents.Add(newPosition);
@@ -106,6 +110,11 @@ namespace Initializers
                 agentIdx++;
             }
             
+        }
+
+        public List<Vector3> GetObstacles()
+        {
+            return new List<Vector3>();
         }
     }
 }

@@ -4,7 +4,7 @@ using Unity.MLAgents;
 using UnityEngine;
 
 
-public class Boards : MonoBehaviour // TODO: make into another manager?
+public class Boards : MonoBehaviour
 {
 
     public float distance = 20;

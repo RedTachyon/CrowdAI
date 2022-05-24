@@ -30,7 +30,7 @@ namespace Observers
 
         }
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
         {
             
         }

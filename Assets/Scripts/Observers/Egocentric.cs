@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Observers
 {
-    public class RotRelative : IObserver
+    public class Egocentric : IObserver
     {
         public void Observe(VectorSensor sensor, Transform transform)
         {
@@ -53,17 +53,18 @@ namespace Observers
         }
         public int Size => 9;
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform)
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
         {
-            const int layerMask = 1 << 3; // Only look at the Agent layer
+            LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             var nearbyObjects =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
-                    .Where(c => c.CompareTag("Agent") & c.transform != transform) // Get only agents 
+                    .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents
+                    .Where(c => MLUtils.Visible(transform, c.transform, Params.MinCosine)) // Cone of vision
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
-                    .Select(c => GetColliderInfo(transform, c))
+                    .Select(c => GetColliderInfo(transform, c, useAcceleration))
                     .Take(Params.SightAgents);
         
-            // Debug.Log(nearbyObjects);
+            // Debug.Log($"Visible objects: {nearbyObjects.Count()}");
             foreach (var agentInfo in nearbyObjects)
             {
                 // Debug.Log(String.Join(",", agentInfo));
@@ -71,22 +72,37 @@ namespace Observers
             }
         }
 
-        public static float[] GetColliderInfo(Transform baseTransform, Collider collider)
+        public static float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
         {
             
             var rigidbody = collider.GetComponent<Rigidbody>();
             var transform = collider.transform;
-            
+
             var pos = transform.localPosition;
             var velocity = rigidbody.velocity;
 
             var rotation = baseTransform.localRotation;
             pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
             velocity = Quaternion.Inverse(rotation) * velocity;
-        
-            
-        
-            return new[] {pos.x, pos.z, velocity.x, velocity.z};
+
+            float[] obs;
+
+            if (useAcceleration)
+            {
+                var agent = collider.GetComponent<AgentBasic>();
+                var acceleration = agent == null
+                    ? Vector3.zero
+                    : Quaternion.Inverse(rotation) * (velocity - agent.PreviousVelocity);
+
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, acceleration.x, acceleration.z};
+            }
+            else
+            {
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z};
+            }
+
+
+            return obs;
         }
     }
 }

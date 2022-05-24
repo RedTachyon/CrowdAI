@@ -12,7 +12,10 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Reflection;
+using JetBrains.Annotations;
+using Sensors;
 using UnityEngine.PlayerLoop;
+// using RayPerceptionSensorComponent3D = Sensors.RaySensorComponent3D;
 
 // Proposed reward structure:
 // 16.5 total reward for approaching the goal
@@ -61,6 +64,10 @@ namespace Agents
 
 
         public Transform goal;
+        public Vector3 goalScale;
+
+        private float _originalHeight;
+        private float _originalGoalHeight;
         
         [Space(10)]
         [Header("Debug metrics")]
@@ -73,6 +80,8 @@ namespace Agents
         public float totalDistance;
 
         public Dictionary<string, float> rewardParts;
+
+        private bool _observeAcceleration = false;
 
         // Debug variables
 
@@ -87,8 +96,38 @@ namespace Agents
         public float speed;
 
         public bool debug;
+        
+        
+        [CanBeNull] private RaySensorComponent _rayPerceptionSensor;
 
         public Vector3 PreviousPosition { get; set; }
+        public Vector3 PreviousVelocity { get; set; }
+
+        private void Awake()
+        {
+            _rayPerceptionSensor = GetComponent<RaySensorComponent>();
+            
+            if (Params.DestroyRaycasts)
+            {
+                // Debug.Log("Destroying");
+                DestroyImmediate(_rayPerceptionSensor);
+                _rayPerceptionSensor = null;
+            }
+
+            if (_rayPerceptionSensor != null)
+                _rayPerceptionSensor.RaysPerDirection = Params.RaysPerDirection;
+            
+
+            _observeAcceleration = Params.SightAcceleration;
+            _bufferSensor = GetComponent<BufferSensorComponent>();
+            
+            if (_observeAcceleration)
+                _bufferSensor.ObservableSize = 6;
+            else 
+                _bufferSensor.ObservableSize = 4;
+
+
+        }
 
         public override void Initialize()
         {
@@ -96,24 +135,36 @@ namespace Agents
         
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
-            // startY = transform.localPosition.y;
-
+            _material = GetComponent<Renderer>().material;
+            _originalColor = _material.color;
+            _originalHeight = transform.localPosition.y;
+            _originalGoalHeight = goal.localPosition.y;
+            PreviousVelocity = Vector3.zero;
 
             UpdateParams();
 
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
         
 
-            _material = GetComponent<Renderer>().material;
-            _originalColor = _material.color;
-            _bufferSensor = GetComponent<BufferSensorComponent>();
             _bufferSensor.MaxNumObservables = Params.SightAgents;
+
+            goalScale = goal.localScale;
+
+
+            // Debug.Log($"Ray perception sensor: {_rayPerceptionSensor}");
+            // Destroy(_rayPerceptionSensor);
+            // Destroy(_bufferSensor);
+            // _rayPerceptionSensor = null;
 
         }
 
         public override void OnEpisodeBegin()
         {
             base.OnEpisodeBegin();
+            // Debug.Log("Starting episode");
+            TeleportBack();
+            PreviousVelocity = Vector3.zero;
+
             CollectedGoal = false;
             energySpent = 0f;
             distanceTraversed = 0f;
@@ -130,12 +181,9 @@ namespace Agents
             };
             
             UpdateParams();
-
-            if (Params.EvaluationMode)
-            {
-                Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                // Collider.enabled = true;
-            }
+            
+            Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+            Collider.enabled = true;
 
             _originalColor = _material.color;
         }
@@ -158,9 +206,10 @@ namespace Agents
         public override void OnActionReceived(ActionBuffers actions)
         {
             base.OnActionReceived(actions);
+
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
-            if (!CollectedGoal || !Params.EvaluationMode)
+            if (!CollectedGoal)
             {
                 _dynamics.ProcessActions(actions, Rigidbody, maxSpeed, maxAcceleration, rotationSpeed, _squasher);
             }
@@ -221,6 +270,22 @@ namespace Agents
                 force *= 0.5f;
             }
             
+            // if (Input.GetKey(KeyCode.Space))
+            // {
+            //     Debug.Log("Hippity Hoppity");
+            //     // Debug.Log(transform.localRotation);
+            //     hopped = !hopped;
+            //     if (hopped)
+            //     {
+            //         TeleportAway();
+            //     }
+            //     else
+            //     {
+            //         TeleportBack();
+            //     }
+            // }
+            //
+            
             // Debug.Log(force.magnitude);
             
             cActionsOut[0] = force.x;
@@ -229,7 +294,7 @@ namespace Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            base.CollectObservations(sensor);
+
             // Debug.Log($"Collected goal? {CollectedGoal}");
 
             var reward = _rewarder.ComputeReward(transform);
@@ -240,7 +305,9 @@ namespace Agents
             
             _observer.Observe(sensor, transform);
 
-            _observer.ObserveAgents(_bufferSensor, transform);
+            _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            // Debug.Log($"Previous velocity: {PreviousVelocity}");
+            // Debug.Log($"Current velocity: {Rigidbody.velocity}");
             
 
             // Draw some debugging lines
@@ -261,8 +328,10 @@ namespace Agents
         
             // Final updates
             PreviousPosition = transform.localPosition;
+            PreviousVelocity = Rigidbody.velocity;
+
             Collision = 0;
-            _material.color = _originalColor;
+            // _material.color = _originalColor;
 
         }
 
@@ -275,15 +344,9 @@ namespace Agents
 
             var currentSpeed = Rigidbody.velocity.magnitude;
             
-            if (Params.GoalSpeedThreshold < 0f || currentSpeed < Params.GoalSpeedThreshold) {
+            if (Params.GoalSpeedThreshold <= 0f || currentSpeed < Params.GoalSpeedThreshold) {
                 AddReward(_rewarder.TriggerReward(transform, other, true));
-                CollectedGoal = true;
-                Manager.Instance.ReachGoal(this);
-            }
-            if (Params.EvaluationMode)
-            {
-                Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-                // Collider.enabled = false;
+                CollectGoal();
             }
             // Debug.Log("Trying to change color");
             // _material.color = Color.blue;
@@ -297,9 +360,9 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
-            Debug.Log("Collision");
+            // Debug.Log("Collision");
         
             AddReward(_rewarder.CollisionReward(transform, other, false));
         }
@@ -311,9 +374,9 @@ namespace Agents
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
                 Collision = 1;
-                _material.color = Color.red;
+                // _material.color = Color.red;
             }
-            Debug.Log("Collision");
+            // Debug.Log("Collision");
             
             // Debug.Log(other.impulse.magnitude / Time.fixedDeltaTime);
         
@@ -339,6 +402,20 @@ namespace Agents
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;
 
+            if (_rayPerceptionSensor != null)
+            {
+
+                _rayPerceptionSensor.RayLayerMask = (1 << LayerMask.NameToLayer("Obstacle"));
+
+                if (Params.RayAgentVision)
+                {
+                    _rayPerceptionSensor.RayLayerMask |= (1 << LayerMask.NameToLayer("Agent"));
+
+                    _rayPerceptionSensor.RayLength = Params.RayLength;
+                    _rayPerceptionSensor.MaxRayDegrees = Params.RayDegrees;
+
+                }
+            }
         }
 
         private void DLog(object message)
@@ -366,5 +443,54 @@ namespace Agents
         {
             rewardParts[type] += reward;
         }
+
+        public void CollectGoal()
+        {
+            CollectedGoal = true;
+            Manager.Instance.ReachGoal(this);
+            Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            Collider.enabled = false;
+
+            if (!Params.EvaluationMode)
+            {
+                TeleportAway();
+            }
+        }
+        public void TeleportAway()
+        {
+            // Debug.Log("Teleporting away");
+            var newPosition = transform.localPosition;
+            newPosition.y = -10f;
+            transform.localPosition = newPosition;
+            
+            transform.localRotation *= Quaternion.Euler(90f, 0f, 0f);
+            
+            var newGoalPosition = goal.transform.localPosition;
+            newGoalPosition.y = -10f;
+            goal.transform.localPosition = newGoalPosition;
+            
+            // Debug.Log("New position: " + transform.localPosition);
+        }
+        
+        public void TeleportBack()
+        {
+            // Debug.Log("Teleporting back");
+            var newPosition = transform.localPosition;
+            newPosition.y = _originalHeight;
+            transform.localPosition = newPosition;
+            
+            var newRotation = transform.localRotation;
+            newRotation.x = 0f;
+            newRotation.z = 0f;
+            transform.localRotation = newRotation;
+
+            
+            var newGoalPosition = goal.transform.localPosition;
+            newGoalPosition.y = _originalGoalHeight;
+            goal.transform.localPosition = newGoalPosition;
+
+            // Debug.Log("New position: " + transform.localPosition);
+        }
+        
     }
 }

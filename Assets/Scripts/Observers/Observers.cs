@@ -8,7 +8,7 @@ namespace Observers
     {
         public void Observe(VectorSensor sensor, Transform transform);
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform);
+        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration);
 
         public int Size
         {
@@ -20,7 +20,7 @@ namespace Observers
     {
         Absolute,
         Relative,
-        RotRelative,
+        Egocentric,
         Proprioceptive,
     }
     
@@ -32,7 +32,7 @@ namespace Observers
             {
                 ObserversEnum.Absolute => new Absolute(),
                 ObserversEnum.Relative => new Relative(),
-                ObserversEnum.RotRelative => new RotRelative(),
+                ObserversEnum.Egocentric => new Egocentric(),
                 ObserversEnum.Proprioceptive => new Proprioceptive(),
                 _ => null
             };

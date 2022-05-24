@@ -6,19 +6,23 @@ using UnityEngine;
 
 namespace Initializers
 {
-    public class Circle : IInitializer
+    public class CircleBlock : IInitializer
     {        
         private readonly Transform _ownObstacles;
         private readonly List<Vector3> _obstaclePositions;
 
-        public Circle()
+        public CircleBlock()
         {
-            _ownObstacles = Manager.Instance.AllObstacles.Find("Circle");
+            _ownObstacles = Manager.Instance.AllObstacles.Find("CircleBlock");
             _obstaclePositions = _ownObstacles.Cast<Transform>().Select(obstacle => obstacle.transform.position).ToList();
         }
         public void PlaceAgents(Transform baseTransform, float size, List<Vector3> obstacles)
         {
             _ownObstacles.gameObject.SetActive(Params.EnableObstacles);
+            foreach (Transform obstacle in _ownObstacles)
+            {
+                obstacle.localScale = new Vector3(Params.BlockScale, 1, Params.BlockScale);
+            }
 
             var placedAgents = new List<Vector3>();
             var placedGoals = new List<Vector3>();
@@ -62,7 +66,7 @@ namespace Initializers
                 if (Params.NiceColors)
                 {
                     float agentFrac = (float) agentIdx / numAgents;
-                    var newColor = new Color(0, agentFrac, 1f - agentFrac);
+                    var newColor = new Color(0f, agentFrac, 1f - agentFrac);
                     agentBasic.SetColor(newColor, true);
                 }
                 
