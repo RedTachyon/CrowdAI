@@ -16,6 +16,7 @@ namespace Initializers
         CircleBlock,
         Crossway,
         Corridor,
+        Choke,
         JsonInitializer,
     }
     
@@ -27,6 +28,7 @@ namespace Initializers
         private static IInitializer _circleBlock = new CircleBlock();
         private static IInitializer _crossway = new Crossway();
         private static IInitializer _corridor = new Corridor();
+        private static IInitializer _choke = new Choke();
         
         public static IInitializer GetInitializer(InitializerEnum initializerType, string path = null)
         {
@@ -37,6 +39,7 @@ namespace Initializers
                 InitializerEnum.CircleBlock => _circleBlock,
                 InitializerEnum.Crossway => _crossway,
                 InitializerEnum.Corridor => _corridor,
+                InitializerEnum.Choke => _choke,
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
                 _ => null
             };
