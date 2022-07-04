@@ -618,7 +618,7 @@ MonoBehaviour:
   spawnScale: 6
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 1
+  enableObstacles: 0
   blockScale: 3
   sharedGoal: 1
   evaluationMode: 0
@@ -628,7 +628,7 @@ MonoBehaviour:
   numAgents: 30
   dynamics: 2
   observer: 2
-  initializer: 5
+  initializer: 1
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -3345,7 +3345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1610611394
 Transform:
   m_ObjectHideFlags: 0
