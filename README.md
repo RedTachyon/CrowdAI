@@ -1,5 +1,8 @@
 # Crowd AI
 
-This will be a PhD thesis. Soon.
+This repository contains the crowd simulation setup that my PhD research is largely based on.
 
-There are two main components - the Unity project (same root) and the Python training code (in `./training`)
+Publications that use this project:
+- Understanding Reinforcement Learned Crowds (v6) (MIG 2022/Computers & Graphics)
+
+A more detailed documentation will be added soon.
