@@ -75,6 +75,9 @@ public class Params : MonoBehaviour
 
     public float e_w = 1.26f;
     public static float E_w => Get("e_w", Instance.e_w);
+
+    public bool energyComplex = true;
+    public static bool EnergyComplex => Convert.ToBoolean(Get("energy_complex", Instance.energyComplex ? 1f : 0f)); 
     
     // Everything else
     [Header("Observation settings")]

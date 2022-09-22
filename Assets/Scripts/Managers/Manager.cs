@@ -412,5 +412,33 @@ namespace Managers
                 SideChannelManager.UnregisterSideChannel(StringChannel);
             }
         }
+
+        public float[,] CompressInfo()
+        {
+            // Saves the global information about agents in a single array
+            var array = new float[numAgents, 6];
+            var agentIdx = 0;
+            // var decisionTime = Time / decisionFrequency;
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                var localPosition = agent.localPosition;
+                var agentBasic = agent.GetComponent<AgentBasic>();
+                var goalPosition = agentBasic.goal.localPosition;
+
+                array[agentIdx, 0] = localPosition.x;
+                array[agentIdx, 1] = localPosition.z;
+                array[agentIdx, 2] = goalPosition.x;
+                array[agentIdx, 3] = goalPosition.z;
+                array[agentIdx, 4] = agentBasic.velocity.x;
+                array[agentIdx, 5] = agentBasic.velocity.z;
+
+                // _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
+                // _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
+
+                agentIdx++;
+            }
+            return array;
+        }
     }
 }

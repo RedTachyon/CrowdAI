@@ -25,8 +25,14 @@ namespace Rewards
         {
             var energySpent = 0f;
             var agent = transform.GetComponent<AgentBasic>();
+            var velocity = agent.Rigidbody.velocity;
+            var lastVelocity = agent.PreviousVelocity;
+            var speedSqr = velocity.sqrMagnitude;
+            var speed = Mathf.Sqrt(speedSqr);
+            var acceleration = (velocity - lastVelocity).magnitude / Time.fixedDeltaTime;
             energySpent += Params.E_s * Time.fixedDeltaTime;
-            energySpent += Params.E_w * agent.Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
+            energySpent += Params.E_w * speedSqr * Time.fixedDeltaTime;
+            energySpent += (Params.EnergyComplex ? 1f : 0f) * acceleration * speed * Time.fixedDeltaTime;
             return energySpent;
         }
     }

@@ -14,7 +14,6 @@ using UnityEngine.Serialization;
 using System.Reflection;
 using JetBrains.Annotations;
 using Sensors;
-using UnityEngine.PlayerLoop;
 // using RayPerceptionSensorComponent3D = Sensors.RaySensorComponent3D;
 
 // Proposed reward structure:

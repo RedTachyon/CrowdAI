@@ -614,8 +614,8 @@ MonoBehaviour:
   rayDegrees: 90
   rayAgentVision: 1
   destroyRaycasts: 0
-  spawnNoiseScale: 0.5
-  spawnScale: 6
+  spawnNoiseScale: 0.3
+  spawnScale: 5
   gridSpawn: 1
   groupSpawnScale: 1.5
   enableObstacles: 0
@@ -625,7 +625,7 @@ MonoBehaviour:
   savePath: 
   earlyFinish: 0
   niceColors: 1
-  numAgents: 30
+  numAgents: 12
   dynamics: 2
   observer: 2
   initializer: 1
