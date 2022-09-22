@@ -78,6 +78,8 @@ namespace Observers
             var rigidbody = collider.GetComponent<Rigidbody>();
             var transform = collider.transform;
 
+            var agent = collider.GetComponent<AgentBasic>();
+
             var pos = transform.localPosition;
             var velocity = rigidbody.velocity;
 
@@ -89,18 +91,21 @@ namespace Observers
 
             if (useAcceleration)
             {
-                var agent = collider.GetComponent<AgentBasic>();
                 var acceleration = agent == null
                     ? Vector3.zero
                     : Quaternion.Inverse(rotation) * (velocity - agent.PreviousVelocity);
 
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, acceleration.x, acceleration.z};
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass, acceleration.x, acceleration.z};
             }
             else
             {
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z};
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass};
             }
 
+            // if (baseTransform.name == "Person")
+            // {
+            //     Debug.Log($"{baseTransform.name} sees {transform.name} at {pos} with velocity {velocity} and mass {agent.mass}");
+            // }
 
             return obs;
         }

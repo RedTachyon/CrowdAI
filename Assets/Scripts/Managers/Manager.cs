@@ -152,10 +152,13 @@ namespace Managers
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
                 // Choose a random mass
-                // var mass = Random.Range(0.5f, 1.5f);
-                var mass = 1f;
+                var mass = Random.Range(0.5f, 1.5f);
+                // var mass = 1f;
                 agent.mass = mass;
-                agentTransform.localScale *= Mathf.Pow(mass, 0.333333f);
+                var factor = Mathf.Pow(mass, 0.333333f);
+                var tempScale = agentTransform.localScale;
+                // agentTransform.localScale.Scale(new Vector3(factor, 1, factor));
+                agentTransform.localScale = new Vector3(factor*tempScale.x, tempScale.y, factor*tempScale.z);
 
                 agentTransform.position = new Vector3(0f, agentTransform.localScale.y, 0f);
 

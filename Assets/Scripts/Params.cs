@@ -147,6 +147,9 @@ public class Params : MonoBehaviour
 
     public bool niceColors = true;
     public static bool NiceColors => Convert.ToBoolean(Get("nice_colors", Instance.niceColors ? 1f : 0f));
+    
+    public bool backwardsAllowed = false;
+    public static bool BackwardsAllowed => Convert.ToBoolean(Get("backwards_allowed", Instance.backwardsAllowed ? 1f : 0f));
         
     [Header("Agent settings")]
     

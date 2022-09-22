@@ -17,9 +17,19 @@ namespace Dynamics
 
             var vectorAction = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
             vectorAction = Squasher.Tanh(vectorAction);
-            
 
-            var linearSpeed = Mathf.Max(vectorAction.y, 0f);
+            float linearSpeed;
+
+            // var linearSpeed = Mathf.Max(vectorAction.y, 0f);
+            if (Params.BackwardsAllowed)
+            {
+                linearSpeed = vectorAction.y > 0 ? vectorAction.y : vectorAction.y * 0.5f;
+            }
+            else
+            {
+                linearSpeed = Mathf.Max(vectorAction.y, 0f);
+            }
+
             var angularSpeed = vectorAction.x;
 
             rigidbody.MoveRotation(Quaternion.Euler(0, angularSpeed * rotSpeed, 0) * rigidbody.rotation);

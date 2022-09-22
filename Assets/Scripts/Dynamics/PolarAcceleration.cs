@@ -27,12 +27,22 @@ namespace Dynamics
             var force = linearSpeed * maxAccel;
             var dragFactor = maxAccel / maxSpeed;
             
-            var currentSpeed = rigidbody.velocity.magnitude;
-            var newSpeed = currentSpeed + (force - dragFactor * currentSpeed) * Time.fixedDeltaTime;
-            newSpeed = Mathf.Max(newSpeed, 0f);
+            var speedSign = Vector3.Dot(rigidbody.velocity, rigidbody.transform.forward) > 0 ? 1f : -1f;
+            speedSign = Params.BackwardsAllowed ? speedSign : 1f;
+            
+            var currentSpeed = speedSign * rigidbody.velocity.magnitude;
+            // var dragSign = Vector3.Dot(rigidbody.velocity, rigidbody.transform.forward) > 0 ? 1f : -1f;
+            // var dragSign = 0f;
+            var deltaSpeed = force - dragFactor * currentSpeed;
+            var newSpeed = currentSpeed + deltaSpeed * Time.fixedDeltaTime;
+            // newSpeed = Mathf.Max(newSpeed, 0f);
+            
+            // Note - either include fixedDeltaTime and then Impulse or Velocity change, or not and then Acceleration/Force
+            // rigidbody.AddForce(rigidbody.transform.forward * deltaSpeed, ForceMode.Force);
             
             
             var newVelocity = rigidbody.transform.forward * newSpeed;
+            // Debug.Log(newVelocity);
             rigidbody.velocity = newVelocity;
             
         }

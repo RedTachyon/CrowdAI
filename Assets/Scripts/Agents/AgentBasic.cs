@@ -121,9 +121,9 @@ namespace Agents
             _bufferSensor = GetComponent<BufferSensorComponent>();
             
             if (_observeAcceleration)
-                _bufferSensor.ObservableSize = 6;
+                _bufferSensor.ObservableSize = 7;
             else 
-                _bufferSensor.ObservableSize = 4;
+                _bufferSensor.ObservableSize = 5;
 
 
         }
@@ -358,6 +358,7 @@ namespace Agents
             if (other.collider.CompareTag("Ground")) return;
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
+                Debug.Log(other.impulse);
                 Collision = 1;
                 // _material.color = Color.red;
             }
