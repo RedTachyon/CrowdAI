@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Agents;
@@ -47,18 +48,25 @@ namespace Observers
         }
         public int Size => 9;
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
+        public IEnumerable<string> ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
         {
             // Collect Buffer observations
             LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
             
-            var nearbyObjects =
+            var nearbyColliders =
                 Physics.OverlapSphere(transform.position, Params.SightRadius, layerMask)
                     .Where(c => c.CompareTag("Agent") && c.transform != transform) // Get only agents
                     .Where(c => MLUtils.Visible(transform, c.transform, Params.MinCosine)) // Cone of vision
                     .OrderBy(c => Vector3.Distance(c.transform.localPosition, transform.localPosition))
-                    .Select(c => GetColliderInfo(c, useAcceleration))
-                    .Take(Params.SightAgents);
+                    .ToList();
+
+            var names = nearbyColliders
+                .Select(c => c.transform.name)
+                .Take(Params.SightAgents);
+            
+            var nearbyObjects = nearbyColliders
+                .Select(c => GetColliderInfo(c, useAcceleration))
+                .Take(Params.SightAgents);
         
             // Debug.Log(nearbyObjects);
             foreach (var agentInfo in nearbyObjects)
@@ -66,6 +74,8 @@ namespace Observers
                 // Debug.Log(String.Join(",", agentInfo));
                 sensor.AppendObservation(agentInfo);
             }
+
+            return names;
         }
 
         private static float[] GetColliderInfo(Collider collider, bool useAcceleration)

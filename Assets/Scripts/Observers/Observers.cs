@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Observers
     {
         public void Observe(VectorSensor sensor, Transform transform);
 
-        public void ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration);
+        public IEnumerable<string> ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration);
 
         public int Size
         {

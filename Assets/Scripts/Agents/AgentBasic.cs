@@ -102,6 +102,8 @@ namespace Agents
         public Vector3 PreviousPosition { get; set; }
         public Vector3 PreviousVelocity { get; set; }
 
+        public List<AgentBasic> neighborsOrder;
+
         private void Awake()
         {
             _rayPerceptionSensor = GetComponent<RaySensorComponent>();
@@ -304,7 +306,12 @@ namespace Agents
             
             _observer.Observe(sensor, transform);
 
-            _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            var names = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+
+            if (IsMainAgent)
+            {
+                Debug.Log($"Observing {names.Count()} agents: {string.Join(", ", names)}");
+            }
             // Debug.Log($"Previous velocity: {PreviousVelocity}");
             // Debug.Log($"Current velocity: {Rigidbody.velocity}");
             
@@ -492,5 +499,6 @@ namespace Agents
             // Debug.Log("New position: " + transform.localPosition);
         }
         
+        private bool IsMainAgent => name == "Person";
     }
 }

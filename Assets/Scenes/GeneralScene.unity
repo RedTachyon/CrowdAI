@@ -609,7 +609,7 @@ MonoBehaviour:
   sightRadius: 10
   sightAgents: 12
   sightAngle: 90
-  sightAcceleration: 1
+  sightAcceleration: 0
   raysPerDirection: 10
   rayLength: 10
   rayDegrees: 90
@@ -626,8 +626,9 @@ MonoBehaviour:
   savePath: 
   earlyFinish: 0
   niceColors: 1
+  backwardsAllowed: 0
   numAgents: 2
-  dynamics: 2
+  dynamics: 3
   observer: 2
   initializer: 1
 --- !u!4 &218126829
