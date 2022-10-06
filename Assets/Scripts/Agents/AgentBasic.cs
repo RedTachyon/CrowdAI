@@ -102,7 +102,7 @@ namespace Agents
         public Vector3 PreviousPosition { get; set; }
         public Vector3 PreviousVelocity { get; set; }
 
-        public List<AgentBasic> neighborsOrder;
+        public List<Transform> neighborsOrder;
 
         private void Awake()
         {
@@ -295,7 +295,7 @@ namespace Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-
+            Debug.Log($"Collecting observations at time {GetComponentInParent<Manager>().Timestep}");
             // Debug.Log($"Collected goal? {CollectedGoal}");
 
             var reward = _rewarder.ComputeReward(transform);
@@ -307,6 +307,7 @@ namespace Agents
             _observer.Observe(sensor, transform);
 
             var neighbors = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            neighborsOrder = neighbors;
             
             // TODO: Plan
             /*

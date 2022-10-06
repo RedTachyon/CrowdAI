@@ -46,6 +46,8 @@ namespace Managers
         
         private int _selectedIdx = 0;
         
+        public bool showAttention = true;
+        
         
         
         
@@ -239,7 +241,7 @@ namespace Managers
         private void FixedUpdate()
         {
             if (!_initialized) return;
-            
+
             // Debug.Log(Time.fixedDeltaTime);
             Dictionary<string, float> episodeStats = null;
             // Reset the episode if time runs out, or if all agents have reached their goals (and early finish is enabled)
@@ -291,6 +293,36 @@ namespace Managers
                 {
                     agent.GetComponent<Agent>().RequestDecision();
                 }
+                
+                if (showAttention)
+                {
+                    var selectedAgent = transform.GetChild(_selectedIdx).GetComponent<AgentBasic>();
+                    var neighbors = selectedAgent.neighborsOrder;
+                    var attentionValues = AttentionChannel.Attention[_selectedIdx];
+                    Debug.Log($"Attention values: {attentionValues}");
+                    
+                    // Reset all agents' colors
+                    foreach (Transform agent in transform)
+                    {
+                        agent.GetComponent<AgentBasic>().SetColor(new Color(1, 1, 1), true);
+                    }
+                    
+                    // Color the selected agent
+                    
+                    selectedAgent.SetColor(new Color(0, 1, 0), false);
+                    
+                    // Color the neighbors
+                    
+                    foreach ((AgentBasic agent, int attention) in neighbors.Zip(attentionValues, (a, b) => (a.GetComponent<AgentBasic>(), b)))
+                    {
+                        // agent.SetColor(new Color(0, 0, attention / 100f), false);
+                        // Observed agents go from white to blue
+                        agent.SetColor(Color.HSVToRGB(160f/255f, 0.5f + attention/100f, 1f), false);
+                        // agent.SetColor(Color.HSVToRGB(160f/255f, 1f, 1f), false);
+                    }
+
+                }
+                
             } else
             {
                 foreach (Transform agent in transform)
@@ -298,6 +330,11 @@ namespace Managers
                     agent.GetComponent<Agent>().RequestAction();
                 }
             }
+
+            // TODO: Add attention-based color changing logic here
+
+
+
 
             Timestep++;
         

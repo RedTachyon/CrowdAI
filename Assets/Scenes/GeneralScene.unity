@@ -608,14 +608,14 @@ MonoBehaviour:
   energyComplex: 1
   sightRadius: 10
   sightAgents: 12
-  sightAngle: 90
+  sightAngle: 180
   sightAcceleration: 0
   raysPerDirection: 10
   rayLength: 10
   rayDegrees: 90
   rayAgentVision: 1
   destroyRaycasts: 0
-  spawnNoiseScale: 0
+  spawnNoiseScale: 0.3
   spawnScale: 5
   gridSpawn: 1
   groupSpawnScale: 1.5
@@ -626,7 +626,7 @@ MonoBehaviour:
   savePath: 
   earlyFinish: 0
   niceColors: 1
-  backwardsAllowed: 0
+  backwardsAllowed: 1
   numAgents: 20
   dynamics: 3
   observer: 2
@@ -5751,6 +5751,7 @@ MonoBehaviour:
   decisionFrequency: 10
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
+  showAttention: 1
 --- !u!4 &6068148285703966662
 Transform:
   m_ObjectHideFlags: 0
