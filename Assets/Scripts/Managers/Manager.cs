@@ -29,6 +29,7 @@ namespace Managers
         public StatsCommunicator statsCommunicator;
 
         public StringChannel StringChannel;
+        public AttentionChannel AttentionChannel;
         
         protected SimpleMultiAgentGroup _agentGroup;
 
@@ -42,9 +43,16 @@ namespace Managers
 
         [NonSerialized]
         public Vector3 goalScale;
-
+        
+        private int _selectedIdx = 0;
+        
+        
+        
+        
+        
         protected static Manager _instance;
         public static Manager Instance => _instance;
+
 
         public void Awake()
         {
@@ -71,6 +79,10 @@ namespace Managers
             
             StringChannel = new StringChannel();
             SideChannelManager.RegisterSideChannel(StringChannel);
+            
+            AttentionChannel = new AttentionChannel();
+            SideChannelManager.RegisterSideChannel(AttentionChannel);
+            
 
             _episodeNum = 0;
             

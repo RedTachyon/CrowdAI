@@ -627,7 +627,7 @@ MonoBehaviour:
   earlyFinish: 0
   niceColors: 1
   backwardsAllowed: 0
-  numAgents: 2
+  numAgents: 20
   dynamics: 3
   observer: 2
   initializer: 1
@@ -5896,6 +5896,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   speed: 0
   debug: 1
+  neighborsOrder: []
 --- !u!114 &6668392869924176160
 MonoBehaviour:
   m_ObjectHideFlags: 0

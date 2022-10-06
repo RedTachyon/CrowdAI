@@ -306,11 +306,23 @@ namespace Agents
             
             _observer.Observe(sensor, transform);
 
-            var names = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            var neighbors = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            
+            // TODO: Plan
+            /*
+             * Record the order of the relevant neighbors (public, so Manager can access it)
+             * On FixedStep, Manager will select the main agent,
+             * pull the info from it.
+             * The main agent gets X color, the rest get Y color proportional to the attention values.
+             * Attention values are pulled from the side channel also on FixedStep.
+             *
+             * Might have to record the colors somewhere
+             * 
+             */
 
             if (IsMainAgent)
             {
-                Debug.Log($"Observing {names.Count()} agents: {string.Join(", ", names)}");
+                Debug.Log($"Observing {neighbors.Count()} agents: {string.Join(", ", neighbors.Select(n => n.name))}");
             }
             // Debug.Log($"Previous velocity: {PreviousVelocity}");
             // Debug.Log($"Current velocity: {Rigidbody.velocity}");

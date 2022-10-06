@@ -36,6 +36,11 @@ namespace Observers
             return new List<string>();
         }
 
+        public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
+        {
+            return new float[] { };
+        }
+
         public int Size => 7;
     }
 }
