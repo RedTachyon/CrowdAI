@@ -41,7 +41,9 @@ namespace Agents
         public float maxSpeed = 2f;
         public float maxAcceleration = 5f;
         public float rotationSpeed = 3f;
-
+        public float e_s = 0f;
+        public float e_w = 0f;
+        
         public float mass = 1f;
 
         // public DynamicsEnum dynamicsType;
@@ -125,7 +127,7 @@ namespace Agents
             if (_observeAcceleration)
                 _bufferSensor.ObservableSize = 7;
             else 
-                _bufferSensor.ObservableSize = 4; // TODO: undo this too!!!!!!!!
+                _bufferSensor.ObservableSize = 5;
 
 
         }
@@ -226,7 +228,7 @@ namespace Agents
                 energySpent += Params.E_s * Time.fixedDeltaTime;
                 energySpent += Params.E_w * Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
                 // energySpent += Params.E_a * Rigidbody.angularVelocity.sqrMagnitude * Time.fixedDeltaTime;
-                // TODO: rotational energy?
+                // TODO: rotational energy and acceleration?
             }
 
 
@@ -309,17 +311,6 @@ namespace Agents
             var neighbors = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
             neighborsOrder = neighbors;
             
-            // TODO: Plan
-            /*
-             * Record the order of the relevant neighbors (public, so Manager can access it)
-             * On FixedStep, Manager will select the main agent,
-             * pull the info from it.
-             * The main agent gets X color, the rest get Y color proportional to the attention values.
-             * Attention values are pulled from the side channel also on FixedStep.
-             *
-             * Might have to record the colors somewhere
-             * 
-             */
 
             // if (IsMainAgent)
             // {

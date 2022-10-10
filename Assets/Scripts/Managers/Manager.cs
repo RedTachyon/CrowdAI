@@ -159,7 +159,7 @@ namespace Managers
                 newGoal.name = baseGoal.name + $" ({i})";
             }
         
-            // Give'em some color
+            // Set up public parameters of all agents
             int agentIdx = 0;
             foreach (Transform agentTransform in transform)
             {
@@ -169,6 +169,12 @@ namespace Managers
                 // Choose a random mass
                 var mass = Params.RandomMass ? Random.Range(0.5f, 1.5f) : 1f;
                 // var mass = 1f;
+                
+                var e_s = Params.RandomEnergy ? Random.Range(1.5f, 3f) : 1f;
+                var e_w = Params.RandomEnergy ? Random.Range(1f, 1.5f) : 1f;
+                
+                // Choose a random friction
+                
                 agent.mass = mass;
                 var factor = Mathf.Pow(mass, 0.333333f);
                 var tempScale = agentTransform.localScale;

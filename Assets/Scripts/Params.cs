@@ -133,6 +133,9 @@ public class Params : MonoBehaviour
     public bool randomMass = false;
     public static bool RandomMass => Convert.ToBoolean(Get("random_mass", Instance.randomMass ? 1f : 0f));
     
+    public bool randomEnergy = false;
+    public static bool RandomEnergy => Convert.ToBoolean(Get("random_energy", Instance.randomEnergy ? 1f : 0f));
+    
     
     public bool sharedGoal;
     public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
