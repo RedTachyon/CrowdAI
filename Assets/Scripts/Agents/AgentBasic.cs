@@ -125,7 +125,7 @@ namespace Agents
             if (_observeAcceleration)
                 _bufferSensor.ObservableSize = 7;
             else 
-                _bufferSensor.ObservableSize = 5;
+                _bufferSensor.ObservableSize = 4; // TODO: undo this too!!!!!!!!
 
 
         }
@@ -295,7 +295,7 @@ namespace Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            Debug.Log($"Collecting observations at time {GetComponentInParent<Manager>().Timestep}");
+            // Debug.Log($"Collecting observations at time {GetComponentInParent<Manager>().Timestep}");
             // Debug.Log($"Collected goal? {CollectedGoal}");
 
             var reward = _rewarder.ComputeReward(transform);
@@ -321,10 +321,10 @@ namespace Agents
              * 
              */
 
-            if (IsMainAgent)
-            {
-                Debug.Log($"Observing {neighbors.Count()} agents: {string.Join(", ", neighbors.Select(n => n.name))}");
-            }
+            // if (IsMainAgent)
+            // {
+            //     Debug.Log($"Observing {neighbors.Count()} agents: {string.Join(", ", neighbors.Select(n => n.name))}");
+            // }
             // Debug.Log($"Previous velocity: {PreviousVelocity}");
             // Debug.Log($"Current velocity: {Rigidbody.velocity}");
             

@@ -621,6 +621,7 @@ MonoBehaviour:
   groupSpawnScale: 1.5
   enableObstacles: 0
   blockScale: 3
+  randomMass: 0
   sharedGoal: 1
   evaluationMode: 0
   savePath: 
@@ -5751,6 +5752,7 @@ MonoBehaviour:
   decisionFrequency: 10
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
+  selectedIdx: 0
   showAttention: 1
 --- !u!4 &6068148285703966662
 Transform:

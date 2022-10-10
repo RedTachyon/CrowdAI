@@ -130,6 +130,9 @@ public class Params : MonoBehaviour
     public float blockScale = 1f;
     public static float BlockScale => Get("block_scale", Instance.blockScale);
     
+    public bool randomMass = false;
+    public static bool RandomMass => Convert.ToBoolean(Get("random_mass", Instance.randomMass ? 1f : 0f));
+    
     
     public bool sharedGoal;
     public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));

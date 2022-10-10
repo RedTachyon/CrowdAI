@@ -9,6 +9,7 @@ using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.SideChannels;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -44,7 +45,7 @@ namespace Managers
         [NonSerialized]
         public Vector3 goalScale;
         
-        private int _selectedIdx = 0;
+        public int selectedIdx = 0;
         
         public bool showAttention = true;
         
@@ -166,7 +167,7 @@ namespace Managers
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
                 // Choose a random mass
-                var mass = Random.Range(0.5f, 1.5f);
+                var mass = Params.RandomMass ? Random.Range(0.5f, 1.5f) : 1f;
                 // var mass = 1f;
                 agent.mass = mass;
                 var factor = Mathf.Pow(mass, 0.333333f);
@@ -296,10 +297,10 @@ namespace Managers
                 
                 if (showAttention)
                 {
-                    var selectedAgent = transform.GetChild(_selectedIdx).GetComponent<AgentBasic>();
+                    var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
                     var neighbors = selectedAgent.neighborsOrder;
-                    var attentionValues = AttentionChannel.Attention[_selectedIdx];
-                    Debug.Log($"Attention values: {attentionValues}");
+                    var attentionValues = AttentionChannel.Attention[selectedIdx];
+                    // Debug.Log($"Attention values: {attentionValues}");
                     
                     // Reset all agents' colors
                     foreach (Transform agent in transform)
@@ -317,7 +318,7 @@ namespace Managers
                     {
                         // agent.SetColor(new Color(0, 0, attention / 100f), false);
                         // Observed agents go from white to blue
-                        agent.SetColor(Color.HSVToRGB(160f/255f, 0.5f + attention/100f, 1f), false);
+                        agent.SetColor(Color.HSVToRGB(220f/255f, 0.2f + 8*attention/100f, 1f), false);
                         // agent.SetColor(Color.HSVToRGB(160f/255f, 1f, 1f), false);
                     }
 
@@ -331,7 +332,6 @@ namespace Managers
                 }
             }
 
-            // TODO: Add attention-based color changing logic here
 
 
 

@@ -81,7 +81,7 @@ namespace Observers
             }
             else
             {
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass};
+                obs = new[] { pos.x, pos.z, velocity.x, velocity.z }; //, agent.mass}; // TODO: undo this!!!!!!!!
             }
 
             // if (baseTransform.name == "Person")
