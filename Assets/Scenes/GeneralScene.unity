@@ -603,8 +603,6 @@ MonoBehaviour:
   comfortSpeedExponent: 1
   comfortDistance: 0
   comfortDistanceWeight: 0
-  e_s: 2.23
-  e_w: 1.26
   energyComplex: 1
   sightRadius: 10
   sightAgents: 12
@@ -621,14 +619,16 @@ MonoBehaviour:
   groupSpawnScale: 1.5
   enableObstacles: 0
   blockScale: 3
-  randomMass: 0
+  randomMass: 1
+  randomEnergy: 1
   sharedGoal: 1
   evaluationMode: 0
   savePath: 
   earlyFinish: 0
   niceColors: 1
+  showAttention: 0
   backwardsAllowed: 1
-  numAgents: 20
+  numAgents: 1
   dynamics: 3
   observer: 2
   initializer: 1
@@ -5753,7 +5753,6 @@ MonoBehaviour:
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
   selectedIdx: 0
-  showAttention: 1
 --- !u!4 &6068148285703966662
 Transform:
   m_ObjectHideFlags: 0
@@ -5880,6 +5879,9 @@ MonoBehaviour:
   maxSpeed: 2
   maxAcceleration: 5
   rotationSpeed: 1
+  e_s: 2.23
+  e_w: 1.26
+  PreferredSpeed: 1.33
   mass: 1
   rewarderType: 0
   squasherType: 3
@@ -5888,6 +5890,7 @@ MonoBehaviour:
   CollectedGoal: 0
   distanceTraversed: 0
   energySpent: 0
+  energySpentComplex: 0
   totalDistance: 0
   collisionReward: 0
   goalReward: 0
@@ -5896,7 +5899,7 @@ MonoBehaviour:
   timeReward: 0
   standstillReward: 0
   totalReward: 0
-  velocity: {x: 0, y: 0, z: 0}
+  velocityDbg: {x: 0, y: 0, z: 0}
   speed: 0
   debug: 1
   neighborsOrder: []

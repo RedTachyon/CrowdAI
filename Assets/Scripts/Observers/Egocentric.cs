@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Agents;
-using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -29,30 +25,35 @@ namespace Observers
             Vector3 goalPosition = goal.localPosition;
             
             // Position: 2
-            sensor.AddObservation(position.x / 10f);
-            sensor.AddObservation(position.z / 10f);
+            sensor.AddObservation(position.x / 10f); // 1
+            sensor.AddObservation(position.z / 10f); // 2
         
             // Rotation: 1
-            sensor.AddObservation(rotation.eulerAngles.y / 360f);
+            sensor.AddObservation(rotation.eulerAngles.y / 360f); // 3
             
             // Relative position: 2
             var relPosition = Quaternion.Inverse(rotation) * (goalPosition - position);
             // var relPosition = goalPosition - position;
-            sensor.AddObservation(relPosition.x / 20f);
-            sensor.AddObservation(relPosition.z / 20f);
+            sensor.AddObservation(relPosition.x / 20f); // 4
+            sensor.AddObservation(relPosition.z / 20f); // 5
 
             // Debug.Log(relPosition);
             
 
             // Velocity: 2, up to ~5
-            sensor.AddObservation(velocity.x / 5f);
-            sensor.AddObservation(velocity.z / 5f);
+            sensor.AddObservation(velocity.x / 5f); // 6
+            sensor.AddObservation(velocity.z / 5f); // 7
             
-            sensor.AddObservation(agent.CollectedGoal);
-            sensor.AddObservation(agent.mass); // 8
+            sensor.AddObservation(agent.CollectedGoal); // 8
+            sensor.AddObservation(agent.mass); // 9
+
+            sensor.AddObservation(agent.e_s); // 10
+            sensor.AddObservation(agent.e_w); // 11
+            
+            sensor.AddObservation(agent.PreferredSpeed); // 12
 
         }
-        public int Size => 9;
+        public int Size => 12;
 
         public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
         {

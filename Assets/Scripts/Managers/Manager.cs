@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.SideChannels;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -47,7 +48,6 @@ namespace Managers
         
         public int selectedIdx = 0;
         
-        public bool showAttention = true;
         
         
         
@@ -88,6 +88,8 @@ namespace Managers
             
 
             _episodeNum = 0;
+            
+            Random.InitState(0);
             
 
         }
@@ -172,10 +174,16 @@ namespace Managers
                 
                 var e_s = Params.RandomEnergy ? Random.Range(1.5f, 3f) : 1f;
                 var e_w = Params.RandomEnergy ? Random.Range(1f, 1.5f) : 1f;
+
+                var prefSpeed = Mathf.Sqrt(e_s / e_w);
                 
                 // Choose a random friction
                 
                 agent.mass = mass;
+                agent.e_s = e_s;
+                agent.e_w = e_w;
+                agent.PreferredSpeed = prefSpeed;
+                
                 var factor = Mathf.Pow(mass, 0.333333f);
                 var tempScale = agentTransform.localScale;
                 // agentTransform.localScale.Scale(new Vector3(factor, 1, factor));
@@ -209,8 +217,8 @@ namespace Managers
                 _finished[agent] = false;
                 agent.GetComponent<AgentBasic>().OnEpisodeBegin();
             }
-            Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
-            ScreenCapture.CaptureScreenshot("LastScreenshot.png");
+            // Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
+            // ScreenCapture.CaptureScreenshot("LastScreenshot.png");
 
         }
         public virtual void ReachGoal(Agent agent)
@@ -301,9 +309,20 @@ namespace Managers
                     agent.GetComponent<Agent>().RequestDecision();
                 }
                 
-                if (showAttention)
+                if (Params.ShowAttention)
                 {
-                    var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
+                    AgentBasic selectedAgent;
+                    if (Application.isEditor && Selection.activeTransform != null && Selection.activeTransform.GetComponent<AgentBasic>() != null)
+                    {
+                        selectedAgent = Selection.activeTransform.GetComponent<AgentBasic>();
+                    }
+                    else
+                    {
+                        selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
+                    }
+                    
+                    // var selectedAgent = Selection.activeTransform != null ? Selection.activeTransform.GetComponent<AgentBasic>() : null;
+                    // var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
                     var neighbors = selectedAgent.neighborsOrder;
                     var attentionValues = AttentionChannel.Attention[selectedIdx];
                     // Debug.Log($"Attention values: {attentionValues}");
@@ -337,7 +356,6 @@ namespace Managers
                     agent.GetComponent<Agent>().RequestAction();
                 }
             }
-
 
 
 
@@ -483,13 +501,14 @@ namespace Managers
                 var localPosition = agent.localPosition;
                 var agentBasic = agent.GetComponent<AgentBasic>();
                 var goalPosition = agentBasic.goal.localPosition;
+                var velocity = agentBasic.Rigidbody.velocity;
 
                 array[agentIdx, 0] = localPosition.x;
                 array[agentIdx, 1] = localPosition.z;
                 array[agentIdx, 2] = goalPosition.x;
                 array[agentIdx, 3] = goalPosition.z;
-                array[agentIdx, 4] = agentBasic.velocity.x;
-                array[agentIdx, 5] = agentBasic.velocity.z;
+                array[agentIdx, 4] = velocity.x;
+                array[agentIdx, 5] = velocity.z;
 
                 // _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
                 // _positionMemory[agentIdx, Timestep, 1] = localPosition.z;

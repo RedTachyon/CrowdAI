@@ -209,5 +209,30 @@ public class MLUtils
         var cosine = Vector3.Dot(baseTransform.forward, direction.normalized);
         return cosine >= minCosine;
     }
-    
+
+    public static float EnergyUsage(Vector3 velocity, Vector3 previousVelocity, float e_s, float e_w, float dt)
+    {
+        var factor = 1 - e_w * dt;
+
+        var a = (velocity - previousVelocity).magnitude / dt;
+        var ap = (previousVelocity - factor * previousVelocity).magnitude / dt;
+        
+        var speed = velocity.magnitude;
+        var previousSpeed = previousVelocity.magnitude;
+
+
+        float extra;
+        if (speed >= previousSpeed)
+        {
+            extra = Mathf.Abs(a) * speed;
+        } else if (speed >= factor * previousSpeed)
+        {
+            extra = -Mathf.Abs(a) * speed;
+        } else  // speed < factor * previousSpeed
+        {
+            extra = Mathf.Abs(a) * speed + 2 * Mathf.Abs(ap) * speed;
+        }
+
+        return e_s + e_w * speed * speed + extra;
+    }
 }

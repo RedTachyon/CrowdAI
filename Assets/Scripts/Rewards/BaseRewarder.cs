@@ -23,6 +23,7 @@ namespace Rewards
             }
             else
             {
+                // Debug.Log($"Previous position: {agent.PreviousPosition}");
                 var prevDistance = Vector3.Distance(agent.PreviousPosition, goal.localPosition);
                 var currentDistance = Vector3.Distance(transform.localPosition, goal.localPosition);
 
@@ -31,7 +32,7 @@ namespace Rewards
 
 
                 // Speed similarity
-                var idealSpeed = Params.ComfortSpeed;
+                var idealSpeed = Params.RandomEnergy ? Mathf.Sqrt(agent.e_s / agent.e_w) : Params.ComfortSpeed;
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
                 var speedDiff = Mathf.Pow(Mathf.Abs(currentSpeed - idealSpeed), Params.ComfortSpeedExponent);
 

@@ -93,7 +93,7 @@ namespace Initializers
                 agent.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-                agentBasic.PreviousPosition = agent.localPosition;
+                // agentBasic.PreviousPosition = agent.localPosition;
 
                 agentIdx++;
             }

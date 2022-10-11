@@ -30,8 +30,8 @@ namespace Rewards
             var speedSqr = velocity.sqrMagnitude;
             var speed = Mathf.Sqrt(speedSqr);
             var acceleration = (velocity - lastVelocity).magnitude / Time.fixedDeltaTime;
-            energySpent += Params.E_s * Time.fixedDeltaTime;
-            energySpent += Params.E_w * speedSqr * Time.fixedDeltaTime;
+            energySpent += agent.e_s * Time.fixedDeltaTime;
+            energySpent += agent.e_w * speedSqr * Time.fixedDeltaTime;
             energySpent += (Params.EnergyComplex ? 1f : 0f) * acceleration * speed * Time.fixedDeltaTime;
             return energySpent;
         }

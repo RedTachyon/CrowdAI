@@ -53,7 +53,7 @@ public class Params : MonoBehaviour
     public float goalSpeedThreshold = 1e-1f;
     public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
 
-    public float comfortSpeed = 1.0f;
+    public float comfortSpeed = 1.33f;
     public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
     
     public float comfortSpeedWeight = -0.75f;
@@ -69,12 +69,12 @@ public class Params : MonoBehaviour
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
     
     // Energy parameters
-    [Header("Energy parameters")]
-    public float e_s = 2.23f;
-    public static float E_s => Get("e_s", Instance.e_s);
-
-    public float e_w = 1.26f;
-    public static float E_w => Get("e_w", Instance.e_w);
+    // [Header("Energy parameters")]
+    // public float e_s = 2.23f;
+    // public static float E_s => Get("e_s", Instance.e_s);
+    //
+    // public float e_w = 1.26f;
+    // public static float E_w => Get("e_w", Instance.e_w);
 
     public bool energyComplex = true;
     public static bool EnergyComplex => Convert.ToBoolean(Get("energy_complex", Instance.energyComplex ? 1f : 0f)); 
@@ -153,6 +153,9 @@ public class Params : MonoBehaviour
 
     public bool niceColors = true;
     public static bool NiceColors => Convert.ToBoolean(Get("nice_colors", Instance.niceColors ? 1f : 0f));
+
+    public bool showAttention = false;
+    public static bool ShowAttention => Convert.ToBoolean(Get("show_attention", Instance.showAttention ? 1f : 0f));
     
     public bool backwardsAllowed = false;
     public static bool BackwardsAllowed => Convert.ToBoolean(Get("backwards_allowed", Instance.backwardsAllowed ? 1f : 0f));

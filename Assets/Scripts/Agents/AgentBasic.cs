@@ -41,8 +41,11 @@ namespace Agents
         public float maxSpeed = 2f;
         public float maxAcceleration = 5f;
         public float rotationSpeed = 3f;
-        public float e_s = 0f;
-        public float e_w = 0f;
+        public float e_s = 2.23f;
+        public float e_w = 1.26f;
+        public float PreferredSpeed = 1.33f;
+
+        // public float PreferredSpeed => Mathf.Sqrt(e_s / e_w);
         
         public float mass = 1f;
 
@@ -78,6 +81,7 @@ namespace Agents
         public bool CollectedGoal;
         public float distanceTraversed;
         public float energySpent;
+        public float energySpentComplex;
         public float totalDistance;
 
         public Dictionary<string, float> rewardParts;
@@ -93,7 +97,7 @@ namespace Agents
         public float timeReward;
         public float standstillReward;
         public float totalReward;
-        public Vector3 velocity;
+        public Vector3 velocityDbg;
         public float speed;
 
         public bool debug;
@@ -103,6 +107,9 @@ namespace Agents
 
         public Vector3 PreviousPosition { get; set; }
         public Vector3 PreviousVelocity { get; set; }
+        
+        public Vector3 PreviousPositionPhysics { get; set; }
+        public Vector3 PreviousVelocityPhysics { get; set; }
 
         public List<Transform> neighborsOrder;
 
@@ -166,10 +173,15 @@ namespace Agents
             base.OnEpisodeBegin();
             // Debug.Log("Starting episode");
             TeleportBack();
+            PreviousPosition = transform.localPosition;
             PreviousVelocity = Vector3.zero;
+            
+            PreviousPositionPhysics = transform.localPosition;
+            PreviousVelocityPhysics = Vector3.zero;
 
             CollectedGoal = false;
             energySpent = 0f;
+            energySpentComplex = 0f;
             distanceTraversed = 0f;
             totalDistance = 0f;
             totalReward = 0f;
@@ -201,7 +213,7 @@ namespace Agents
                 speedReward = rewardParts["speed"];
                 timeReward = rewardParts["time"];
                 standstillReward = rewardParts["standstill"];
-                velocity = Rigidbody.velocity;
+                velocityDbg = Rigidbody.velocity;
                 speed = Rigidbody.velocity.magnitude;
             }
         }
@@ -211,6 +223,9 @@ namespace Agents
             base.OnActionReceived(actions);
 
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
+            
+            PreviousPositionPhysics = transform.localPosition;
+            PreviousVelocityPhysics = Rigidbody.velocity;
             
             if (!CollectedGoal)
             {
@@ -225,12 +240,19 @@ namespace Agents
             // Update measurements
             if (!CollectedGoal)
             {
-                energySpent += Params.E_s * Time.fixedDeltaTime;
-                energySpent += Params.E_w * Rigidbody.velocity.sqrMagnitude * Time.fixedDeltaTime;
-                // energySpent += Params.E_a * Rigidbody.angularVelocity.sqrMagnitude * Time.fixedDeltaTime;
-                // TODO: rotational energy and acceleration?
+                var velocity = Rigidbody.velocity;
+                // Debug.Log($"Delta time: {Time.fixedDeltaTime}");
+
+                energySpent += e_s * Time.fixedDeltaTime;
+                energySpent += e_w * velocity.sqrMagnitude * Time.fixedDeltaTime;
+                
+                energySpentComplex += e_s * Time.fixedDeltaTime;
+                energySpentComplex += e_w * velocity.sqrMagnitude * Time.fixedDeltaTime;
+                energySpentComplex += velocity.magnitude * (velocity - PreviousVelocityPhysics).magnitude * Time.fixedDeltaTime;
             }
 
+            Debug.Log($"Velocity from {PreviousVelocityPhysics} to {Rigidbody.velocity}");
+            // TODO: Properly figure out previous velocity between decisions, and between observations
 
 
             // Debug.Log(Rigidbody.velocity.magnitude);
