@@ -312,15 +312,14 @@ namespace Managers
                 if (Params.ShowAttention)
                 {
                     AgentBasic selectedAgent;
+                    selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
+
+#if UNITY_EDITOR
                     if (Application.isEditor && Selection.activeTransform != null && Selection.activeTransform.GetComponent<AgentBasic>() != null)
                     {
                         selectedAgent = Selection.activeTransform.GetComponent<AgentBasic>();
                     }
-                    else
-                    {
-                        selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
-                    }
-                    
+#endif
                     // var selectedAgent = Selection.activeTransform != null ? Selection.activeTransform.GetComponent<AgentBasic>() : null;
                     // var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
                     var neighbors = selectedAgent.neighborsOrder;
