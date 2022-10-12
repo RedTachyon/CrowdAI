@@ -243,16 +243,15 @@ namespace Agents
                 var velocity = Rigidbody.velocity;
                 // Debug.Log($"Delta time: {Time.fixedDeltaTime}");
 
-                energySpent += e_s * Time.fixedDeltaTime;
-                energySpent += e_w * velocity.sqrMagnitude * Time.fixedDeltaTime;
+                var (simpleEnergy, complexEnergy) =
+                    MLUtils.EnergyUsage(velocity, PreviousVelocityPhysics, e_s, e_w, Time.fixedDeltaTime);
                 
-                energySpentComplex += e_s * Time.fixedDeltaTime;
-                energySpentComplex += e_w * velocity.sqrMagnitude * Time.fixedDeltaTime;
-                energySpentComplex += velocity.magnitude * (velocity - PreviousVelocityPhysics).magnitude * Time.fixedDeltaTime;
+                energySpent += simpleEnergy;
+                energySpentComplex += complexEnergy;
+
             }
 
-            Debug.Log($"Velocity from {PreviousVelocityPhysics} to {Rigidbody.velocity}");
-            // TODO: Properly figure out previous velocity between decisions, and between observations
+            // Debug.Log($"Velocity from {PreviousVelocityPhysics} to {Rigidbody.velocity}");
 
 
             // Debug.Log(Rigidbody.velocity.magnitude);
@@ -391,7 +390,7 @@ namespace Agents
             if (other.collider.CompareTag("Ground")) return;
             if (other.collider.CompareTag("Obstacle") || other.collider.CompareTag("Agent"))
             {
-                Debug.Log(other.impulse);
+                // Debug.Log(other.impulse);
                 Collision = 1;
                 // _material.color = Color.red;
             }

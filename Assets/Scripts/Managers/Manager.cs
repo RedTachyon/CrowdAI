@@ -372,6 +372,7 @@ namespace Managers
         {
             
             var energies = new List<float>();
+            var energiesComplex = new List<float>();
             var distances = new List<float>();
             var successes = new List<float>();
             var numAgents = 0;
@@ -381,6 +382,7 @@ namespace Managers
                 if (!agent.gameObject.activeInHierarchy) continue;
                 
                 energies.Add(agent.GetComponent<AgentBasic>().energySpent);
+                energiesComplex.Add(agent.GetComponent<AgentBasic>().energySpentComplex);
                 distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
                 successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
                 numAgents++;
@@ -389,6 +391,7 @@ namespace Managers
             var stats = new Dictionary<string, float>
             {
                 ["e_energy"] = energies.Average(),
+                ["e_energy_complex"] = energiesComplex.Average(),
                 ["e_distance"] = distances.Average(),
                 ["e_success"] = successes.Average(),
             };

@@ -210,29 +210,21 @@ public class MLUtils
         return cosine >= minCosine;
     }
 
-    public static float EnergyUsage(Vector3 velocity, Vector3 previousVelocity, float e_s, float e_w, float dt)
+    public static (float, float) EnergyUsage(Vector3 velocity, Vector3 previousVelocity, float e_s, float e_w, float dt)
     {
         var factor = 1 - e_w * dt;
+        var v = velocity.magnitude;
+        var v0 = previousVelocity.magnitude;
 
-        var a = (velocity - previousVelocity).magnitude / dt;
-        var ap = (previousVelocity - factor * previousVelocity).magnitude / dt;
-        
-        var speed = velocity.magnitude;
-        var previousSpeed = previousVelocity.magnitude;
+        var vp = factor * v0;
+        var a = (v - v0) / dt;
+        var ap = (v0 - vp) / dt;
 
+        var baseEnergy = e_s + e_w * v * v;
+        var accelerationEnergy = a * v - 2 * (v < vp ? 1 : 0) * (a * v + ap * v);
 
-        float extra;
-        if (speed >= previousSpeed)
-        {
-            extra = Mathf.Abs(a) * speed;
-        } else if (speed >= factor * previousSpeed)
-        {
-            extra = -Mathf.Abs(a) * speed;
-        } else  // speed < factor * previousSpeed
-        {
-            extra = Mathf.Abs(a) * speed + 2 * Mathf.Abs(ap) * speed;
-        }
+        return (baseEnergy * dt, (baseEnergy + accelerationEnergy) * dt);
 
-        return e_s + e_w * speed * speed + extra;
+        // return (baseEnergy + accelerationEnergy) * dt;
     }
 }
