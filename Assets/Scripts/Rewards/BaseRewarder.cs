@@ -46,6 +46,8 @@ namespace Rewards
                 reward += Params.StepReward;
                 agent.AddRewardPart(-1, "time");
             }
+            
+            // TODO: add non-finishing penalty
 
             return reward;
         }

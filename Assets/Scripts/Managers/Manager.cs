@@ -185,7 +185,8 @@ namespace Managers
                 agent.PreferredSpeed = prefSpeed;
                 
                 var factor = Mathf.Pow(mass, 0.333333f);
-                var tempScale = agentTransform.localScale;
+                // var tempScale = agentTransform.localScale;
+                var tempScale = new Vector3(0.4f, 0.875f, 0.4f);
                 // agentTransform.localScale.Scale(new Vector3(factor, 1, factor));
                 agentTransform.localScale = new Vector3(factor*tempScale.x, tempScale.y, factor*tempScale.z);
 

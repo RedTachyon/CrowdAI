@@ -32,25 +32,25 @@ public class Params : MonoBehaviour
     // // // //
     
     [Header("Reward settings")]
-    public float potential = 0.4f;
+    public float potential = 1f;
     public static float Potential => Get("potential", Instance.potential);
 
-    public float goal = 1.0f;
+    public float goal = 10f;
     public static float Goal => Get("goal", Instance.goal);
     
-    public float collision = -0.3f;
+    public float collision = -0.05f;
     public static float Collision => Get("collision", Instance.collision);
     
     public float stepReward = -0.005f;
     public static float StepReward => Get("step_reward", Instance.stepReward);
     
-    public float standstillWeight = -0.1f;
+    public float standstillWeight = 0f;
     public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
 
-    public float standstillExponent = 1f;
+    public float standstillExponent = 0f;
     public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
     
-    public float goalSpeedThreshold = 1e-1f;
+    public float goalSpeedThreshold = 0f;
     public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
 
     public float comfortSpeed = 1.33f;
@@ -62,10 +62,10 @@ public class Params : MonoBehaviour
     public float comfortSpeedExponent = 1.0f;
     public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
 
-    public float comfortDistance = 1.5f;
+    public float comfortDistance = 0f;
     public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
     
-    public float comfortDistanceWeight = 1.0f;
+    public float comfortDistanceWeight = 0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
     
     // Energy parameters
@@ -97,7 +97,7 @@ public class Params : MonoBehaviour
     public int raysPerDirection = 10; // Only at launch
     public static int RaysPerDirection => Mathf.RoundToInt(Get("rays_per_direction", Instance.raysPerDirection));
     
-    public float rayLength = 40f;
+    public float rayLength = 10f;
     public static float RayLength => Get("ray_length", Instance.rayLength);
     
     public float rayDegrees = 90f;
@@ -157,7 +157,7 @@ public class Params : MonoBehaviour
     public bool showAttention = false;
     public static bool ShowAttention => Convert.ToBoolean(Get("show_attention", Instance.showAttention ? 1f : 0f));
     
-    public bool backwardsAllowed = false;
+    public bool backwardsAllowed = true;
     public static bool BackwardsAllowed => Convert.ToBoolean(Get("backwards_allowed", Instance.backwardsAllowed ? 1f : 0f));
         
     [Header("Agent settings")]

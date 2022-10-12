@@ -248,6 +248,7 @@ namespace Agents
                 
                 energySpent += simpleEnergy;
                 energySpentComplex += complexEnergy;
+                // TODO: Add non-finishing energy penalty
 
             }
 

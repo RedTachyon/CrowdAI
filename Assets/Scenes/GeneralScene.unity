@@ -628,8 +628,8 @@ MonoBehaviour:
   niceColors: 1
   showAttention: 0
   backwardsAllowed: 1
-  numAgents: 1
-  dynamics: 3
+  numAgents: 20
+  dynamics: 2
   observer: 2
   initializer: 1
 --- !u!4 &218126829
