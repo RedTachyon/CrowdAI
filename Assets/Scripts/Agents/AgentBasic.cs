@@ -24,16 +24,26 @@ using Sensors;
 
 namespace Agents
 {
-    public class AgentBasic : Agent
+    public class AgentBasic : Agent, IAgent
     {
-    
+
+        private Animator _animator;
+
+        private int _animIDSpeed;
+        
         private Material _material;
         private Color _originalColor;
 
         private BufferSensorComponent _bufferSensor;
-    
-        [HideInInspector] public Rigidbody Rigidbody;
-        [HideInInspector] public Collider Collider;
+
+        // Interface elements for all types of agents
+        public Rigidbody Rigidbody { get; private set; }
+        public Collider Collider { get; private set; }
+        
+        [field: SerializeField] public Transform Goal { get; set; }
+        
+        
+        public Vector3 GoalScale { get; private set; }
 
         public bool controllable = true;
 
@@ -67,8 +77,7 @@ namespace Agents
         internal int Collision = 0;
 
 
-        public Transform goal;
-        public Vector3 goalScale;
+
 
         private float _originalHeight;
         private float _originalGoalHeight;
@@ -145,10 +154,15 @@ namespace Agents
         
             Rigidbody = GetComponent<Rigidbody>();
             Collider = GetComponent<Collider>();
-            _material = GetComponent<Renderer>().material;
+            _animator = GetComponentInChildren<Animator>();
+            if (_animator != null)
+            {
+                _animIDSpeed = Animator.StringToHash("Speed");
+            }
+            _material = GetComponentInChildren<Renderer>().material;
             _originalColor = _material.color;
             _originalHeight = transform.localPosition.y;
-            _originalGoalHeight = goal.localPosition.y;
+            _originalGoalHeight = Goal.localPosition.y;
             PreviousVelocity = Vector3.zero;
 
             UpdateParams();
@@ -158,7 +172,7 @@ namespace Agents
 
             _bufferSensor.MaxNumObservables = Params.SightAgents;
 
-            goalScale = goal.localScale;
+            GoalScale = Goal.localScale;
 
 
             // Debug.Log($"Ray perception sensor: {_rayPerceptionSensor}");
@@ -216,6 +230,11 @@ namespace Agents
                 velocityDbg = Rigidbody.velocity;
                 speed = Rigidbody.velocity.magnitude;
             }
+        }
+
+        public void Update()
+        {
+            _animator?.SetFloat(_animIDSpeed, Rigidbody.velocity.magnitude);
         }
 
         public override void OnActionReceived(ActionBuffers actions)
@@ -372,7 +391,7 @@ namespace Agents
         {
             // Debug.Log("Hitting a trigger");
         
-            if (other.name != goal.name) return;
+            if (other.name != Goal.name) return;
 
             var currentSpeed = Rigidbody.velocity.magnitude;
             
@@ -422,7 +441,7 @@ namespace Agents
             _material.color = color;
             if (colorGoal)
             {
-                goal.GetComponent<Renderer>().material.color = color;
+                Goal.GetComponent<Renderer>().material.color = color;
             }
         }
 
@@ -498,9 +517,9 @@ namespace Agents
             
             transform.localRotation *= Quaternion.Euler(90f, 0f, 0f);
             
-            var newGoalPosition = goal.transform.localPosition;
+            var newGoalPosition = Goal.transform.localPosition;
             newGoalPosition.y = -10f;
-            goal.transform.localPosition = newGoalPosition;
+            Goal.transform.localPosition = newGoalPosition;
             
             // Debug.Log("New position: " + transform.localPosition);
         }
@@ -518,9 +537,9 @@ namespace Agents
             transform.localRotation = newRotation;
 
             
-            var newGoalPosition = goal.transform.localPosition;
+            var newGoalPosition = Goal.transform.localPosition;
             newGoalPosition.y = _originalGoalHeight;
-            goal.transform.localPosition = newGoalPosition;
+            Goal.transform.localPosition = newGoalPosition;
 
             // Debug.Log("New position: " + transform.localPosition);
         }

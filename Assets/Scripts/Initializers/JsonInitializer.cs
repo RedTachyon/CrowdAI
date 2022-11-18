@@ -78,7 +78,7 @@ namespace Initializers
             {  
                 if (!agent.gameObject.activeInHierarchy) continue;
 
-                var goal = agent.GetComponent<AgentBasic>().goal;
+                var goal = agent.GetComponent<AgentBasic>().Goal;
 
                 // var xSpawn = _spawnPoints[agentIdx];
                 // var ySpawn

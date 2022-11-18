@@ -29,7 +29,7 @@ namespace Initializers
 
                 // Debug.Log($"Forbidden positions: {placedAgents.Count}");
                 var agentBasic = agent.GetComponent<AgentBasic>();
-                var goal = agentBasic.goal;
+                var goal = agentBasic.Goal;
                 
                 var newPosition = MLUtils.NoncollidingPosition(
                     -size,

@@ -71,7 +71,7 @@ namespace Managers
             _finished = new Dictionary<Transform, bool>();
             Academy.Instance.OnEnvironmentReset += ResetEpisode;
 
-            goalScale = GetComponentInChildren<AgentBasic>().goal.localScale;
+            goalScale = GetComponentInChildren<AgentBasic>().Goal.localScale;
             // goalScale = agent.goal.localScale;
             _agentGroup = new SimpleMultiAgentGroup();
 
@@ -133,7 +133,7 @@ namespace Managers
                 
                 var currentAgent = transform.GetChild(i);
                 currentAgent.gameObject.SetActive(active);
-                var currentGoal = currentAgent.GetComponent<AgentBasic>().goal;
+                var currentGoal = currentAgent.GetComponent<AgentBasic>().Goal;
                 currentGoal.gameObject.SetActive(active);
 
                 Agent agent = currentAgent.GetComponent<Agent>();
@@ -146,7 +146,7 @@ namespace Managers
             }
         
             var baseAgent = GetComponentInChildren<AgentBasic>();
-            var baseGoal = baseAgent.goal;
+            var baseGoal = baseAgent.Goal;
 
             // If necessary, add some more agents
             if (agentsToAdd > 0) Debug.Log($"Creating {agentsToAdd} new agents");
@@ -156,7 +156,7 @@ namespace Managers
                 var newAgent = Instantiate(baseAgent, transform);
                 var newGoal = Instantiate(baseGoal, baseGoal.parent);
             
-                newAgent.GetComponent<AgentBasic>().goal = newGoal;
+                newAgent.GetComponent<AgentBasic>().Goal = newGoal;
                 newAgent.name = baseAgent.name + $" ({i})";
                 newGoal.name = baseGoal.name + $" ({i})";
             }
@@ -186,7 +186,9 @@ namespace Managers
                 
                 var factor = Mathf.Pow(mass, 0.333333f);
                 // var tempScale = agentTransform.localScale;
-                var tempScale = new Vector3(0.4f, 0.875f, 0.4f);
+                // var tempScale = new Vector3(0.4f, 0.875f, 0.4f);
+                var tempScale = new Vector3(1f, 1f, 1f);
+
                 // agentTransform.localScale.Scale(new Vector3(factor, 1, factor));
                 agentTransform.localScale = new Vector3(factor*tempScale.x, tempScale.y, factor*tempScale.z);
 
@@ -437,7 +439,7 @@ namespace Managers
                 
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
-                var goalPosition = agent.GetComponent<AgentBasic>().goal.localPosition;
+                var goalPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
 
                 var distance = Vector3.Distance(agentPosition, goalPosition);
                 distances.Add(distance);
@@ -503,7 +505,7 @@ namespace Managers
                 if (!agent.gameObject.activeInHierarchy) continue;
                 var localPosition = agent.localPosition;
                 var agentBasic = agent.GetComponent<AgentBasic>();
-                var goalPosition = agentBasic.goal.localPosition;
+                var goalPosition = agentBasic.Goal.localPosition;
                 var velocity = agentBasic.Rigidbody.velocity;
 
                 array[agentIdx, 0] = localPosition.x;

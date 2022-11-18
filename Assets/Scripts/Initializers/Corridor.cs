@@ -34,7 +34,7 @@ namespace Initializers
                 if (!agent.gameObject.activeInHierarchy) continue;
 
                 var agentBasic = agent.GetComponent<AgentBasic>();
-                var goal = agentBasic.goal;
+                var goal = agentBasic.Goal;
 
                 Vector3 newPosition;
                 Vector3 goalPosition;
@@ -90,7 +90,7 @@ namespace Initializers
                 else
                 {
                     goalPosition = newPosition + goalOffset;
-                    goal.localScale = agentBasic.goalScale;
+                    goal.localScale = agentBasic.GoalScale;
                 }
                 
                 agent.localPosition = newPosition;

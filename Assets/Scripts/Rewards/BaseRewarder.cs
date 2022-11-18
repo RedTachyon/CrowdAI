@@ -13,7 +13,7 @@ namespace Rewards
             var reward = 0f;
             
             AgentBasic agent = transform.GetComponent<AgentBasic>();
-            Transform goal = agent.goal;
+            Transform goal = agent.Goal;
             if (agent.CollectedGoal)
             {
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;

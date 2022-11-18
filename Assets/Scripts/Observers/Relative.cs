@@ -19,7 +19,7 @@ namespace Observers
             // n_tags + 1: normalized distance
             
             var agent = transform.GetComponent<AgentBasic>();
-            var goal = agent.goal;
+            var goal = agent.Goal;
 
         
             Vector3 position = transform.localPosition;

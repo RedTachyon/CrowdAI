@@ -37,7 +37,7 @@ namespace Initializers
                 if (!agent.gameObject.activeInHierarchy) continue;
                 
                 var agentBasic = agent.GetComponent<AgentBasic>();
-                var goal = agentBasic.goal;
+                var goal = agentBasic.Goal;
 
                 float r = size;
                 var x = r * Mathf.Cos((float) agentIdx / numAgents * Constants.Tau);
