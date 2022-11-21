@@ -40,6 +40,7 @@ namespace Managers
 
         protected float[,,] _positionMemory;
         protected float[] _timeMemory;
+        protected float[,] _goalPosition;
 
         public Transform AllObstacles;
 
@@ -118,6 +119,7 @@ namespace Managers
 
             _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
             _timeMemory = new float[maxStep * decisionFrequency];
+            _goalPosition = new float[numAgents, 2];
 
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
@@ -172,8 +174,8 @@ namespace Managers
                 var mass = Params.RandomMass ? Random.Range(0.5f, 1.5f) : 1f;
                 // var mass = 1f;
                 
-                var e_s = Params.RandomEnergy ? Random.Range(1.5f, 3f) : 1f;
-                var e_w = Params.RandomEnergy ? Random.Range(1f, 1.5f) : 1f;
+                var e_s = Params.RandomEnergy ? Random.Range(1.5f, 3f) : 2.23f;
+                var e_w = Params.RandomEnergy ? Random.Range(1f, 1.5f) : 1.26f;
 
                 var prefSpeed = Mathf.Sqrt(e_s / e_w);
                 
@@ -208,6 +210,18 @@ namespace Managers
             IInitializer initializer = Mapper.GetInitializer(Params.Initializer, dataFileName);
             initializer.PlaceAgents(transform, Params.SpawnScale, initializer.GetObstacles());
 
+            var agentIdxGoal = 0;
+            // var decisionTime = Time / decisionFrequency;
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                
+                var localPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
+                _goalPosition[agentIdxGoal, 0] = localPosition.x;
+                _goalPosition[agentIdxGoal, 1] = localPosition.z;
+
+                agentIdxGoal++;
+            }
 
             
             // Initialize stats
@@ -251,7 +265,7 @@ namespace Managers
             }
             
             Debug.Log($"Writing to {fullSavePath}");
-            var data = new TrajectoryData(_timeMemory, _positionMemory);
+            var data = new TrajectoryData(_timeMemory, _positionMemory, _goalPosition);
             var json = JsonConvert.SerializeObject(data);
             File.WriteAllText(fullSavePath, json);
         }
