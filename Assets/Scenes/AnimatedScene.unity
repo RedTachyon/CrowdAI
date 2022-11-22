@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -623,12 +623,12 @@ MonoBehaviour:
   randomEnergy: 0
   sharedGoal: 1
   evaluationMode: 0
-  savePath: /home/ariel/projects/CrowdAI-analysis/traj_new.json
+  savePath: /Users/redtachyon/projects/CrowdAI-analysis/traj.json
   earlyFinish: 0
   niceColors: 1
   showAttention: 0
   backwardsAllowed: 0
-  numAgents: 12
+  numAgents: 1
   dynamics: 2
   observer: 2
   initializer: 1
@@ -6085,10 +6085,12 @@ MonoBehaviour:
   rewarderType: 0
   squasherType: 3
   CollectedGoal: 0
+  rewardDisabled: 0
   distanceTraversed: 0
   energySpent: 0
   energySpentComplex: 0
   totalDistance: 0
+  afterFirstStep: 0
   collisionReward: 0
   goalReward: 0
   potentialReward: 0

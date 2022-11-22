@@ -15,12 +15,15 @@ namespace Initializers
         public float[,,] position { get; set; }
         
         public float[,] goal { get; set; }
+        
+        public int[] finish { get; set; }
 
-        public TrajectoryData(float[] _time, float[,,] _position, float[,] _goalPosition)
+        public TrajectoryData(float[] _time, float[,,] _position, float[,] _goalPosition, int[] _finish)
         {
             time = _time;
             position = _position;
             goal = _goalPosition;
+            finish = _finish;
         }
     }
     public class JsonInitializer : IInitializer

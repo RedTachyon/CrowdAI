@@ -14,7 +14,7 @@ namespace Rewards
             
             AgentBasic agent = transform.GetComponent<AgentBasic>();
             Transform goal = agent.Goal;
-            if (agent.CollectedGoal)
+            if (agent.rewardDisabled)
             {
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
                 var speedNorm = Mathf.Pow(currentSpeed, Params.StandstillExponent);
@@ -23,27 +23,31 @@ namespace Rewards
             }
             else
             {
-                // Debug.Log($"Previous position: {agent.PreviousPosition}");
-                var prevDistance = Vector3.Distance(agent.PreviousPosition, goal.localPosition);
-                var currentDistance = Vector3.Distance(transform.localPosition, goal.localPosition);
+                var prevDistance = MLUtils.FlatDistance(agent.PreviousPosition, goal.localPosition);
+                var currentDistance = MLUtils.FlatDistance(transform.localPosition, goal.localPosition);
 
                 // Up to ~0.1
                 var diff = prevDistance - currentDistance;
-
 
                 // Speed similarity
                 var idealSpeed = Params.RandomEnergy ? Mathf.Sqrt(agent.e_s / agent.e_w) : Params.ComfortSpeed;
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
                 var speedDiff = Mathf.Pow(Mathf.Abs(currentSpeed - idealSpeed), Params.ComfortSpeedExponent);
+                
+                
 
-                // Debug.Log($"Current speed rmse: {speedDiff}");
-
-
-                reward += Params.Potential * diff; // Add reward for getting closer to the goal
+                reward += Params.Potential * diff; // Add this on the last step too
                 agent.AddRewardPart(diff, "potential");
-                reward += Params.ComfortSpeedWeight * speedDiff;
-                agent.AddRewardPart(-speedDiff, "speed");
-                reward += Params.StepReward;
+                if (!agent.CollectedGoal)
+                {
+                    // Only add the speed reward if the agent hasn't collected the goal yet
+                    reward += Params.ComfortSpeedWeight * speedDiff;
+                    agent.AddRewardPart(-speedDiff, "speed");
+                    // Debug.Log($"speedDiff: {speedDiff}");
+
+                }
+
+                reward += Params.StepReward; // Always add this for simplicity
                 agent.AddRewardPart(-1, "time");
             }
             

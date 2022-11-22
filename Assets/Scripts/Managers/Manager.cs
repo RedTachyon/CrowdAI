@@ -41,6 +41,7 @@ namespace Managers
         protected float[,,] _positionMemory;
         protected float[] _timeMemory;
         protected float[,] _goalPosition;
+        protected int[] _finishTime;
 
         public Transform AllObstacles;
 
@@ -120,6 +121,8 @@ namespace Managers
             _positionMemory = new float[numAgents, maxStep * decisionFrequency, 2];
             _timeMemory = new float[maxStep * decisionFrequency];
             _goalPosition = new float[numAgents, 2];
+            _finishTime = new int[numAgents];
+            
 
             var currentNumAgents = transform.childCount;
             var agentsToAdd = numAgents - currentNumAgents;
@@ -170,6 +173,7 @@ namespace Managers
                 var agent = agentTransform.GetComponent<AgentBasic>();
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
+                agent.AgentIndex = agentIdx;
                 // Choose a random mass
                 var mass = Params.RandomMass ? Random.Range(0.5f, 1.5f) : 1f;
                 // var mass = 1f;
@@ -219,9 +223,15 @@ namespace Managers
                 var localPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
                 _goalPosition[agentIdxGoal, 0] = localPosition.x;
                 _goalPosition[agentIdxGoal, 1] = localPosition.z;
+                _finishTime[agentIdxGoal] = -1;
 
                 agentIdxGoal++;
             }
+            
+            // for (int i = 0; i < numAgents; i++)
+            // {
+            //     _finishTime[i] = -1;
+            // }
 
             
             // Initialize stats
@@ -240,7 +250,9 @@ namespace Managers
         }
         public virtual void ReachGoal(Agent agent)
         {
+            var idx = agent.GetComponent<AgentBasic>().AgentIndex;
             _finished[agent.GetComponent<Transform>()] = true;
+            if (_finishTime[idx] < 0) _finishTime[idx] = Timestep;
             // agent.GetComponent<AgentBasic>().CollectedGoal = true;
 
         }
@@ -265,7 +277,7 @@ namespace Managers
             }
             
             Debug.Log($"Writing to {fullSavePath}");
-            var data = new TrajectoryData(_timeMemory, _positionMemory, _goalPosition);
+            var data = new TrajectoryData(_timeMemory, _positionMemory, _goalPosition, _finishTime);
             var json = JsonConvert.SerializeObject(data);
             File.WriteAllText(fullSavePath, json);
         }
@@ -306,6 +318,8 @@ namespace Managers
 
                 agentIdx++;
             }
+            
+            // Debug.Log($"Timestep: {Timestep}");
 
             _timeMemory[Timestep] = Timestep * Time.fixedDeltaTime;
             

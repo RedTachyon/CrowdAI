@@ -224,7 +224,15 @@ public class MLUtils
         var accelerationEnergy = a * v - 2 * (v < vp ? 1 : 0) * (a * v + ap * v);
 
         return (baseEnergy * dt, (baseEnergy + accelerationEnergy) * dt);
+        // return (e_s * dt, (e_w * v * v) * dt);
 
         // return (baseEnergy + accelerationEnergy) * dt;
+    }
+    
+    public static float FlatDistance(Vector3 a, Vector3 b)
+    {
+        var dx = a.x - b.x;
+        var dz = a.z - b.z;
+        return MathF.Sqrt(dx * dx + dz * dz);
     }
 }

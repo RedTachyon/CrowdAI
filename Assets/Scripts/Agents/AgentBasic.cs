@@ -27,6 +27,7 @@ namespace Agents
     public class AgentBasic : Agent, IAgent
     {
 
+        public int AgentIndex { get; set; }
         private Animator _animator;
 
         private int _animIDSpeed;
@@ -88,10 +89,13 @@ namespace Agents
         
         // Metrics
         public bool CollectedGoal;
+        public bool rewardDisabled;
         public float distanceTraversed;
         public float energySpent;
         public float energySpentComplex;
         public float totalDistance;
+
+        public bool afterFirstStep;
 
         public Dictionary<string, float> rewardParts;
 
@@ -164,6 +168,7 @@ namespace Agents
             _originalHeight = transform.localPosition.y;
             _originalGoalHeight = Goal.localPosition.y;
             PreviousVelocity = Vector3.zero;
+            afterFirstStep = false;
 
             UpdateParams();
 
@@ -193,7 +198,10 @@ namespace Agents
             PreviousPositionPhysics = transform.localPosition;
             PreviousVelocityPhysics = Vector3.zero;
 
+            afterFirstStep = false;
+
             CollectedGoal = false;
+            rewardDisabled = false;
             energySpent = 0f;
             energySpentComplex = 0f;
             distanceTraversed = 0f;
@@ -302,8 +310,8 @@ namespace Agents
             if (Input.GetKey(KeyCode.D)) xValue = 1f;
             if (Input.GetKey(KeyCode.A)) xValue = -1f;
             
-
-            force = new Vector3(xValue, 0, zValue).normalized * baseSpeed;
+            // TODO: diagonals are faster with cartesian controls
+            force = new Vector3(xValue, 0, zValue) * baseSpeed;
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -338,15 +346,14 @@ namespace Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            // Debug.Log($"Collecting observations at time {GetComponentInParent<Manager>().Timestep}");
-            // Debug.Log($"Collected goal? {CollectedGoal}");
 
-            var reward = _rewarder.ComputeReward(transform);
-            AddReward(reward);
-            
+            if (afterFirstStep) // Only compute reward after the first observation
+            {
+                var reward = _rewarder.ComputeReward(transform);
+                AddReward(reward);
+            }
 
-            // DLog($"Current reward: {GetCurrentReward()}");
-            
+
             _observer.Observe(sensor, transform);
 
             var neighbors = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
@@ -374,12 +381,17 @@ namespace Agents
             if (!CollectedGoal)
             {
                 distanceTraversed += Vector3.Distance(transform.position, PreviousPosition);
+                // Debug.Log($"Distance updated by {Vector3.Distance(transform.position, PreviousPosition)} to {distanceTraversed}");
+
             }
             totalDistance += Vector3.Distance(transform.position, PreviousPosition);
         
             // Final updates
             PreviousPosition = transform.localPosition;
             PreviousVelocity = Rigidbody.velocity;
+
+            if (CollectedGoal) rewardDisabled = true;
+            afterFirstStep = true;
 
             Collision = 0;
             // _material.color = _originalColor;
