@@ -8,32 +8,33 @@ namespace Rewards
     {
         public float ComputeReward(Transform transform)
         {
-            throw new System.NotImplementedException();
+            return 0f;
         }
 
         public float CollisionReward(Transform transform, Collision other, bool stay)
         {
-            throw new System.NotImplementedException();
+            return 0f;
         }
 
         public float TriggerReward(Transform transform, Collider other, bool stay)
         {
-            throw new System.NotImplementedException();
+            return 0f;
         }
 
         public float ActionReward(Transform transform, ActionBuffers actions)
         {
-            var energySpent = 0f;
             var agent = transform.GetComponent<AgentBasic>();
+
+            if (agent.CollectedGoal)
+            {
+                return 0f;
+            }
+            var energySpent = 0f;
             var velocity = agent.Rigidbody.velocity;
-            var lastVelocity = agent.PreviousVelocity;
+            var lastVelocity = agent.PreviousVelocityPhysics;
             var speedSqr = velocity.sqrMagnitude;
-            var speed = Mathf.Sqrt(speedSqr);
-            var acceleration = (velocity - lastVelocity).magnitude / Time.fixedDeltaTime;
             energySpent += agent.e_s * Time.fixedDeltaTime;
             energySpent += agent.e_w * speedSqr * Time.fixedDeltaTime;
-            // TODO: put this in a separate rewarder
-            // energySpent += (Params.EnergyComplex ? 1f : 0f) * acceleration * speed * Time.fixedDeltaTime;
             return energySpent;
         }
     }

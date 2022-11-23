@@ -66,7 +66,7 @@ namespace Agents
         // public ObserversEnum observerType;
         private IObserver _observer;
 
-        public RewardersEnum rewarderType;
+        // public RewardersEnum rewarderType;
         private IRewarder _rewarder;
 
         public Squasher.SquashersEnum squasherType;
@@ -461,7 +461,7 @@ namespace Agents
         {
             _dynamics = Dynamics.Mapper.GetDynamics(Params.Dynamics);
             _observer = Observers.Mapper.GetObserver(Params.Observer);
-            _rewarder = Rewards.Mapper.GetRewarder(rewarderType);
+            _rewarder = Rewards.Mapper.GetRewarder(Params.Rewarder);
             _squasher = Squasher.GetSquasher(squasherType);
             
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize = _observer.Size;

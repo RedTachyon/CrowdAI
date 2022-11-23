@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -628,10 +628,11 @@ MonoBehaviour:
   niceColors: 1
   showAttention: 0
   backwardsAllowed: 0
-  numAgents: 1
+  numAgents: 20
   dynamics: 2
   observer: 2
   initializer: 1
+  rewarder: 2
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -6082,7 +6083,6 @@ MonoBehaviour:
   e_w: 1.26
   PreferredSpeed: 1.33
   mass: 1
-  rewarderType: 0
   squasherType: 3
   CollectedGoal: 0
   rewardDisabled: 0
