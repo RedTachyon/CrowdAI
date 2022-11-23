@@ -32,7 +32,8 @@ namespace Rewards
             var acceleration = (velocity - lastVelocity).magnitude / Time.fixedDeltaTime;
             energySpent += agent.e_s * Time.fixedDeltaTime;
             energySpent += agent.e_w * speedSqr * Time.fixedDeltaTime;
-            energySpent += (Params.EnergyComplex ? 1f : 0f) * acceleration * speed * Time.fixedDeltaTime;
+            // TODO: put this in a separate rewarder
+            // energySpent += (Params.EnergyComplex ? 1f : 0f) * acceleration * speed * Time.fixedDeltaTime;
             return energySpent;
         }
     }

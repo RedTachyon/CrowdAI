@@ -4,6 +4,7 @@ using Dynamics;
 using Initializers;
 using Managers;
 using Observers;
+using Rewards;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -174,6 +175,9 @@ public class Params : MonoBehaviour
     
     public InitializerEnum initializer = InitializerEnum.Random; // TODO: uniformize mode and initializer
     public static InitializerEnum Initializer => Enum.Parse<InitializerEnum>(Get("mode", Instance.initializer.ToString()));
+    
+    public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
+    public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
 
     private static float Get(string name, float defaultValue)
     {

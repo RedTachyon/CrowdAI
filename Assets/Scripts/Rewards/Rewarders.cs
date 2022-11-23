@@ -16,7 +16,7 @@ namespace Rewards
     {
         BaseRewarder,
         Empty,
-        AnimalChase,
+        Energy,
     }
     
     public static class Mapper
@@ -27,6 +27,7 @@ namespace Rewards
             {
                 RewardersEnum.BaseRewarder => new BaseRewarder(),
                 RewardersEnum.Empty => new Empty(),
+                RewardersEnum.Energy => new Energy(),
                 // RewardersEnum.AnimalChase => new AnimalChase(),
                 _ => null
             };
