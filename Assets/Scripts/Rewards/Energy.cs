@@ -6,14 +6,14 @@ namespace Rewards
 {
     public class Energy : IRewarder
     {
-        public float ComputeReward(Transform transform)
+        public float FinishReward(Transform transform, bool success)
         {
-            return 0f;
-        }
+            var agent = transform.GetComponent<AgentBasic>();
+            var position = transform.localPosition;
+            var goalPosition = agent.Goal.transform.localPosition;
 
-        public float TriggerReward(Transform transform, Collider other, bool stay)
-        {
-            return 0f;
+            var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
+            return success ? 0f : -Params.EnergyWeight * cost;
         }
 
         public float ActionReward(Transform transform, ActionBuffers actions)
