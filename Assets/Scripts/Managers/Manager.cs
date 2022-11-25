@@ -297,6 +297,7 @@ namespace Managers
 
                 Debug.Log("Resetting");
                 
+                
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }

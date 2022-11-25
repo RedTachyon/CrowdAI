@@ -557,5 +557,17 @@ namespace Agents
         }
         
         private bool IsMainAgent => name == "Person";
+        
+        public void AddFinalReward()
+        {
+            if (CollectedGoal)
+            {
+                AddReward(_rewarder.FinishReward(transform, true));
+            }
+            else
+            {
+                AddReward(_rewarder.FinishReward(transform, false));
+            }
+        }
     }
 }

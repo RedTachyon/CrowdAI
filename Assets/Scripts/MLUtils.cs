@@ -212,21 +212,30 @@ public class MLUtils
 
     public static (float, float) EnergyUsage(Vector3 velocity, Vector3 previousVelocity, float e_s, float e_w, float dt)
     {
-        var factor = 1 - e_w * dt;
+        // var factor = 1 - e_w * dt;
+        // var v = velocity.magnitude;
+        // var v0 = previousVelocity.magnitude;
+        //
+        // var vp = factor * v0;
+        // var a = (v - v0) / dt;
+        // var ap = (v0 - vp) / dt;
+        //
+        // var baseEnergy = e_s + e_w * v * v;
+        // var accelerationEnergy = a * v - 2 * (v < vp ? 1 : 0) * (a * v + ap * v);
+        //
+        // return (baseEnergy * dt, (baseEnergy + accelerationEnergy) * dt);
+        // // return (e_s * dt, (e_w * v * v) * dt);
+        //
+        // // return (baseEnergy + accelerationEnergy) * dt;
+        
         var v = velocity.magnitude;
         var v0 = previousVelocity.magnitude;
+        
+        var simpleEnergy = e_s * dt + e_w * v * v * dt;
+        
+        var complexEnergy = v*v - (1 - e_w * dt) * Vector3.Dot(previousVelocity, velocity);
 
-        var vp = factor * v0;
-        var a = (v - v0) / dt;
-        var ap = (v0 - vp) / dt;
-
-        var baseEnergy = e_s + e_w * v * v;
-        var accelerationEnergy = a * v - 2 * (v < vp ? 1 : 0) * (a * v + ap * v);
-
-        return (baseEnergy * dt, (baseEnergy + accelerationEnergy) * dt);
-        // return (e_s * dt, (e_w * v * v) * dt);
-
-        // return (baseEnergy + accelerationEnergy) * dt;
+        return (simpleEnergy, complexEnergy);
     }
     
     public static float FlatDistance(Vector3 a, Vector3 b)
@@ -234,5 +243,14 @@ public class MLUtils
         var dx = a.x - b.x;
         var dz = a.z - b.z;
         return MathF.Sqrt(dx * dx + dz * dz);
+    }
+    
+    public static float EnergyHeuristic(Vector3 position, Vector3 target, float e_s, float e_w)
+    {
+        var distance = FlatDistance(position, target);
+        var speed = Mathf.Sqrt(e_s / e_w);
+        var time = distance / speed;
+        
+        return e_s * time + e_w * speed * speed * time;
     }
 }

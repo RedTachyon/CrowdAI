@@ -68,6 +68,9 @@ public class Params : MonoBehaviour
     
     public float comfortDistanceWeight = 0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
+
+    public float energyWeight = 1f;
+    public static float EnergyWeight => Get("energy_weight", Instance.energyWeight);
     
     // Energy parameters
     // [Header("Energy parameters")]
@@ -77,9 +80,6 @@ public class Params : MonoBehaviour
     // public float e_w = 1.26f;
     // public static float E_w => Get("e_w", Instance.e_w);
 
-    public bool energyComplex = true;
-    public static bool EnergyComplex => Convert.ToBoolean(Get("energy_complex", Instance.energyComplex ? 1f : 0f)); 
-    
     // Everything else
     [Header("Observation settings")]
     public float sightRadius = 10f;
