@@ -295,9 +295,17 @@ namespace Managers
                 if (Params.SavePath != "") WriteTrajectory();
                 else Debug.Log("Oops, not saving anything");
 
+                
+                foreach (Transform agent in transform)
+                {
+                    agent.GetComponent<AgentBasic>().AddFinalReward();
+                }
+                
+
                 Debug.Log("Resetting");
-                
-                
+                // Debug.Break();
+                // return;
+
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
             }

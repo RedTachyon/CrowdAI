@@ -13,7 +13,7 @@ namespace Rewards
             var goalPosition = agent.Goal.transform.localPosition;
 
             var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
-            agent.AddRewardPart(success ? 0f : cost, "final");
+            agent.AddRewardPart(success ? 0f : -cost, "final");
 
             return success ? 0f : -Params.FinalEnergyWeight * cost;
         }
