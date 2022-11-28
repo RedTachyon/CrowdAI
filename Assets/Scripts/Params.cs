@@ -32,6 +32,24 @@ public class Params : MonoBehaviour
      // REWARD //
     // // // //
     
+    [Header("Agent settings")]
+    
+    [Range(1, 100)]
+    public int numAgents = 10;
+    public static int NumAgents => Mathf.RoundToInt(Get("num_agents", Instance.numAgents));
+
+    public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;
+    public static DynamicsEnum Dynamics => Enum.Parse<DynamicsEnum>(Get("dynamics", Instance.dynamics.ToString()));
+
+    public ObserversEnum observer = ObserversEnum.Absolute;
+    public static ObserversEnum Observer => Enum.Parse<ObserversEnum>(Get("observer", Instance.observer.ToString()));
+    
+    public InitializerEnum initializer = InitializerEnum.Random;
+    public static InitializerEnum Initializer => Enum.Parse<InitializerEnum>(Get("initializer", Instance.initializer.ToString()));
+    
+    public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
+    public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
+    
     [Header("Reward settings")]
     public float potential = 1f;
     public static float Potential => Get("potential", Instance.potential);
@@ -45,14 +63,6 @@ public class Params : MonoBehaviour
     public float stepReward = -0.005f;
     public static float StepReward => Get("step_reward", Instance.stepReward);
     
-    public float standstillWeight = 0f;
-    public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
-
-    public float standstillExponent = 0f;
-    public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
-    
-    public float goalSpeedThreshold = 0f;
-    public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
 
     public float comfortSpeed = 1.33f;
     public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
@@ -63,22 +73,32 @@ public class Params : MonoBehaviour
     public float comfortSpeedExponent = 1.0f;
     public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
 
+    // Unused
+    
+    public float standstillWeight = 0f;
+    public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
+
+    public float standstillExponent = 0f;
+    public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
+    
+    public float goalSpeedThreshold = 0f;
+    public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
+
+    
     public float comfortDistance = 0f;
     public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
     
     public float comfortDistanceWeight = 0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
 
+    // Energy rewarder
+    
     public float energyWeight = 1f;
     public static float EnergyWeight => Get("energy_weight", Instance.energyWeight);
     
-    // Energy parameters
-    // [Header("Energy parameters")]
-    // public float e_s = 2.23f;
-    // public static float E_s => Get("e_s", Instance.e_s);
-    //
-    // public float e_w = 1.26f;
-    // public static float E_w => Get("e_w", Instance.e_w);
+    public float finalEnergyWeight = 1f;
+    public static float FinalEnergyWeight => Get("final_energy_weight", Instance.finalEnergyWeight);
+
 
     // Everything else
     [Header("Observation settings")]
@@ -161,23 +181,7 @@ public class Params : MonoBehaviour
     public bool backwardsAllowed = true;
     public static bool BackwardsAllowed => Convert.ToBoolean(Get("backwards_allowed", Instance.backwardsAllowed ? 1f : 0f));
         
-    [Header("Agent settings")]
-    
-    [Range(1, 100)]
-    public int numAgents = 10;
-    public static int NumAgents => Mathf.RoundToInt(Get("num_agents", Instance.numAgents));
 
-    public DynamicsEnum dynamics = DynamicsEnum.CartesianVelocity;
-    public static DynamicsEnum Dynamics => Enum.Parse<DynamicsEnum>(Get("dynamics", Instance.dynamics.ToString()));
-
-    public ObserversEnum observer = ObserversEnum.Absolute;
-    public static ObserversEnum Observer => Enum.Parse<ObserversEnum>(Get("observer", Instance.observer.ToString()));
-    
-    public InitializerEnum initializer = InitializerEnum.Random; // TODO: uniformize mode and initializer
-    public static InitializerEnum Initializer => Enum.Parse<InitializerEnum>(Get("mode", Instance.initializer.ToString()));
-    
-    public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
-    public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
 
     private static float Get(string name, float defaultValue)
     {

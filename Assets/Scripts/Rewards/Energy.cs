@@ -13,7 +13,7 @@ namespace Rewards
             var goalPosition = agent.Goal.transform.localPosition;
 
             var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
-            return success ? 0f : -Params.EnergyWeight * cost;
+            return success ? 0f : -Params.FinalEnergyWeight * cost;
         }
 
         public float ActionReward(Transform transform, ActionBuffers actions)
