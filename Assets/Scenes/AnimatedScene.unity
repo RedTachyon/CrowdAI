@@ -591,19 +591,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numAgents: 20
+  dynamics: 2
+  observer: 2
+  initializer: 1
+  rewarder: 2
   potential: 1
   goal: 10
   collision: -0.05
   stepReward: -0.005
-  standstillWeight: 0
-  standstillExponent: 0
-  goalSpeedThreshold: 0
   comfortSpeed: 1.33
   comfortSpeedWeight: -0.75
   comfortSpeedExponent: 1
+  standstillWeight: 0
+  standstillExponent: 0
+  goalSpeedThreshold: 0
   comfortDistance: 0
   comfortDistanceWeight: 0
-  energyComplex: 1
+  energyWeight: 1
+  finalEnergyWeight: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180
@@ -623,16 +629,11 @@ MonoBehaviour:
   randomEnergy: 0
   sharedGoal: 1
   evaluationMode: 0
-  savePath: /Users/redtachyon/projects/CrowdAI-analysis/traj.json
+  savePath: 
   earlyFinish: 0
   niceColors: 1
   showAttention: 0
   backwardsAllowed: 0
-  numAgents: 20
-  dynamics: 2
-  observer: 2
-  initializer: 1
-  rewarder: 2
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0

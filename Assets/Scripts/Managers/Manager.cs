@@ -394,7 +394,17 @@ namespace Managers
             Timestep++;
         
             // Debug.Log(Time);
+            
+            Physics.Simulate(Time.fixedDeltaTime);
 
+            foreach (Transform agent_transform in transform)
+            {
+                var agent = agent_transform.GetComponent<AgentBasic>();
+                var reward = agent._rewarder.LateReward(agent_transform);
+                agent.AddReward(reward);
+                
+                agent.RecordEnergy();
+            }
             
 
         }

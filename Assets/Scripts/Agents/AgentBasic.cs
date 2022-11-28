@@ -67,8 +67,9 @@ namespace Agents
         private IObserver _observer;
 
         // public RewardersEnum rewarderType;
-        private IRewarder _rewarder;
-
+        // private IRewarder _rewarder;
+        public IRewarder _rewarder { get; private set; }
+        
         public Squasher.SquashersEnum squasherType;
         private Func<Vector2, Vector2> _squasher;
 
@@ -109,6 +110,8 @@ namespace Agents
         public float speedReward;
         public float timeReward;
         public float standstillReward;
+        public float energyReward;
+        public float finalReward;
         public float totalReward;
         public Vector3 velocityDbg;
         public float speed;
@@ -122,7 +125,8 @@ namespace Agents
         public Vector3 PreviousVelocity { get; set; }
         
         public Vector3 PreviousPositionPhysics { get; set; }
-        public Vector3 PreviousVelocityPhysics { get; set; }
+        public Vector3 PreviouserPositionPhysics { get; set; }
+        // public Vector3 PreviousVelocityPhysics { get; set; }
 
         public List<Transform> neighborsOrder;
 
@@ -196,7 +200,8 @@ namespace Agents
             PreviousVelocity = Vector3.zero;
             
             PreviousPositionPhysics = transform.localPosition;
-            PreviousVelocityPhysics = Vector3.zero;
+            PreviouserPositionPhysics = transform.localPosition;
+            // PreviousVelocityPhysics = Vector3.zero;
 
             afterFirstStep = false;
 
@@ -215,6 +220,8 @@ namespace Agents
                 ["speed"] = 0f,
                 ["time"] = 0f,
                 ["standstill"] = 0f,
+                ["energy"] = 0f,
+                ["final"] = 0f,
             };
             
             UpdateParams();
@@ -235,6 +242,8 @@ namespace Agents
                 speedReward = rewardParts["speed"];
                 timeReward = rewardParts["time"];
                 standstillReward = rewardParts["standstill"];
+                energyReward = rewardParts["energy"];
+                finalReward = rewardParts["final"];
                 velocityDbg = Rigidbody.velocity;
                 speed = Rigidbody.velocity.magnitude;
             }
@@ -251,8 +260,10 @@ namespace Agents
 
             // Debug.Log($"{name} OnAction at step {GetComponentInParent<Statistician>().Time}");
             
+            PreviouserPositionPhysics = PreviousPositionPhysics;
             PreviousPositionPhysics = transform.localPosition;
-            PreviousVelocityPhysics = Rigidbody.velocity;
+            
+            // PreviousVelocityPhysics = Rigidbody.velocity;
             
             if (!CollectedGoal)
             {
@@ -265,19 +276,22 @@ namespace Agents
             
             
             // Update measurements
-            if (!CollectedGoal)
-            {
-                var velocity = Rigidbody.velocity;
-                // Debug.Log($"Delta time: {Time.fixedDeltaTime}");
-
-                var (simpleEnergy, complexEnergy) =
-                    MLUtils.EnergyUsage(velocity, PreviousVelocityPhysics, e_s, e_w, Time.fixedDeltaTime);
-                
-                energySpent += simpleEnergy;
-                energySpentComplex += complexEnergy;
-                // TODO: Add non-finishing energy penalty
-
-            }
+            // if (!CollectedGoal)
+            // {
+            //     // var velocity = Rigidbody.velocity;
+            //     // Debug.Log($"Delta time: {Time.fixedDeltaTime}");
+            //     
+            //     var velocity = (transform.localPosition - PreviousPositionPhysics) / Time.fixedDeltaTime;
+            //     var previousVelocity = (PreviousPositionPhysics - PreviouserPositionPhysics) / Time.fixedDeltaTime;
+            //
+            //     var (simpleEnergy, complexEnergy) =
+            //         MLUtils.EnergyUsage(velocity, previousVelocity, e_s, e_w, Time.fixedDeltaTime);
+            //     
+            //     energySpent += simpleEnergy;
+            //     energySpentComplex += complexEnergy;
+            //     // TODO: Add non-finishing energy penalty
+            //
+            // }
 
             // Debug.Log($"Velocity from {PreviousVelocityPhysics} to {Rigidbody.velocity}");
 
@@ -497,7 +511,7 @@ namespace Agents
             return reward;
         }
 
-        private new void AddReward(float reward)
+        public new void AddReward(float reward)
         {
             base.AddReward(reward);
             totalReward += reward;
@@ -506,6 +520,12 @@ namespace Agents
         public void AddRewardPart(float reward, string type)
         {
             rewardParts[type] += reward;
+        }
+        
+        public void AddReward(float reward, string type)
+        {
+            AddReward(reward);
+            AddRewardPart(reward, type);
         }
 
         public void CollectGoal()
@@ -569,5 +589,28 @@ namespace Agents
                 AddReward(_rewarder.FinishReward(transform, false));
             }
         }
+
+
+        public void RecordEnergy()
+        {
+            if (!CollectedGoal)
+            {
+                // var velocity = Rigidbody.velocity;
+                // Debug.Log($"Delta time: {Time.fixedDeltaTime}");
+                
+                var velocity = (transform.localPosition - PreviousPositionPhysics) / Time.fixedDeltaTime;
+                var previousVelocity = (PreviousPositionPhysics - PreviouserPositionPhysics) / Time.fixedDeltaTime;
+
+                var (simpleEnergy, complexEnergy) =
+                    MLUtils.EnergyUsage(velocity, previousVelocity, e_s, e_w, Time.fixedDeltaTime);
+                
+                energySpent += simpleEnergy;
+                energySpentComplex += complexEnergy;
+                // TODO: Add non-finishing energy penalty
+
+            }
+        }
+
+
     }
 }

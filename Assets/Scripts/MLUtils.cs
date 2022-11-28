@@ -212,28 +212,16 @@ public class MLUtils
 
     public static (float, float) EnergyUsage(Vector3 velocity, Vector3 previousVelocity, float e_s, float e_w, float dt)
     {
-        // var factor = 1 - e_w * dt;
-        // var v = velocity.magnitude;
-        // var v0 = previousVelocity.magnitude;
-        //
-        // var vp = factor * v0;
-        // var a = (v - v0) / dt;
-        // var ap = (v0 - vp) / dt;
-        //
-        // var baseEnergy = e_s + e_w * v * v;
-        // var accelerationEnergy = a * v - 2 * (v < vp ? 1 : 0) * (a * v + ap * v);
-        //
-        // return (baseEnergy * dt, (baseEnergy + accelerationEnergy) * dt);
-        // // return (e_s * dt, (e_w * v * v) * dt);
-        //
-        // // return (baseEnergy + accelerationEnergy) * dt;
-        
         var v = velocity.magnitude;
         var v0 = previousVelocity.magnitude;
         
         var simpleEnergy = e_s * dt + e_w * v * v * dt;
         
-        var complexEnergy = v*v - (1 - e_w * dt) * Vector3.Dot(previousVelocity, velocity);
+        var complexEnergy = e_s * dt + v*v - (1 - e_w * dt) * Vector3.Dot(previousVelocity, velocity);
+        
+        // TODO: previous and current velocities are computed incorrectly, current velocity doesn't consider what happens due to physics
+        // Maybe compute this based on the positions?
+        Debug.Log($"Velocity: {v}, Previous Velocity: {v0}, Simple Energy: {simpleEnergy}, Complex Energy: {complexEnergy}");
 
         return (simpleEnergy, complexEnergy);
     }

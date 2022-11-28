@@ -39,6 +39,11 @@ namespace Rewards
         {
             return 0f;
         }
+        
+        public float LateReward(Transform transform)
+        {
+            return 0f;
+        }
     }
 
     public enum RewardersEnum

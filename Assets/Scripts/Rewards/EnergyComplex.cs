@@ -13,10 +13,11 @@ namespace Rewards
             var goalPosition = agent.Goal.transform.localPosition;
 
             var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
+            agent.AddRewardPart(success ? 0f : cost, "final");
             return success ? 0f : -Params.FinalEnergyWeight * cost;
         }
 
-        public float ActionReward(Transform transform, ActionBuffers actions)
+        public float LateReward(Transform transform)
         {
             var agent = transform.GetComponent<AgentBasic>();
             var dt = Time.fixedDeltaTime;
@@ -25,44 +26,18 @@ namespace Rewards
                 return 0f;
             }
             
-            var velocity = agent.Rigidbody.velocity;
-            var lastVelocity = agent.PreviousVelocity;
-            var (energy, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
+            // var velocity = agent.Rigidbody.velocity;
+            // var lastVelocity = agent.PreviousVelocityPhysics;
+            var velocity = (transform.localPosition - agent.PreviousPositionPhysics) / Time.fixedDeltaTime;
+            var lastVelocity = (agent.PreviousPositionPhysics - agent.PreviouserPositionPhysics) / Time.fixedDeltaTime;
+            var (_, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
+            
+            var reward = -Params.EnergyWeight * complexEnergy;
+            
+            agent.AddRewardPart(complexEnergy, "energy");
 
-            return -Params.EnergyWeight * complexEnergy;
-            // var speed = velocity.magnitude;
-            // var lastSpeed = lastVelocity.magnitude;
-            // var acceleration = (velocity - lastVelocity).magnitude / dt;
-            //
-            // var speed_threshold = (1f - agent.e_w * dt) * lastSpeed;
-            // var a_p = (speed - speed_threshold) / dt;
-            //
-            // var energySpent = 0f;
-            // energySpent += agent.e_s * dt;
-            //
-            // energySpent += Vector3.Dot(velocity, velocity);
-            // energySpent -= (1 - agent.e_w * dt) * Vector3.Dot(lastVelocity, velocity);
+            return reward;
             
-            
-            // OLD VERSION
-            
-            // if (speed >= lastSpeed) // TODO: Triple check this math
-            // {
-            //     energySpent += agent.e_w * speed * speed * dt;
-            //     energySpent += acceleration * speed;
-            // } else if (speed >= speed_threshold)
-            // {
-            //     energySpent += a_p * speed;
-            // } else  // speed < speed_threshold
-            // {
-            //     energySpent -= a_p * speed_threshold;
-            // }
-            
-            // TODO: compute and implement an end-of-episode energy penalty
-
-            // energySpent += agent.e_w * speed * speed * Time.fixedDeltaTime;
-            // energySpent += acceleration * speed * Time.fixedDeltaTime;
-            // return energySpent;
         }
     }
 }
