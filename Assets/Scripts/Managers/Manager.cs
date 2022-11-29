@@ -290,16 +290,14 @@ namespace Managers
             // if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
             if (DecisionTimestep >= maxStep || (Params.EarlyFinish && _finished.Values.All(x => x)))
             {
-                episodeStats = GetEpisodeStats();
-                if (Params.SavePath != "") WriteTrajectory();
-                else Debug.Log("Oops, not saving anything");
-
-                
                 foreach (Transform agent in transform)
                 {
                     agent.GetComponent<AgentBasic>().AddFinalReward();
                 }
                 
+                episodeStats = GetEpisodeStats();
+                if (Params.SavePath != "") WriteTrajectory();
+                else Debug.Log("Oops, not saving anything");
 
                 Debug.Log("Resetting");
                 // Debug.Break();
