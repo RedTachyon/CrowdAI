@@ -22,12 +22,13 @@ namespace Managers
         public string dataFileName;
 
         [Range(1, 1000)]
-        public int maxStep = 500;
+        public int maxStep = 200;
 
         [Range(1, 10)] public int decisionFrequency = 1;
         
         protected Dictionary<Transform, bool> _finished;
         internal int Timestep;
+        internal int DecisionTimestep;
         public StatsCommunicator statsCommunicator;
 
         public StringChannel StringChannel;
@@ -49,12 +50,7 @@ namespace Managers
         public Vector3 goalScale;
         
         public int selectedIdx = 0;
-        
-        
-        
-        
-        
-        
+
         protected static Manager _instance;
         public static Manager Instance => _instance;
 
@@ -238,6 +234,7 @@ namespace Managers
             _finished.Clear();
 
             Timestep = 0;
+            DecisionTimestep = 0;
 
             foreach (Transform agent in transform)
             {
@@ -286,10 +283,12 @@ namespace Managers
         {
             if (!_initialized) return;
 
-            // Debug.Log(Time.fixedDeltaTime);
             Dictionary<string, float> episodeStats = null;
+            var terminal = false;
             // Reset the episode if time runs out, or if all agents have reached their goals (and early finish is enabled)
-            if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
+            // TODO: base termination on decision steps?
+            // if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
+            if (DecisionTimestep >= maxStep || (Params.EarlyFinish && _finished.Values.All(x => x)))
             {
                 episodeStats = GetEpisodeStats();
                 if (Params.SavePath != "") WriteTrajectory();
@@ -305,6 +304,8 @@ namespace Managers
                 Debug.Log("Resetting");
                 // Debug.Break();
                 // return;
+
+                terminal = true;
 
                 _agentGroup.EndGroupEpisode();
                 ResetEpisode();
@@ -387,7 +388,8 @@ namespace Managers
                     }
 
                 }
-                
+
+                DecisionTimestep++;
             } else
             {
                 foreach (Transform agent in transform)
@@ -395,9 +397,6 @@ namespace Managers
                     agent.GetComponent<Agent>().RequestAction();
                 }
             }
-
-
-
 
             Timestep++;
         

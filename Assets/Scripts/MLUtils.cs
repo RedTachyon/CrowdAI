@@ -221,7 +221,7 @@ public class MLUtils
         
         // TODO: previous and current velocities are computed incorrectly, current velocity doesn't consider what happens due to physics
         // Maybe compute this based on the positions?
-        Debug.Log($"Velocity: {v}, Previous Velocity: {v0}, Simple Energy: {simpleEnergy}, Complex Energy: {complexEnergy}");
+        // Debug.Log($"Velocity: {v}, Previous Velocity: {v0}, Simple Energy: {simpleEnergy}, Complex Energy: {complexEnergy}");
 
         return (simpleEnergy, complexEnergy);
     }

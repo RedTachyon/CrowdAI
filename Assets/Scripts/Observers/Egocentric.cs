@@ -70,6 +70,8 @@ namespace Observers
             pos = Quaternion.Inverse(rotation) * (pos - baseTransform.localPosition);
             velocity = Quaternion.Inverse(rotation) * velocity;
 
+            var mass = agent == null ? 0f : agent.mass;
+            
             float[] obs;
 
             if (useAcceleration)
@@ -78,11 +80,11 @@ namespace Observers
                     ? Vector3.zero
                     : Quaternion.Inverse(rotation) * (velocity - agent.PreviousVelocity);
 
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass, acceleration.x, acceleration.z};
+                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, mass, acceleration.x, acceleration.z};
             }
             else
             {
-                obs = new[] { pos.x, pos.z, velocity.x, velocity.z, agent.mass};
+                obs = new[] { pos.x, pos.z, velocity.x, velocity.z, mass};
             }
 
             // if (baseTransform.name == "Person")

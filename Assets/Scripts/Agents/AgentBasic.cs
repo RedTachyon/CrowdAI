@@ -580,14 +580,7 @@ namespace Agents
         
         public void AddFinalReward()
         {
-            if (CollectedGoal)
-            {
-                AddReward(_rewarder.FinishReward(transform, true));
-            }
-            else
-            {
-                AddReward(_rewarder.FinishReward(transform, false));
-            }
+            AddReward(_rewarder.FinishReward(transform, CollectedGoal));
         }
 
 

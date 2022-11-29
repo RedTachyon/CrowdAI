@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -591,10 +591,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 10
   dynamics: 2
   observer: 2
-  initializer: 5
+  initializer: 1
   rewarder: 3
   potential: 1
   goal: 10
@@ -623,10 +623,10 @@ MonoBehaviour:
   spawnScale: 5
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 1
+  enableObstacles: 0
   blockScale: 3
   randomMass: 1
-  randomEnergy: 0
+  randomEnergy: 1
   sharedGoal: 1
   evaluationMode: 0
   savePath: 
