@@ -10,7 +10,7 @@ namespace Observers
     {
         public void Observe(VectorSensor sensor, Transform transform);
 
-        public List<Transform> ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
+        public List<Transform> ObserveAgents(BufferSensorComponent sensor, Transform transform)
         {
             // Collect Buffer observations
             LayerMask layerMask = 1 << LayerMask.NameToLayer("Agent");
@@ -28,7 +28,7 @@ namespace Observers
                 .ToList();
             
             var nearbyObjects = nearbyColliders
-                .Select(c => GetColliderInfo(transform, c, useAcceleration))
+                .Select(c => GetColliderInfo(transform, c))
                 .Take(Params.SightAgents);
         
             // Debug.Log(nearbyObjects);
@@ -41,7 +41,7 @@ namespace Observers
             return agents;
         }
 
-        public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration);
+        public float[] GetColliderInfo(Transform baseTransform, Collider collider);
 
         public int Size
         {

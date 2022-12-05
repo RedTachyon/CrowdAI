@@ -566,5 +566,7 @@ namespace Managers
             }
             return array;
         }
+        
+        public float NormedTime => DecisionTimestep / (float) maxStep;
     }
 }

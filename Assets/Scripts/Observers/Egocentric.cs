@@ -1,4 +1,5 @@
 using Agents;
+using Managers;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -51,11 +52,13 @@ namespace Observers
             sensor.AddObservation(agent.e_w); // 11
             
             sensor.AddObservation(agent.PreferredSpeed); // 12
+            sensor.AddObservation(Manager.Instance.NormedTime); // 13
+
 
         }
-        public int Size => 12;
+        public int Size => 13;
 
-        public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
+        public float[] GetColliderInfo(Transform baseTransform, Collider collider)
         {
             
             var rigidbody = collider.GetComponent<Rigidbody>();
@@ -74,18 +77,8 @@ namespace Observers
             
             float[] obs;
 
-            if (useAcceleration)
-            {
-                var acceleration = agent == null
-                    ? Vector3.zero
-                    : Quaternion.Inverse(rotation) * (velocity - agent.PreviousVelocity);
-
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, mass, acceleration.x, acceleration.z};
-            }
-            else
-            {
-                obs = new[] { pos.x, pos.z, velocity.x, velocity.z, mass};
-            }
+  
+            obs = new[] { pos.x, pos.z, velocity.x, velocity.z, mass};
 
             // if (baseTransform.name == "Person")
             // {

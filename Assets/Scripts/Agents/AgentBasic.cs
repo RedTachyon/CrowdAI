@@ -100,7 +100,6 @@ namespace Agents
 
         public Dictionary<string, float> rewardParts;
 
-        private bool _observeAcceleration = false;
 
         // Debug variables
 
@@ -145,13 +144,9 @@ namespace Agents
                 _rayPerceptionSensor.RaysPerDirection = Params.RaysPerDirection;
             
 
-            _observeAcceleration = Params.SightAcceleration;
             _bufferSensor = GetComponent<BufferSensorComponent>();
             
-            if (_observeAcceleration)
-                _bufferSensor.ObservableSize = 7;
-            else 
-                _bufferSensor.ObservableSize = 5;
+            _bufferSensor.ObservableSize = 5;
 
 
         }
@@ -370,7 +365,7 @@ namespace Agents
 
             _observer.Observe(sensor, transform);
 
-            var neighbors = _observer.ObserveAgents(_bufferSensor, transform, _observeAcceleration);
+            var neighbors = _observer.ObserveAgents(_bufferSensor, transform);
             neighborsOrder = neighbors;
             
 

@@ -27,16 +27,16 @@ namespace Observers
             sensor.AddObservation(velocity.z / 5f);
             
             sensor.AddObservation(agent.CollectedGoal);
-            sensor.AddObservation(agent.mass); // 8
+            sensor.AddObservation(agent.mass); // 7
 
         }
 
-        public IEnumerable<string> ObserveAgents(BufferSensorComponent sensor, Transform transform, bool useAcceleration)
+        public IEnumerable<string> ObserveAgents(BufferSensorComponent sensor, Transform transform)
         {
             return new List<string>();
         }
 
-        public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
+        public float[] GetColliderInfo(Transform baseTransform, Collider collider)
         {
             return new float[] { };
         }
