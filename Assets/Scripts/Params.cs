@@ -112,9 +112,6 @@ public class Params : MonoBehaviour
     public static float SightAngle => Get("sight_angle", Instance.sightAngle);
     public static float MinCosine => Mathf.Cos(SightAngle * Mathf.Deg2Rad);
     
-    public bool sightAcceleration = false;
-    public static bool SightAcceleration => Convert.ToBoolean(Get("sight_acceleration", Instance.sightAcceleration ? 1f : 0f));
-
     public int raysPerDirection = 10; // Only at launch
     public static int RaysPerDirection => Mathf.RoundToInt(Get("rays_per_direction", Instance.raysPerDirection));
     

@@ -49,17 +49,16 @@ namespace Observers
             
             sensor.AddObservation(agent.e_s); // 10
             sensor.AddObservation(agent.e_w); // 11
-            
+
             sensor.AddObservation(agent.PreferredSpeed); // 12
             
-            sensor.AddObservation((float) Manager.Instance.DecisionTimestep / Manager.Instance.maxStep); // 13
-
+            sensor.AddObservation(Manager.Instance.NormedTime); // 13
         }
         public int Size => 13;
 
 
 
-        public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
+        public float[] GetColliderInfo(Transform baseTransform, Collider collider)
         {
             var rigidbody = collider.GetComponent<Rigidbody>();
             var agent = collider.GetComponent<AgentBasic>();
@@ -70,18 +69,8 @@ namespace Observers
             var velocity = rigidbody.velocity;
 
             float[] obs;
-            if (useAcceleration)
-            {
-                var acceleration = agent == null
-                    ? Vector3.zero
-                    : velocity - agent.PreviousVelocity;
 
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass, acceleration.x, acceleration.z};
-            }
-            else
-            {
-                obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass};
-            }
+            obs = new[] {pos.x, pos.z, velocity.x, velocity.z, agent.mass};
 
 
             return obs;
