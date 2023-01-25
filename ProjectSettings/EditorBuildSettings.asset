@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/BACKUPGeneralScene.unity
     guid: 083d802bbc7dd4f7eb1df1e9e18dffa6
   - enabled: 1
-    path: Assets/Scenes/NormalScene.unity
+    path: Assets/Scenes/FamilyScene.unity
     guid: 17891461a6c127d6eb9d8cfa2f7d6068
   m_configObjects: {}

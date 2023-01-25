@@ -216,8 +216,15 @@ public class MLUtils
         var v0 = previousVelocity.magnitude;
         
         var simpleEnergy = e_s * dt + e_w * v * v * dt;
+
+        var acceleration = (velocity - previousVelocity) / dt;
         
-        var complexEnergy = e_s * dt + v*v - (1 - e_w * dt) * Vector3.Dot(previousVelocity, velocity);
+        // var complexEnergy = e_s * dt + v*v - (1 - e_w * dt) * Vector3.Dot(previousVelocity, velocity);
+
+        var complexEnergy = e_s * dt +
+                            Mathf.Abs(Vector3.Dot(velocity, acceleration)
+                                      + e_w * Vector3.Dot(previousVelocity, velocity))
+                            * dt;
         
         // TODO: previous and current velocities are computed incorrectly, current velocity doesn't consider what happens due to physics
         // Maybe compute this based on the positions?

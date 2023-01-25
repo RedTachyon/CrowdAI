@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -594,7 +594,7 @@ MonoBehaviour:
   numAgents: 20
   dynamics: 2
   observer: 2
-  initializer: 1
+  initializer: 3
   rewarder: 2
   potential: 1
   goal: 10
@@ -623,7 +623,7 @@ MonoBehaviour:
   spawnScale: 5
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 0
+  enableObstacles: 1
   blockScale: 3
   randomMass: 1
   randomEnergy: 0
@@ -6098,6 +6098,8 @@ MonoBehaviour:
   speedReward: 0
   timeReward: 0
   standstillReward: 0
+  energyReward: 0
+  finalReward: 0
   totalReward: 0
   velocityDbg: {x: 0, y: 0, z: 0}
   speed: 0

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Agents;
+using Managers;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -51,10 +52,11 @@ namespace Observers
             sensor.AddObservation(agent.e_w); // 11
             
             sensor.AddObservation(agent.PreferredSpeed); // 12
+            sensor.AddObservation((float) Manager.Instance.DecisionTimestep / Manager.Instance.maxStep); // 13
 
 
         }
-        public int Size => 12;
+        public int Size => 13;
         
 
         public float[] GetColliderInfo(Transform baseTransform, Collider collider, bool useAcceleration)
