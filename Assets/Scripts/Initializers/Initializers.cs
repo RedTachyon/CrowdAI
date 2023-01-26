@@ -17,6 +17,7 @@ namespace Initializers
         Crossway,
         Corridor,
         Choke,
+        Family,
         JsonInitializer,
     }
     
@@ -29,6 +30,7 @@ namespace Initializers
         private static IInitializer _crossway = new Crossway();
         private static IInitializer _corridor = new Corridor();
         private static IInitializer _choke = new Choke();
+        private static IInitializer _family = new Family();
         
         public static IInitializer GetInitializer(InitializerEnum initializerType, string path = null)
         {
@@ -40,6 +42,7 @@ namespace Initializers
                 InitializerEnum.Crossway => _crossway,
                 InitializerEnum.Corridor => _corridor,
                 InitializerEnum.Choke => _choke,
+                InitializerEnum.Family => _family,
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
                 _ => null
             };
