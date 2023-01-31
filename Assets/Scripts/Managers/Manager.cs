@@ -409,6 +409,8 @@ namespace Managers
                 agent.AddReward(reward);
                 
                 agent.RecordEnergy();
+                
+                // if (Timestep % decisionFrequency == 0) Debug.Log($"Reward of agent {agent.name}: {agent.GetCurrentReward()}");
             }
             
 

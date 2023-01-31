@@ -44,8 +44,8 @@ namespace Rewards
             agent.AddRewardPart(complexEnergy, "energy");
             agent.AddRewardPart(potentialEnergy, "energyPotential");
 
-            return reward;
-            
+            return reward + potentialEnergy;
+
         }
     }
 }

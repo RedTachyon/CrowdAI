@@ -217,6 +217,7 @@ namespace Agents
                 ["standstill"] = 0f,
                 ["energy"] = 0f,
                 ["final"] = 0f,
+                ["energyPotential"] = 0f,
             };
             
             UpdateParams();
@@ -499,7 +500,7 @@ namespace Agents
             }
         }
 
-        private float GetCurrentReward()
+        public float GetCurrentReward()
         {
             var reward = (float) typeof(Agent).GetField("m_Reward", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
             // Debug.Log(reward);
