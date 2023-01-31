@@ -73,6 +73,8 @@ namespace Agents
         public Squasher.SquashersEnum squasherType;
         private Func<Vector2, Vector2> _squasher;
 
+        private bool _teleported;
+
 
         // protected int Unfrozen = 1;
 
@@ -547,13 +549,16 @@ namespace Agents
             var newGoalPosition = Goal.transform.localPosition;
             newGoalPosition.y = -10f;
             Goal.transform.localPosition = newGoalPosition;
-            
+
+            _teleported = true;
+
             // Debug.Log("New position: " + transform.localPosition);
         }
         
         public void TeleportBack()
         {
             // Debug.Log("Teleporting back");
+            if (!_teleported) return;
             var newPosition = transform.localPosition;
             newPosition.y = _originalHeight;
             transform.localPosition = newPosition;
@@ -567,6 +572,8 @@ namespace Agents
             var newGoalPosition = Goal.transform.localPosition;
             newGoalPosition.y = _originalGoalHeight;
             Goal.transform.localPosition = newGoalPosition;
+
+            _teleported = false;
 
             // Debug.Log("New position: " + transform.localPosition);
         }

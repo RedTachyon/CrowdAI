@@ -43,6 +43,8 @@ namespace Managers
         protected float[] _timeMemory;
         protected float[,] _goalPosition;
         protected int[] _finishTime;
+        
+        public Terrain Terrain;
 
         public Transform AllObstacles;
 
@@ -118,6 +120,7 @@ namespace Managers
             _timeMemory = new float[maxStep * decisionFrequency];
             _goalPosition = new float[numAgents, 2];
             _finishTime = new int[numAgents];
+            
             
 
             var currentNumAgents = transform.childCount;
@@ -209,6 +212,17 @@ namespace Managers
             Debug.Log($"Total agents: {transform.Cast<Transform>().Count()}");
             IInitializer initializer = Mapper.GetInitializer(Params.Initializer, dataFileName);
             initializer.PlaceAgents(transform, Params.SpawnScale, initializer.GetObstacles());
+            
+            foreach (Transform agentTransform in transform)
+            {
+                var y = Terrain.activeTerrain.SampleHeight(agentTransform.position) + agentTransform.localScale.y * 0.875f;
+                // Debug.Log($"y: {y}");
+                // Debug.Log($"agentTransform.position: {agentTransform.position}");
+                agentTransform.position = new Vector3(agentTransform.position.x, y, agentTransform.position.z);
+                // Debug.Log($"agentTransform.position: {agentTransform.position}");
+
+            }
+            
 
             var agentIdxGoal = 0;
             // var decisionTime = Time / decisionFrequency;
