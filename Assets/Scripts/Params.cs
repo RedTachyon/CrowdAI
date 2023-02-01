@@ -99,6 +99,9 @@ public class Params : MonoBehaviour
     public float finalEnergyWeight = 1f;
     public static float FinalEnergyWeight => Get("final_energy_weight", Instance.finalEnergyWeight);
 
+    public float potentialEnergyScale = 2f;
+    public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
+
 
     // Everything else
     [Header("Observation settings")]

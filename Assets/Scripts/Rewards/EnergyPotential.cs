@@ -36,9 +36,9 @@ namespace Rewards
             
             var distanceToGoal = Vector3.Distance(transform.position, agent.Goal.transform.position);
             var previousDistanceToGoal = Vector3.Distance(agent.PreviousPositionPhysics, agent.Goal.transform.position);
-            
-            var c_p = 4 * Mathf.Sqrt(agent.e_s * agent.e_w);
-            
+
+            var c_p = Params.PotentialEnergyScale * Mathf.Sqrt(agent.e_s * agent.e_w);
+
             var potentialEnergy = c_p * (previousDistanceToGoal - distanceToGoal);
             
             agent.AddRewardPart(complexEnergy, "energy");
