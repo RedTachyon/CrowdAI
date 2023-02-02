@@ -27,8 +27,8 @@ namespace Managers
         [Range(1, 10)] public int decisionFrequency = 1;
         
         protected Dictionary<Transform, bool> _finished;
-        internal int Timestep;
-        internal int DecisionTimestep;
+        [Range(1, 2000)] [SerializeField] internal int Timestep;
+        [Range(1, 200)] [SerializeField] internal int DecisionTimestep;
         public StatsCommunicator statsCommunicator;
 
         public StringChannel StringChannel;
@@ -51,9 +51,11 @@ namespace Managers
         
         public int selectedIdx = 0;
 
+        private MacroAgent _familyAgent;
+        
+        
         protected static Manager _instance;
         public static Manager Instance => _instance;
-
 
         public void Awake()
         {
@@ -86,6 +88,8 @@ namespace Managers
             
 
             _episodeNum = 0;
+            
+            _familyAgent = transform.parent.GetComponentInChildren<MacroAgent>();
             
             Random.InitState(0);
             
@@ -164,9 +168,9 @@ namespace Managers
         
             // Set up public parameters of all agents
             int agentIdx = 0;
-            foreach (Transform agentTransform in transform)
+            foreach (var (agentTransform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
-                var agent = agentTransform.GetComponent<AgentBasic>();
+                Debug.Log($"Setting up agent {agent.name}");
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
                 agent.AgentIndex = agentIdx;
@@ -212,11 +216,9 @@ namespace Managers
 
             var agentIdxGoal = 0;
             // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
+            foreach (var agent in ActiveAgents<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
-                var localPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
+                var localPosition = agent.Goal.localPosition;
                 _goalPosition[agentIdxGoal, 0] = localPosition.x;
                 _goalPosition[agentIdxGoal, 1] = localPosition.z;
                 _finishTime[agentIdxGoal] = -1;
@@ -236,9 +238,9 @@ namespace Managers
             Timestep = 0;
             DecisionTimestep = 0;
 
-            foreach (Transform agent in transform)
+            foreach (var (agentTransform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
-                _finished[agent] = false;
+                _finished[agentTransform] = false;
                 agent.GetComponent<AgentBasic>().OnEpisodeBegin();
             }
             // Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
@@ -290,9 +292,9 @@ namespace Managers
             // if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
             if (DecisionTimestep >= maxStep || (Params.EarlyFinish && _finished.Values.All(x => x)))
             {
-                foreach (Transform agent in transform)
+                foreach (var agent in ActiveAgents<AgentBasic>())
                 {
-                    agent.GetComponent<AgentBasic>().AddFinalReward();
+                    agent.AddFinalReward();
                 }
                 
                 episodeStats = GetEpisodeStats();
@@ -316,10 +318,8 @@ namespace Managers
             
             var agentIdx = 0;
             // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
+            foreach (var (agent, _) in ActiveAgentsTransform<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
                 var localPosition = agent.localPosition;
                 _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
                 _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
@@ -343,9 +343,9 @@ namespace Managers
                 // Collect stats only when requesting a decision
                 CollectStats(episodeStats);
 
-                foreach (Transform agent in transform)
+                foreach (var agent in ActiveAgents<Agent>())
                 {
-                    agent.GetComponent<Agent>().RequestDecision();
+                    agent.RequestDecision();
                 }
                 
                 if (Params.ShowAttention)
@@ -366,9 +366,9 @@ namespace Managers
                     // Debug.Log($"Attention values: {attentionValues}");
                     
                     // Reset all agents' colors
-                    foreach (Transform agent in transform)
+                    foreach (var agent in ActiveAgents<AgentBasic>())
                     {
-                        agent.GetComponent<AgentBasic>().SetColor(new Color(1, 1, 1), true);
+                        agent.SetColor(new Color(1, 1, 1), true);
                     }
                     
                     // Color the selected agent
@@ -390,7 +390,7 @@ namespace Managers
                 DecisionTimestep++;
             } else
             {
-                foreach (Transform agent in transform)
+                foreach (var agent in ActiveAgents<Agent>())
                 {
                     agent.GetComponent<Agent>().RequestAction();
                 }
@@ -402,9 +402,8 @@ namespace Managers
             
             Physics.Simulate(Time.fixedDeltaTime);
 
-            foreach (Transform agent_transform in transform)
+            foreach (var (agent_transform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
-                var agent = agent_transform.GetComponent<AgentBasic>();
                 var reward = agent._rewarder.LateReward(agent_transform);
                 agent.AddReward(reward);
                 
@@ -425,14 +424,12 @@ namespace Managers
             var successes = new List<float>();
             var numAgents = 0;
             
-            foreach (Transform agent in transform)
+            foreach (var agent in ActiveAgents<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
-                energies.Add(agent.GetComponent<AgentBasic>().energySpent);
-                energiesComplex.Add(agent.GetComponent<AgentBasic>().energySpentComplex);
-                distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
-                successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
+                energies.Add(agent.energySpent);
+                energiesComplex.Add(agent.energySpentComplex);
+                distances.Add(agent.distanceTraversed);
+                successes.Add(agent.CollectedGoal ? 1f : 0f);
                 numAgents++;
             }
             Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
@@ -444,11 +441,8 @@ namespace Managers
                 ["e_success"] = successes.Average(),
             };
             
-            foreach (Transform agentTransform in transform)
+            foreach (var agent in ActiveAgents<AgentBasic>())
             {
-                if (!agentTransform.gameObject.activeInHierarchy) continue;
-
-                var agent = agentTransform.GetComponent<AgentBasic>();
                 foreach (var rewardPart in agent.rewardParts)
                 {
                     var keyname = $"e_reward_{rewardPart.Key}";
@@ -475,17 +469,13 @@ namespace Managers
 
             var activeSpeeds = new List<float>();
             
-            foreach (Transform agent in transform)
+            foreach (var (agent, agentBasic) in ActiveAgentsTransform<AgentBasic>())
             {
-                // Ignore inactive agents - not participating in the scene
-                if (!agent.gameObject.activeInHierarchy) continue;
-                // Ignore agents that reached the goal
-                var agentBasic = agent.GetComponent<AgentBasic>();
                 // if (agentBasic.CollectedGoal) continue;
                 
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
-                var goalPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
+                var goalPosition = agentBasic.Goal.localPosition;
 
                 var distance = Vector3.Distance(agentPosition, goalPosition);
                 distances.Add(distance);
@@ -504,7 +494,7 @@ namespace Managers
                 dones.Add(_finished[agent] ? 1f : 0f);
                 // Debug.Log(_finished[agent]);
             
-                collisions.Add(agent.GetComponent<AgentBasic>().Collision);
+                collisions.Add(agentBasic.Collision);
             }
             
             // TODO: at some point uniformize e_name and m_name
@@ -546,11 +536,9 @@ namespace Managers
             var array = new float[numAgents, 6];
             var agentIdx = 0;
             // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
+            foreach (var (agent, agentBasic) in ActiveAgentsTransform<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
                 var localPosition = agent.localPosition;
-                var agentBasic = agent.GetComponent<AgentBasic>();
                 var goalPosition = agentBasic.Goal.localPosition;
                 var velocity = agentBasic.Rigidbody.velocity;
 
@@ -570,5 +558,43 @@ namespace Managers
         }
         
         public float NormedTime => DecisionTimestep / (float) maxStep;
+
+        IEnumerable<T> ActiveAgents<T>() where T : Component
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent.GetComponent<T>();
+            }
+        }
+
+        IEnumerable<AgentBasic> ActiveAgents()
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent.GetComponent<AgentBasic>();
+            }
+        }
+        
+        IEnumerable<Transform> ActiveAgentsTransform()
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent;
+            }
+        }
+        
+        IEnumerable<(Transform, T)> ActiveAgentsTransform<T>() where T : Component
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                var component = agent.GetComponent<T>();
+                if (component == null) continue;
+                yield return (agent, component);
+            }
+        }
     }
 }
