@@ -45,8 +45,14 @@ namespace Initializers
                 
                 // float xMin, xMax, zMin, zMax;
 
-                var newX = -6 + UnityEngine.Random.Range(-5, 5);
-                var newZ = 0 + UnityEngine.Random.Range(-5, 5);
+                // var newX = -6 + UnityEngine.Random.Range(-5, 5);
+                // var newZ = 0 + UnityEngine.Random.Range(-5, 5);
+
+                var u1 = UnityEngine.Random.value;
+                var u2 = UnityEngine.Random.value;
+                
+                var newX = -9 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Cos(2 * Mathf.PI * u2);
+                var newZ = 0 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Sin(2 * Mathf.PI * u2);
                 
                 newPosition = new Vector3(newX, agent.localPosition.y, newZ);
                 newRotation = Quaternion.LookRotation(Vector3.right);
@@ -66,6 +72,9 @@ namespace Initializers
                 agent.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
                 // agentBasic.PreviousPosition = agent.localPosition;
+                
+                // Disable collider for the goal
+                agentBasic.Goal.GetComponent<Collider>().enabled = false;
 
                 agentIdx++;
             }

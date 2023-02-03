@@ -591,7 +591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 4
+  numAgents: 5
   dynamics: 2
   observer: 2
   initializer: 6
@@ -623,7 +623,7 @@ MonoBehaviour:
   spawnScale: 5
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 0
+  enableObstacles: 1
   blockScale: 3
   randomMass: 1
   randomEnergy: 1
@@ -748,7 +748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &324249622
 Transform:
   m_ObjectHideFlags: 0
@@ -898,7 +898,8 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  Agents: []
+  agents: []
+  goalPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &521081497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,8 +913,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
-    NumStackedVectorObservations: 1
+    VectorObservationSize: 4
+    NumStackedVectorObservations: 4
     m_ActionSpec:
       m_NumContinuousActions: 2
       BranchSizes: 
@@ -1512,7 +1513,7 @@ Transform:
   m_GameObject: {fileID: 681389178}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 5, y: 2, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 324249622}
@@ -6143,7 +6144,7 @@ GameObject:
   - component: {fileID: 6068148285703966662}
   - component: {fileID: 6036236077061054587}
   m_Layer: 0
-  m_Name: Agents
+  m_Name: Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6162,8 +6163,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dataFileName: 12peds-1.json
-  maxStep: 200
+  maxStep: 201
   decisionFrequency: 10
+  Timestep: 0
+  DecisionTimestep: 0
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
   selectedIdx: 0

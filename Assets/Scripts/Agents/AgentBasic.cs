@@ -43,6 +43,8 @@ namespace Agents
         
         [field: SerializeField] public Transform Goal { get; set; }
         
+        public FamilyAgent Family { get; set; }
+        
         
         public Vector3 GoalScale { get; private set; }
 

@@ -51,7 +51,7 @@ namespace Managers
         
         public int selectedIdx = 0;
 
-        private MacroAgent _familyAgent;
+        private FamilyAgent _familyAgent;
         
         
         protected static Manager _instance;
@@ -89,7 +89,7 @@ namespace Managers
 
             _episodeNum = 0;
             
-            _familyAgent = transform.parent.GetComponentInChildren<MacroAgent>();
+            _familyAgent = transform.parent.GetComponentInChildren<FamilyAgent>();
             
             Random.InitState(0);
             
@@ -237,48 +237,20 @@ namespace Managers
 
             Timestep = 0;
             DecisionTimestep = 0;
+            
+            _familyAgent?.ResetAgents();
 
             foreach (var (agentTransform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
                 _finished[agentTransform] = false;
                 agent.GetComponent<AgentBasic>().OnEpisodeBegin();
+                _familyAgent?.AddAgent(agent.GetComponent<AgentBasic>());
             }
+            
+            _familyAgent?.OnEpisodeBegin();
             // Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
             // ScreenCapture.CaptureScreenshot("LastScreenshot.png");
 
-        }
-        public virtual void ReachGoal(Agent agent)
-        {
-            var idx = agent.GetComponent<AgentBasic>().AgentIndex;
-            _finished[agent.GetComponent<Transform>()] = true;
-            if (_finishTime[idx] < 0) _finishTime[idx] = Timestep;
-            // agent.GetComponent<AgentBasic>().CollectedGoal = true;
-
-        }
-
-        private void WriteTrajectory()
-        {
-            Debug.Log("Trying to save a trajectory");
-            string fullSavePath;
-            if (Params.SavePath != "DEFAULT")
-            {
-                fullSavePath = Params.SavePath;
-            }
-            else
-            {
-                if (!Directory.Exists("output"))
-                {
-                    Directory.CreateDirectory("output");
-                }
-
-                fullSavePath = Path.Combine("output", $"trajectory_{_episodeNum}.json");
-                // var savePath = $"output/trajectory_{_episodeNum}.json";
-            }
-            
-            Debug.Log($"Writing to {fullSavePath}");
-            var data = new TrajectoryData(_timeMemory, _positionMemory, _goalPosition, _finishTime);
-            var json = JsonConvert.SerializeObject(data);
-            File.WriteAllText(fullSavePath, json);
         }
 
         private void FixedUpdate()
@@ -343,6 +315,7 @@ namespace Managers
                 // Collect stats only when requesting a decision
                 CollectStats(episodeStats);
 
+                _familyAgent?.RequestDecision();
                 foreach (var agent in ActiveAgents<Agent>())
                 {
                     agent.RequestDecision();
@@ -390,6 +363,7 @@ namespace Managers
                 DecisionTimestep++;
             } else
             {
+                _familyAgent?.RequestAction();
                 foreach (var agent in ActiveAgents<Agent>())
                 {
                     agent.GetComponent<Agent>().RequestAction();
@@ -412,6 +386,15 @@ namespace Managers
                 // if (Timestep % decisionFrequency == 0) Debug.Log($"Reward of agent {agent.name}: {agent.GetCurrentReward()}");
             }
             
+
+        }
+
+        public virtual void ReachGoal(Agent agent)
+        {
+            var idx = agent.GetComponent<AgentBasic>().AgentIndex;
+            _finished[agent.GetComponent<Transform>()] = true;
+            if (_finishTime[idx] < 0) _finishTime[idx] = Timestep;
+            // agent.GetComponent<AgentBasic>().CollectedGoal = true;
 
         }
 
@@ -457,7 +440,32 @@ namespace Managers
             }
 
             return stats;
-        } 
+        }
+
+        private void WriteTrajectory()
+        {
+            Debug.Log("Trying to save a trajectory");
+            string fullSavePath;
+            if (Params.SavePath != "DEFAULT")
+            {
+                fullSavePath = Params.SavePath;
+            }
+            else
+            {
+                if (!Directory.Exists("output"))
+                {
+                    Directory.CreateDirectory("output");
+                }
+
+                fullSavePath = Path.Combine("output", $"trajectory_{_episodeNum}.json");
+                // var savePath = $"output/trajectory_{_episodeNum}.json";
+            }
+            
+            Debug.Log($"Writing to {fullSavePath}");
+            var data = new TrajectoryData(_timeMemory, _positionMemory, _goalPosition, _finishTime);
+            var json = JsonConvert.SerializeObject(data);
+            File.WriteAllText(fullSavePath, json);
+        }
 
 
         private void CollectStats(Dictionary<string, float> episodeStats = null)
