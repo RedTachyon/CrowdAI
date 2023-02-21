@@ -38,30 +38,36 @@ namespace Initializers
                 var agentBasic = agent.GetComponent<AgentBasic>();
                 var goal = agentBasic.Goal;
 
-                Vector3 newPosition;
-                Vector3 goalPosition;
-                Vector3 goalOffset;
-                Quaternion newRotation;
+                // Vector3 newPosition;
+                // Vector3 goalPosition;
+                // Vector3 goalOffset;
+                // Quaternion newRotation;
+                //
+                //
+                // var u1 = UnityEngine.Random.value;
+                // var u2 = UnityEngine.Random.value;
+                //
+                // var newX = -9 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Cos(2 * Mathf.PI * u2);
+                // var newZ = 0 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Sin(2 * Mathf.PI * u2);
                 
-                // float xMin, xMax, zMin, zMax;
-
-                // var newX = -6 + UnityEngine.Random.Range(-5, 5);
-                // var newZ = 0 + UnityEngine.Random.Range(-5, 5);
-
-                var u1 = UnityEngine.Random.value;
-                var u2 = UnityEngine.Random.value;
+                var newPosition = MLUtils.NoncollidingPosition(
+                    -11,
+                    -7,
+                    -2,
+                    2,
+                    agent.localPosition.y,
+                    placedAgents);
                 
-                var newX = -9 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Cos(2 * Mathf.PI * u2);
-                var newZ = 0 + 1 * Mathf.Sqrt(-2 * Mathf.Log(u1)) * Mathf.Sin(2 * Mathf.PI * u2);
-                
-                newPosition = new Vector3(newX, agent.localPosition.y, newZ);
-                newRotation = Quaternion.LookRotation(Vector3.right);
-                goalPosition = new Vector3(9, agent.localPosition.y, 0);
+                // newPosition = new Vector3(newX, agent.localPosition.y, newZ);
+                var newRotation = Quaternion.LookRotation(Vector3.right);
+                var goalPosition = new Vector3(9, agent.localPosition.y, 0);
                 
                 
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
+                
+                goal.localScale = new Vector3(4f, 1f, 4f);
 
                 // Save the placed agents
                 placedAgents.Add(newPosition);

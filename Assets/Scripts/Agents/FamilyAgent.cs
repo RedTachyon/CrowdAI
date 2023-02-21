@@ -29,7 +29,7 @@ namespace Agents
         {
             base.CollectObservations(sensor);
 
-            Debug.Log("Collecting observations family");
+            // Debug.Log("Collecting observations family");
             
             var ownPosition = GetPosition();
             var goal = goalPosition;
