@@ -21,7 +21,9 @@ namespace Agents
             Debug.Log("Starting family");
             goalPosition = agents[0].Goal.localPosition;
             goalPosition = new Vector3(9, 0, 0);
+            
             PreviousPosition = GetPosition();
+            
         }
 
 
@@ -41,6 +43,17 @@ namespace Agents
             sensor.AddObservation(ownPosition.z);
             sensor.AddObservation(goal.x);
             sensor.AddObservation(goal.z);
+            
+            var currentDistance = MLUtils.FlatDistance(ownPosition, goal);
+            var prevDistance = MLUtils.FlatDistance(PreviousPosition, goal);
+            
+            var reward = Params.Potential * (prevDistance - currentDistance);
+
+            AddReward(reward);
+
+            Debug.Log($"Family reward: {reward}");
+            
+            PreviousPosition = ownPosition;
         }
         
         
