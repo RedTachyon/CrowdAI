@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Agents;
+using Managers;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Rewards
         public float ComputeReward(Transform transform)
         {
             var reward = 0f;
+            // Debug.Log($"Boring reward at timestep {Manager.Instance.Timestep}");
             
             AgentBasic agent = transform.GetComponent<AgentBasic>();
             Transform goal = agent.Goal;
@@ -90,6 +92,35 @@ namespace Rewards
 
         public float ActionReward(Transform transform, ActionBuffers actions)
         {
+            float reward = 0f;
+            // Debug.Log($"Action reward at timestep {Manager.Instance.Timestep}");
+            var agent = transform.GetComponent<AgentBasic>();
+            if (agent.CollectedGoal)
+            {
+                return 0f;
+            }
+
+            var family = agent.Family;
+            var lastOrder = family.LastAction;
+            
+            var velocity = transform.GetComponent<Rigidbody>().velocity;
+
+            var v = new Vector2(velocity.x, velocity.z);
+            var a = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
+            
+            var alignment = Vector2.Dot(v.normalized, a.normalized); // [0, 1]
+            
+            Debug.Log($"Current alignment: {alignment}");
+
+            reward += alignment;
+            
+            return reward;
+        }
+        
+        public float LateReward(Transform transform)
+        {
+            // Debug.Log($"Computing late reward at timestep {Manager.Instance.Timestep}");
+
             float reward = 0f;
             return reward;
         }

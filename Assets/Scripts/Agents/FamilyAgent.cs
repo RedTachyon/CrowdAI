@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Managers;
 using Observers;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -15,6 +16,8 @@ namespace Agents
         public Vector3 goalPosition;
 
         private Vector3 PreviousPosition;
+
+        public ActionSegment<float> LastAction;
         
         public override void OnEpisodeBegin()
         {
@@ -51,7 +54,7 @@ namespace Agents
 
             AddReward(reward);
 
-            Debug.Log($"Family reward: {reward}");
+            // Debug.Log($"Family reward: {reward}");
             
             PreviousPosition = ownPosition;
         }
@@ -60,13 +63,15 @@ namespace Agents
         public override void OnActionReceived(ActionBuffers actions)
         {
             base.OnActionReceived(actions);
+            LastAction = actions.ContinuousActions;
+            Debug.Log($"Recording action at timestep {Manager.Instance.Timestep}");
             // Debug.Log("Action received family");
         }
         
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var cActionsOut = actionsOut.ContinuousActions;
-            cActionsOut[0] = 0;
+            cActionsOut[0] = 1;
             cActionsOut[1] = 0;
         }
         

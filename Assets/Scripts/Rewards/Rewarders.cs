@@ -53,6 +53,7 @@ namespace Rewards
         Energy,
         EnergyComplex,
         EnergyPotential,
+        FamilyRewarder
     }
     
     public static class Mapper
@@ -66,7 +67,7 @@ namespace Rewards
                 RewardersEnum.Energy => new Energy(),
                 RewardersEnum.EnergyComplex => new EnergyComplex(),
                 RewardersEnum.EnergyPotential => new EnergyPotential(),
-                // RewardersEnum.AnimalChase => new AnimalChase(),
+                RewardersEnum.FamilyRewarder => new FamilyRewarder(),
                 _ => null
             };
 

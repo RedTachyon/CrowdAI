@@ -366,11 +366,10 @@ namespace Managers
                 _familyAgent?.RequestAction();
                 foreach (var agent in ActiveAgents<Agent>())
                 {
-                    agent.GetComponent<Agent>().RequestAction();
+                    agent.RequestAction();
                 }
             }
 
-            Timestep++;
         
             // Debug.Log(Time);
             
@@ -385,7 +384,9 @@ namespace Managers
                 
                 // if (Timestep % decisionFrequency == 0) Debug.Log($"Reward of agent {agent.name}: {agent.GetCurrentReward()}");
             }
-            
+
+            Timestep++;
+
 
         }
 
