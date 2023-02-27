@@ -18,12 +18,15 @@ namespace Agents
         private Vector3 PreviousPosition;
 
         public ActionSegment<float> LastAction;
+
+        public bool CollectedGoal;
         
         public override void OnEpisodeBegin()
         {
             Debug.Log("Starting family");
             goalPosition = agents[0].Goal.localPosition;
             goalPosition = new Vector3(9, 0, 0);
+            CollectedGoal = false;
             
             PreviousPosition = GetPosition();
             
@@ -64,26 +67,55 @@ namespace Agents
         {
             base.OnActionReceived(actions);
             LastAction = actions.ContinuousActions;
-            Debug.Log($"Recording action at timestep {Manager.Instance.Timestep}");
+            // Debug.Log($"Recording action at timestep {Manager.Instance.Timestep}");
             // Debug.Log("Action received family");
         }
         
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var cActionsOut = actionsOut.ContinuousActions;
-            cActionsOut[0] = 1;
-            cActionsOut[1] = 0;
+            cActionsOut[0] = 0;
+            cActionsOut[1] = 1;
         }
         
         public Vector3 GetPosition()
         {
             // Returns the mean position of all agents
-            // TODO: cache this value
 
             var position = agents.Select(a => a.transform.position).Aggregate((a, b) => a + b) / agents.Count;
             return position;
         }
         
+        
+        public bool CheckGoal()
+        {
+            var ownPosition = GetPosition();
+            var goal = goalPosition;
+            var distance = MLUtils.FlatDistance(ownPosition, goal);
+            return distance < Params.FamilyGoalRadius;
+        }
+
+
+        public void TryFinish()
+        {
+            if (CollectedGoal) return;
+            
+            var done = CheckGoal();
+            if (!done) return;
+            
+            
+            Debug.Log("Family done");
+                
+            foreach (AgentBasic agent in agents)
+            {
+                agent.CollectGoal();
+            }
+
+            AddReward(Params.Goal);
+            CollectedGoal = true;
+
+            // EndEpisode();
+        }
         
         
         public void AddAgent(AgentBasic agent)

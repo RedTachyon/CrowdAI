@@ -91,6 +91,10 @@ public class Params : MonoBehaviour
     public float comfortDistanceWeight = 0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
 
+
+    public float familyGoalRadius = 0.5f;
+    public static float FamilyGoalRadius => Get("family_goal_radius", Instance.familyGoalRadius);
+
     // Energy rewarder
     
     public float energyWeight = 1f;

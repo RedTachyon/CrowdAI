@@ -591,7 +591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 1
+  numAgents: 2
   dynamics: 2
   observer: 2
   initializer: 6
@@ -608,6 +608,7 @@ MonoBehaviour:
   goalSpeedThreshold: 0
   comfortDistance: 0
   comfortDistanceWeight: 0
+  familyGoalRadius: 0.5
   energyWeight: 1
   finalEnergyWeight: 1
   potentialEnergyScale: 2
@@ -900,6 +901,7 @@ MonoBehaviour:
   MaxStep: 0
   agents: []
   goalPosition: {x: 0, y: 0, z: 0}
+  CollectedGoal: 0
 --- !u!114 &521081497
 MonoBehaviour:
   m_ObjectHideFlags: 0

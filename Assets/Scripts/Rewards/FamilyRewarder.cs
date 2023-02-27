@@ -25,21 +25,11 @@ namespace Rewards
             }
             else
             {
-                var prevDistance = MLUtils.FlatDistance(agent.PreviousPosition, goal.localPosition);
-                var currentDistance = MLUtils.FlatDistance(transform.localPosition, goal.localPosition);
-
-                // Up to ~0.1
-                var diff = prevDistance - currentDistance;
-
                 // Speed similarity
                 var idealSpeed = Params.RandomEnergy ? Mathf.Sqrt(agent.e_s / agent.e_w) : Params.ComfortSpeed;
                 var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
                 var speedDiff = Mathf.Pow(Mathf.Abs(currentSpeed - idealSpeed), Params.ComfortSpeedExponent);
                 
-                
-
-                reward += Params.Potential * diff; // Add this on the last step too
-                agent.AddRewardPart(diff, "potential");
                 if (!agent.CollectedGoal)
                 {
                     // Only add the speed reward if the agent hasn't collected the goal yet
@@ -49,8 +39,8 @@ namespace Rewards
 
                 }
 
-                reward += Params.StepReward; // Always add this for simplicity
-                agent.AddRewardPart(-1, "time");
+                // reward += Params.StepReward; // Always add this for simplicity
+                // agent.AddRewardPart(-1, "time");
             }
             
             // TODO: add non-finishing penalty

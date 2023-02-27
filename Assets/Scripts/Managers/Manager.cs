@@ -374,6 +374,8 @@ namespace Managers
             // Debug.Log(Time);
             
             Physics.Simulate(Time.fixedDeltaTime);
+            
+            _familyAgent?.TryFinish();
 
             foreach (var (agent_transform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
