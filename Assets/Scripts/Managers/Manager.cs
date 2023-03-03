@@ -280,6 +280,7 @@ namespace Managers
                 terminal = true;
 
                 _agentGroup.EndGroupEpisode();
+                _familyAgent?.EndEpisode();
                 ResetEpisode();
             }
 
