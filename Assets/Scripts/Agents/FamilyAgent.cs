@@ -67,7 +67,6 @@ namespace Agents
         {
             base.OnActionReceived(actions);
             LastAction = actions.ContinuousActions;
-            // Debug.Log($"Recording action at timestep {Manager.Instance.Timestep}");
             // Debug.Log("Action received family");
         }
         
@@ -75,7 +74,7 @@ namespace Agents
         {
             var cActionsOut = actionsOut.ContinuousActions;
             cActionsOut[0] = 0;
-            cActionsOut[1] = 1;
+            cActionsOut[1] = -1;
         }
         
         public Vector3 GetPosition()

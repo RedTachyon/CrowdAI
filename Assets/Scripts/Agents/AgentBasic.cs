@@ -220,6 +220,7 @@ namespace Agents
                 ["energy"] = 0f,
                 ["final"] = 0f,
                 ["energyPotential"] = 0f,
+                ["alignment"] = 0f,
             };
             
             UpdateParams();

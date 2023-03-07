@@ -374,7 +374,9 @@ namespace Managers
         
             // Debug.Log(Time);
             
+            // Debug.Log("Before physics");
             Physics.Simulate(Time.fixedDeltaTime);
+            // Debug.Log("After physics");
             
             _familyAgent?.TryFinish();
 

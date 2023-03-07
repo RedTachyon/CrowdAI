@@ -591,7 +591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 5
+  numAgents: 1
   dynamics: 2
   observer: 2
   initializer: 6
@@ -612,6 +612,7 @@ MonoBehaviour:
   energyWeight: 1
   finalEnergyWeight: 1
   potentialEnergyScale: 2
+  alignmentWeight: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180

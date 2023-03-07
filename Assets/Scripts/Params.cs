@@ -105,6 +105,11 @@ public class Params : MonoBehaviour
 
     public float potentialEnergyScale = 2f;
     public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
+    
+    // Alignment
+    
+    public float alignmentWeight = 1f;
+    public static float AlignmentWeight => Get("alignment_weight", Instance.alignmentWeight);
 
 
     // Everything else

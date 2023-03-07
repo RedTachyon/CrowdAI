@@ -96,13 +96,14 @@ namespace Rewards
             var velocity = transform.GetComponent<Rigidbody>().velocity;
 
             var v = new Vector2(velocity.x, velocity.z);
-            var a = new Vector2(actions.ContinuousActions[0], actions.ContinuousActions[1]);
-            
+            var a = new Vector2(lastOrder[0], lastOrder[1]);
+
             var alignment = Vector2.Dot(v.normalized, a.normalized); // [0, 1]
             
+            // Debug.Log($"Current alignment: {alignment}, v.x: {v.x}, v.y: {v.y}, a.x: {a.x}, a.y: {a.y}");
             Debug.Log($"Current alignment: {alignment}");
-
-            reward += alignment;
+            agent.AddRewardPart(alignment, "alignment");
+            reward += Params.AlignmentWeight * alignment;
             
             return reward;
         }
