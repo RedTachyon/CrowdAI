@@ -66,8 +66,9 @@ namespace Initializers
                 agent.localPosition = newPosition;
                 agent.localRotation = newRotation;
                 goal.localPosition = goalPosition;
-                
-                goal.localScale = new Vector3(4f, 1f, 4f);
+
+                var scale = 2 * Params.FamilyGoalRadius;
+                goal.localScale = new Vector3(scale, goal.localScale.y, scale);
 
                 // Save the placed agents
                 placedAgents.Add(newPosition);
