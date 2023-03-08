@@ -41,6 +41,7 @@ namespace Agents
             
             var ownPosition = GetPosition();
             var goal = goalPosition;
+
             
             
             // Observations:
@@ -67,6 +68,8 @@ namespace Agents
         {
             base.OnActionReceived(actions);
             LastAction = actions.ContinuousActions;
+            transform.localPosition = GetPosition(5f);
+
             // Debug.Log("Action received family");
         }
         
@@ -77,11 +80,16 @@ namespace Agents
             cActionsOut[1] = -1;
         }
         
-        public Vector3 GetPosition()
+        public Vector3 GetPosition(float? y = null)
         {
             // Returns the mean position of all agents
 
             var position = agents.Select(a => a.transform.position).Aggregate((a, b) => a + b) / agents.Count;
+            
+            if (y != null)
+            {
+                position.y = (float) y;
+            }
             return position;
         }
         
