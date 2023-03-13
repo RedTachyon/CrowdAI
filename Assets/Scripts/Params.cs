@@ -60,6 +60,8 @@ public class Params : MonoBehaviour
     public float rotationSpeed = 3f;
     public static float RotationSpeed => Get("rotation_speed", Instance.rotationSpeed);
     
+    
+    
     [Header("Reward settings")]
     public float potential = 1f;
     public static float Potential => Get("potential", Instance.potential);

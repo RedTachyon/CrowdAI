@@ -6,17 +6,6 @@ namespace Rewards
 {
     public class EnergyPotential : IRewarder
     {
-        public float FinishReward(Transform transform, bool success)
-        {
-            var agent = transform.GetComponent<AgentBasic>();
-            var position = transform.localPosition;
-            var goalPosition = agent.Goal.transform.localPosition;
-
-            var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
-            agent.AddRewardPart(success ? 0f : -cost, "final");
-            return success ? 0f : -Params.FinalEnergyWeight * cost;
-        }
-
         public float LateReward(Transform transform)
         {
             var agent = transform.GetComponent<AgentBasic>();
@@ -42,10 +31,21 @@ namespace Rewards
             var potentialEnergy = c_p * (previousDistanceToGoal - distanceToGoal);
             
             agent.AddRewardPart(complexEnergy, "energy");
-            agent.AddRewardPart(potentialEnergy, "energyPotential");
+            agent.AddRewardPart((previousDistanceToGoal - distanceToGoal), "energyPotential");
 
             return reward + potentialEnergy;
 
+        }
+        
+        public float FinishReward(Transform transform, bool success)
+        {
+            var agent = transform.GetComponent<AgentBasic>();
+            var position = transform.localPosition;
+            var goalPosition = agent.Goal.transform.localPosition;
+
+            var cost = MLUtils.EnergyHeuristic(position, goalPosition, agent.e_s, agent.e_w);
+            agent.AddRewardPart(success ? 0f : -cost, "final");
+            return success ? 0f : -Params.FinalEnergyWeight * cost;
         }
     }
 }
