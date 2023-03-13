@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -592,10 +592,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numAgents: 15
-  dynamics: 3
+  dynamics: 2
   observer: 0
   initializer: 1
   rewarder: 4
+  maxSpeed: 3
+  maxAcceleration: 5
+  rotationSpeed: 2
   potential: 1
   goal: 10
   collision: -0.05
@@ -608,8 +611,11 @@ MonoBehaviour:
   goalSpeedThreshold: 0
   comfortDistance: 0
   comfortDistanceWeight: 0
+  familyGoalRadius: 0.5
   energyWeight: 1
   finalEnergyWeight: 1
+  potentialEnergyScale: 2
+  alignmentWeight: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180
@@ -5951,6 +5957,8 @@ MonoBehaviour:
   dataFileName: 24peds-1.json
   maxStep: 200
   decisionFrequency: 10
+  Timestep: 0
+  DecisionTimestep: 0
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
   selectedIdx: 0
@@ -6076,9 +6084,6 @@ MonoBehaviour:
   MaxStep: 0
   <Goal>k__BackingField: {fileID: 3898099998562990149}
   controllable: 1
-  maxSpeed: 2
-  maxAcceleration: 5
-  rotationSpeed: 1
   e_s: 2.23
   e_w: 1.26
   PreferredSpeed: 1.33

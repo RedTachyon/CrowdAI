@@ -50,6 +50,16 @@ public class Params : MonoBehaviour
     public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
     public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
     
+    [Header("Physics")]
+    public float maxSpeed = 2f;
+    public static float MaxSpeed => Get("max_speed", Instance.maxSpeed);
+    
+    public float maxAcceleration = 5f;
+    public static float MaxAcceleration => Get("max_acceleration", Instance.maxAcceleration);
+
+    public float rotationSpeed = 3f;
+    public static float RotationSpeed => Get("rotation_speed", Instance.rotationSpeed);
+    
     [Header("Reward settings")]
     public float potential = 1f;
     public static float Potential => Get("potential", Instance.potential);

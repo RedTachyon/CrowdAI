@@ -51,9 +51,9 @@ namespace Agents
         public bool controllable = true;
 
         // public bool velocityControl = false;
-        public float maxSpeed = 2f;
-        public float maxAcceleration = 5f;
-        public float rotationSpeed = 3f;
+        // public float maxSpeed = 2f;
+        // public float maxAcceleration = 5f;
+        // public float rotationSpeed = 3f;
         public float e_s = 2.23f;
         public float e_w = 1.26f;
         public float PreferredSpeed = 1.33f;
@@ -266,7 +266,7 @@ namespace Agents
             
             if (!CollectedGoal)
             {
-                _dynamics.ProcessActions(actions, Rigidbody, maxSpeed, maxAcceleration, rotationSpeed, _squasher);
+                _dynamics.ProcessActions(actions, Rigidbody, Params.MaxSpeed, Params.MaxAcceleration, Params.RotationSpeed, _squasher);
             }
 
 
