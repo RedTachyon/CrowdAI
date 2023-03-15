@@ -112,6 +112,7 @@ namespace Agents
         public float timeReward;
         public float standstillReward;
         public float energyReward;
+        public float energyPotentialReward;
         public float finalReward;
         public float totalReward;
         public Vector3 velocityDbg;
@@ -242,6 +243,7 @@ namespace Agents
                 timeReward = rewardParts["time"];
                 standstillReward = rewardParts["standstill"];
                 energyReward = rewardParts["energy"];
+                energyPotentialReward = rewardParts["energyPotential"];
                 finalReward = rewardParts["final"];
                 velocityDbg = Rigidbody.velocity;
                 speed = Rigidbody.velocity.magnitude;
@@ -305,27 +307,38 @@ namespace Agents
             if (!controllable) return;
             
             var cActionsOut = actionsOut.ContinuousActions;
+            
+            // Simple heuristic
+            // var xValue = 0f;
+            // var zValue = MathF.Atanh(1.33f / Params.MaxSpeed);
+            //
+            // cActionsOut[0] = xValue;
+            // cActionsOut[1] = zValue;
+            //
+            // return;
+            
+            // Regular heuristic
 
             var xValue = 0f;
             var zValue = 0f;
             Vector3 force;
-
+            
             // Only for polar WASD controls
             // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
             // const float ratio = 1f;
-
+            
             const float baseSpeed = 1.7f;
             
             if (Input.GetKey(KeyCode.W)) zValue = 1f;
             if (Input.GetKey(KeyCode.S)) zValue = -1f;
-
+            
             if (Input.GetKey(KeyCode.D)) xValue = 1f;
             if (Input.GetKey(KeyCode.A)) xValue = -1f;
             
             // TODO: diagonals are faster with cartesian controls
             force = new Vector3(xValue, 0, zValue) * baseSpeed;
-
+            
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 force *= 2;

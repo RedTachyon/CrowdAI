@@ -118,6 +118,9 @@ public class Params : MonoBehaviour
     public float potentialEnergyScale = 2f;
     public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
     
+    public bool useComplexEnergy = true;
+    public static bool UseComplexEnergy => Convert.ToBoolean(Get("complex_energy", Instance.useComplexEnergy ? 1f : 0f));
+    
     // Alignment
     
     public float alignmentWeight = 1f;

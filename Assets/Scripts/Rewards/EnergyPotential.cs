@@ -19,18 +19,20 @@ namespace Rewards
             // var lastVelocity = agent.PreviousVelocityPhysics;
             var velocity = (transform.localPosition - agent.PreviousPositionPhysics) / Time.fixedDeltaTime;
             var lastVelocity = (agent.PreviousPositionPhysics - agent.PreviouserPositionPhysics) / Time.fixedDeltaTime;
-            var (_, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
+            var (normalEnergy, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
             
-            var reward = -Params.EnergyWeight * complexEnergy;
+            var energy = Params.UseComplexEnergy ? complexEnergy : normalEnergy;
             
-            var distanceToGoal = Vector3.Distance(transform.position, agent.Goal.transform.position);
-            var previousDistanceToGoal = Vector3.Distance(agent.PreviousPositionPhysics, agent.Goal.transform.position);
+            var reward = -Params.EnergyWeight * energy;
+            
+            var distanceToGoal = MLUtils.FlatDistance(transform.position, agent.Goal.transform.position);
+            var previousDistanceToGoal = MLUtils.FlatDistance(agent.PreviousPositionPhysics, agent.Goal.transform.position);
 
             var c_p = Params.PotentialEnergyScale * Mathf.Sqrt(agent.e_s * agent.e_w);
 
             var potentialEnergy = c_p * (previousDistanceToGoal - distanceToGoal);
             
-            agent.AddRewardPart(complexEnergy, "energy");
+            agent.AddRewardPart(energy, "energy");
             agent.AddRewardPart((previousDistanceToGoal - distanceToGoal), "energyPotential");
 
             return reward + potentialEnergy;
