@@ -591,11 +591,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e172f6c086e340a78b2a268ebb9264c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numAgents: 15
-  dynamics: 3
+  numAgents: 1
+  dynamics: 2
   observer: 0
   initializer: 1
   rewarder: 4
+  maxSpeed: 3
+  maxAcceleration: 5
+  rotationSpeed: 2
   potential: 1
   goal: 10
   collision: -0.05
@@ -608,8 +611,12 @@ MonoBehaviour:
   goalSpeedThreshold: 0
   comfortDistance: 0
   comfortDistanceWeight: 0
+  familyGoalRadius: 0.5
   energyWeight: 1
   finalEnergyWeight: 1
+  potentialEnergyScale: 2
+  useComplexEnergy: 1
+  alignmentWeight: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180
@@ -625,7 +632,7 @@ MonoBehaviour:
   enableObstacles: 0
   blockScale: 3
   randomMass: 1
-  randomEnergy: 1
+  randomEnergy: 0
   sharedGoal: 1
   evaluationMode: 0
   savePath: 
@@ -5951,6 +5958,8 @@ MonoBehaviour:
   dataFileName: 24peds-1.json
   maxStep: 200
   decisionFrequency: 10
+  Timestep: 0
+  DecisionTimestep: 0
   statsCommunicator: {fileID: 2113393393}
   AllObstacles: {fileID: 1990633735}
   selectedIdx: 0
@@ -6076,9 +6085,6 @@ MonoBehaviour:
   MaxStep: 0
   <Goal>k__BackingField: {fileID: 3898099998562990149}
   controllable: 1
-  maxSpeed: 2
-  maxAcceleration: 5
-  rotationSpeed: 1
   e_s: 2.23
   e_w: 1.26
   PreferredSpeed: 1.33
@@ -6098,6 +6104,7 @@ MonoBehaviour:
   timeReward: 0
   standstillReward: 0
   energyReward: 0
+  energyPotentialReward: 0
   finalReward: 0
   totalReward: 0
   velocityDbg: {x: 0, y: 0, z: 0}

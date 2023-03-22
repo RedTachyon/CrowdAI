@@ -27,8 +27,8 @@ namespace Managers
         [Range(1, 10)] public int decisionFrequency = 1;
         
         protected Dictionary<Transform, bool> _finished;
-        internal int Timestep;
-        internal int DecisionTimestep;
+        [Range(1, 2000)] [SerializeField] internal int Timestep;
+        [Range(1, 200)] [SerializeField] internal int DecisionTimestep;
         public StatsCommunicator statsCommunicator;
 
         public StringChannel StringChannel;
@@ -51,9 +51,11 @@ namespace Managers
         
         public int selectedIdx = 0;
 
+        private FamilyAgent _familyAgent;
+        
+        
         protected static Manager _instance;
         public static Manager Instance => _instance;
-
 
         public void Awake()
         {
@@ -86,6 +88,8 @@ namespace Managers
             
 
             _episodeNum = 0;
+            
+            _familyAgent = transform.parent.GetComponentInChildren<FamilyAgent>();
             
             Random.InitState(0);
             
@@ -164,9 +168,9 @@ namespace Managers
         
             // Set up public parameters of all agents
             int agentIdx = 0;
-            foreach (Transform agentTransform in transform)
+            foreach (var (agentTransform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
-                var agent = agentTransform.GetComponent<AgentBasic>();
+                Debug.Log($"Setting up agent {agent.name}");
                 agent.SetColor(ColorMap.GetColor(agentIdx), true);
                 
                 agent.AgentIndex = agentIdx;
@@ -212,11 +216,9 @@ namespace Managers
 
             var agentIdxGoal = 0;
             // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
+            foreach (var agent in ActiveAgents<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
-                var localPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
+                var localPosition = agent.Goal.localPosition;
                 _goalPosition[agentIdxGoal, 0] = localPosition.x;
                 _goalPosition[agentIdxGoal, 1] = localPosition.z;
                 _finishTime[agentIdxGoal] = -1;
@@ -235,16 +237,164 @@ namespace Managers
 
             Timestep = 0;
             DecisionTimestep = 0;
+            
+            _familyAgent?.ResetAgents();
 
-            foreach (Transform agent in transform)
+            foreach (var (agentTransform, agent) in ActiveAgentsTransform<AgentBasic>())
             {
-                _finished[agent] = false;
+                _finished[agentTransform] = false;
                 agent.GetComponent<AgentBasic>().OnEpisodeBegin();
+                _familyAgent?.AddAgent(agent.GetComponent<AgentBasic>());
             }
+            
+            _familyAgent?.OnEpisodeBegin();
             // Debug.Log($"Saving a screenshot to {Application.persistentDataPath}");
             // ScreenCapture.CaptureScreenshot("LastScreenshot.png");
 
         }
+
+        private void FixedUpdate()
+        {
+            if (!_initialized) return;
+
+            Dictionary<string, float> episodeStats = null;
+            var terminal = false;
+            // Reset the episode if time runs out, or if all agents have reached their goals (and early finish is enabled)
+            // TODO: base termination on decision steps?
+            // if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
+            if (DecisionTimestep >= maxStep || (Params.EarlyFinish && _finished.Values.All(x => x)))
+            {
+                foreach (var agent in ActiveAgents<AgentBasic>())
+                {
+                    agent.AddFinalReward();
+                }
+                
+                episodeStats = GetEpisodeStats();
+                if (Params.SavePath != "") WriteTrajectory();
+                else Debug.Log("Oops, not saving anything");
+
+                Debug.Log("Resetting");
+                // Debug.Break();
+                // return;
+
+                terminal = true;
+
+                _agentGroup.EndGroupEpisode();
+                _familyAgent?.EndEpisode();
+                ResetEpisode();
+            }
+
+
+            ///////////////////////
+            // Log the positions //
+            ///////////////////////
+            
+            var agentIdx = 0;
+            // var decisionTime = Time / decisionFrequency;
+            foreach (var (agent, _) in ActiveAgentsTransform<AgentBasic>())
+            {
+                var localPosition = agent.localPosition;
+                _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
+                _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
+
+                agentIdx++;
+            }
+            
+            // Debug.Log($"Timestep: {Timestep}");
+
+            _timeMemory[Timestep] = Timestep * Time.fixedDeltaTime;
+            
+
+            /////////////////////
+            // Request actions //
+            /////////////////////
+
+            if (Timestep % decisionFrequency == 0)
+            {
+                // Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
+                
+                // Collect stats only when requesting a decision
+                CollectStats(episodeStats);
+
+                _familyAgent?.RequestDecision();
+                foreach (var agent in ActiveAgents<Agent>())
+                {
+                    agent.RequestDecision();
+                }
+                
+                if (Params.ShowAttention)
+                {
+                    AgentBasic selectedAgent;
+                    selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
+
+#if UNITY_EDITOR
+                    if (Application.isEditor && Selection.activeTransform != null && Selection.activeTransform.GetComponent<AgentBasic>() != null)
+                    {
+                        selectedAgent = Selection.activeTransform.GetComponent<AgentBasic>();
+                    }
+#endif
+                    // var selectedAgent = Selection.activeTransform != null ? Selection.activeTransform.GetComponent<AgentBasic>() : null;
+                    // var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
+                    var neighbors = selectedAgent.neighborsOrder;
+                    var attentionValues = AttentionChannel.Attention[selectedIdx];
+                    // Debug.Log($"Attention values: {attentionValues}");
+                    
+                    // Reset all agents' colors
+                    foreach (var agent in ActiveAgents<AgentBasic>())
+                    {
+                        agent.SetColor(new Color(1, 1, 1), true);
+                    }
+                    
+                    // Color the selected agent
+                    
+                    selectedAgent.SetColor(new Color(0, 1, 0), false);
+                    
+                    // Color the neighbors
+                    
+                    foreach ((AgentBasic agent, int attention) in neighbors.Zip(attentionValues, (a, b) => (a.GetComponent<AgentBasic>(), b)))
+                    {
+                        // agent.SetColor(new Color(0, 0, attention / 100f), false);
+                        // Observed agents go from white to blue
+                        agent.SetColor(Color.HSVToRGB(220f/255f, 0.2f + 8*attention/100f, 1f), false);
+                        // agent.SetColor(Color.HSVToRGB(160f/255f, 1f, 1f), false);
+                    }
+
+                }
+
+                DecisionTimestep++;
+            } else
+            {
+                _familyAgent?.RequestAction();
+                foreach (var agent in ActiveAgents<Agent>())
+                {
+                    agent.RequestAction();
+                }
+            }
+
+        
+            // Debug.Log(Time);
+            
+            // Debug.Log("Before physics");
+            Physics.Simulate(Time.fixedDeltaTime);
+            // Debug.Log("After physics");
+            
+            _familyAgent?.TryFinish();
+
+            foreach (var (agent_transform, agent) in ActiveAgentsTransform<AgentBasic>())
+            {
+                var reward = agent._rewarder.LateReward(agent_transform);
+                agent.AddReward(reward);
+                
+                agent.RecordEnergy();
+                
+                // if (Timestep % decisionFrequency == 0) Debug.Log($"Reward of agent {agent.name}: {agent.GetCurrentReward()}");
+            }
+
+            Timestep++;
+
+
+        }
+
         public virtual void ReachGoal(Agent agent)
         {
             var idx = agent.GetComponent<AgentBasic>().AgentIndex;
@@ -252,6 +402,50 @@ namespace Managers
             if (_finishTime[idx] < 0) _finishTime[idx] = Timestep;
             // agent.GetComponent<AgentBasic>().CollectedGoal = true;
 
+        }
+
+        private Dictionary<string, float> GetEpisodeStats()
+        {
+            
+            var energies = new List<float>();
+            var energiesComplex = new List<float>();
+            var distances = new List<float>();
+            var successes = new List<float>();
+            var numAgents = 0;
+            
+            foreach (var agent in ActiveAgents<AgentBasic>())
+            {
+                energies.Add(agent.energySpent);
+                energiesComplex.Add(agent.energySpentComplex);
+                distances.Add(agent.distanceTraversed);
+                successes.Add(agent.CollectedGoal ? 1f : 0f);
+                numAgents++;
+            }
+            Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
+            var stats = new Dictionary<string, float>
+            {
+                ["e_energy"] = energies.Average(),
+                ["e_energy_complex"] = energiesComplex.Average(),
+                ["e_distance"] = distances.Average(),
+                ["e_success"] = successes.Average(),
+            };
+            
+            foreach (var agent in ActiveAgents<AgentBasic>())
+            {
+                foreach (var rewardPart in agent.rewardParts)
+                {
+                    var keyname = $"e_reward_{rewardPart.Key}";
+                    if (stats.ContainsKey(keyname))
+                    {
+                        stats[keyname] += rewardPart.Value / numAgents;
+                    } else
+                    {
+                        stats[keyname] = rewardPart.Value / numAgents;
+                    }
+                }
+            }
+
+            return stats;
         }
 
         private void WriteTrajectory()
@@ -279,192 +473,6 @@ namespace Managers
             File.WriteAllText(fullSavePath, json);
         }
 
-        private void FixedUpdate()
-        {
-            if (!_initialized) return;
-
-            Dictionary<string, float> episodeStats = null;
-            var terminal = false;
-            // Reset the episode if time runs out, or if all agents have reached their goals (and early finish is enabled)
-            // TODO: base termination on decision steps?
-            // if (Timestep >= maxStep * decisionFrequency || (Params.EarlyFinish && _finished.Values.All(x => x)))
-            if (DecisionTimestep >= maxStep || (Params.EarlyFinish && _finished.Values.All(x => x)))
-            {
-                foreach (Transform agent in transform)
-                {
-                    agent.GetComponent<AgentBasic>().AddFinalReward();
-                }
-                
-                episodeStats = GetEpisodeStats();
-                if (Params.SavePath != "") WriteTrajectory();
-                else Debug.Log("Oops, not saving anything");
-
-                Debug.Log("Resetting");
-                // Debug.Break();
-                // return;
-
-                terminal = true;
-
-                _agentGroup.EndGroupEpisode();
-                ResetEpisode();
-            }
-
-
-            ///////////////////////
-            // Log the positions //
-            ///////////////////////
-            
-            var agentIdx = 0;
-            // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
-            {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
-                var localPosition = agent.localPosition;
-                _positionMemory[agentIdx, Timestep, 0] = localPosition.x;
-                _positionMemory[agentIdx, Timestep, 1] = localPosition.z;
-
-                agentIdx++;
-            }
-            
-            // Debug.Log($"Timestep: {Timestep}");
-
-            _timeMemory[Timestep] = Timestep * Time.fixedDeltaTime;
-            
-
-            /////////////////////
-            // Request actions //
-            /////////////////////
-
-            if (Timestep % decisionFrequency == 0)
-            {
-                // Debug.Log($"Timestep: {Timestep}; Time: {Timestep * Time.fixedDeltaTime}");
-                
-                // Collect stats only when requesting a decision
-                CollectStats(episodeStats);
-
-                foreach (Transform agent in transform)
-                {
-                    agent.GetComponent<Agent>().RequestDecision();
-                }
-                
-                if (Params.ShowAttention)
-                {
-                    AgentBasic selectedAgent;
-                    selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
-
-#if UNITY_EDITOR
-                    if (Application.isEditor && Selection.activeTransform != null && Selection.activeTransform.GetComponent<AgentBasic>() != null)
-                    {
-                        selectedAgent = Selection.activeTransform.GetComponent<AgentBasic>();
-                    }
-#endif
-                    // var selectedAgent = Selection.activeTransform != null ? Selection.activeTransform.GetComponent<AgentBasic>() : null;
-                    // var selectedAgent = transform.GetChild(selectedIdx).GetComponent<AgentBasic>();
-                    var neighbors = selectedAgent.neighborsOrder;
-                    var attentionValues = AttentionChannel.Attention[selectedIdx];
-                    // Debug.Log($"Attention values: {attentionValues}");
-                    
-                    // Reset all agents' colors
-                    foreach (Transform agent in transform)
-                    {
-                        agent.GetComponent<AgentBasic>().SetColor(new Color(1, 1, 1), true);
-                    }
-                    
-                    // Color the selected agent
-                    
-                    selectedAgent.SetColor(new Color(0, 1, 0), false);
-                    
-                    // Color the neighbors
-                    
-                    foreach ((AgentBasic agent, int attention) in neighbors.Zip(attentionValues, (a, b) => (a.GetComponent<AgentBasic>(), b)))
-                    {
-                        // agent.SetColor(new Color(0, 0, attention / 100f), false);
-                        // Observed agents go from white to blue
-                        agent.SetColor(Color.HSVToRGB(220f/255f, 0.2f + 8*attention/100f, 1f), false);
-                        // agent.SetColor(Color.HSVToRGB(160f/255f, 1f, 1f), false);
-                    }
-
-                }
-
-                DecisionTimestep++;
-            } else
-            {
-                foreach (Transform agent in transform)
-                {
-                    agent.GetComponent<Agent>().RequestAction();
-                }
-            }
-
-            Timestep++;
-        
-            // Debug.Log(Time);
-            
-            Physics.Simulate(Time.fixedDeltaTime);
-
-            foreach (Transform agent_transform in transform)
-            {
-                var agent = agent_transform.GetComponent<AgentBasic>();
-                var reward = agent._rewarder.LateReward(agent_transform);
-                agent.AddReward(reward);
-                
-                agent.RecordEnergy();
-                
-                // if (Timestep % decisionFrequency == 0) Debug.Log($"Reward of agent {agent.name}: {agent.GetCurrentReward()}");
-            }
-            
-
-        }
-
-        private Dictionary<string, float> GetEpisodeStats()
-        {
-            
-            var energies = new List<float>();
-            var energiesComplex = new List<float>();
-            var distances = new List<float>();
-            var successes = new List<float>();
-            var numAgents = 0;
-            
-            foreach (Transform agent in transform)
-            {
-                if (!agent.gameObject.activeInHierarchy) continue;
-                
-                energies.Add(agent.GetComponent<AgentBasic>().energySpent);
-                energiesComplex.Add(agent.GetComponent<AgentBasic>().energySpentComplex);
-                distances.Add(agent.GetComponent<AgentBasic>().distanceTraversed);
-                successes.Add(agent.GetComponent<AgentBasic>().CollectedGoal ? 1f : 0f);
-                numAgents++;
-            }
-            Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
-            var stats = new Dictionary<string, float>
-            {
-                ["e_energy"] = energies.Average(),
-                ["e_energy_complex"] = energiesComplex.Average(),
-                ["e_distance"] = distances.Average(),
-                ["e_success"] = successes.Average(),
-            };
-            
-            foreach (Transform agentTransform in transform)
-            {
-                if (!agentTransform.gameObject.activeInHierarchy) continue;
-
-                var agent = agentTransform.GetComponent<AgentBasic>();
-                foreach (var rewardPart in agent.rewardParts)
-                {
-                    var keyname = $"e_reward_{rewardPart.Key}";
-                    if (stats.ContainsKey(keyname))
-                    {
-                        stats[keyname] += rewardPart.Value / numAgents;
-                    } else
-                    {
-                        stats[keyname] = rewardPart.Value / numAgents;
-                    }
-                }
-            }
-
-            return stats;
-        } 
-
 
         private void CollectStats(Dictionary<string, float> episodeStats = null)
         {
@@ -475,17 +483,13 @@ namespace Managers
 
             var activeSpeeds = new List<float>();
             
-            foreach (Transform agent in transform)
+            foreach (var (agent, agentBasic) in ActiveAgentsTransform<AgentBasic>())
             {
-                // Ignore inactive agents - not participating in the scene
-                if (!agent.gameObject.activeInHierarchy) continue;
-                // Ignore agents that reached the goal
-                var agentBasic = agent.GetComponent<AgentBasic>();
                 // if (agentBasic.CollectedGoal) continue;
                 
                 // Get distance from goal
                 var agentPosition = agent.localPosition;
-                var goalPosition = agent.GetComponent<AgentBasic>().Goal.localPosition;
+                var goalPosition = agentBasic.Goal.localPosition;
 
                 var distance = Vector3.Distance(agentPosition, goalPosition);
                 distances.Add(distance);
@@ -504,7 +508,7 @@ namespace Managers
                 dones.Add(_finished[agent] ? 1f : 0f);
                 // Debug.Log(_finished[agent]);
             
-                collisions.Add(agent.GetComponent<AgentBasic>().Collision);
+                collisions.Add(agentBasic.Collision);
             }
             
             // TODO: at some point uniformize e_name and m_name
@@ -546,11 +550,9 @@ namespace Managers
             var array = new float[numAgents, 6];
             var agentIdx = 0;
             // var decisionTime = Time / decisionFrequency;
-            foreach (Transform agent in transform)
+            foreach (var (agent, agentBasic) in ActiveAgentsTransform<AgentBasic>())
             {
-                if (!agent.gameObject.activeInHierarchy) continue;
                 var localPosition = agent.localPosition;
-                var agentBasic = agent.GetComponent<AgentBasic>();
                 var goalPosition = agentBasic.Goal.localPosition;
                 var velocity = agentBasic.Rigidbody.velocity;
 
@@ -570,5 +572,43 @@ namespace Managers
         }
         
         public float NormedTime => DecisionTimestep / (float) maxStep;
+
+        IEnumerable<T> ActiveAgents<T>() where T : Component
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent.GetComponent<T>();
+            }
+        }
+
+        IEnumerable<AgentBasic> ActiveAgents()
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent.GetComponent<AgentBasic>();
+            }
+        }
+        
+        IEnumerable<Transform> ActiveAgentsTransform()
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                yield return agent;
+            }
+        }
+        
+        IEnumerable<(Transform, T)> ActiveAgentsTransform<T>() where T : Component
+        {
+            foreach (Transform agent in transform)
+            {
+                if (!agent.gameObject.activeInHierarchy) continue;
+                var component = agent.GetComponent<T>();
+                if (component == null) continue;
+                yield return (agent, component);
+            }
+        }
     }
 }

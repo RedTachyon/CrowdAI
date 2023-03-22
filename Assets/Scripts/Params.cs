@@ -50,6 +50,18 @@ public class Params : MonoBehaviour
     public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
     public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
     
+    [Header("Physics")]
+    public float maxSpeed = 2f;
+    public static float MaxSpeed => Get("max_speed", Instance.maxSpeed);
+    
+    public float maxAcceleration = 5f;
+    public static float MaxAcceleration => Get("max_acceleration", Instance.maxAcceleration);
+
+    public float rotationSpeed = 3f;
+    public static float RotationSpeed => Get("rotation_speed", Instance.rotationSpeed);
+    
+    
+    
     [Header("Reward settings")]
     public float potential = 1f;
     public static float Potential => Get("potential", Instance.potential);
@@ -91,6 +103,10 @@ public class Params : MonoBehaviour
     public float comfortDistanceWeight = 0f;
     public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
 
+
+    public float familyGoalRadius = 0.5f;
+    public static float FamilyGoalRadius => Get("family_goal_radius", Instance.familyGoalRadius);
+
     // Energy rewarder
     
     public float energyWeight = 1f;
@@ -101,6 +117,14 @@ public class Params : MonoBehaviour
 
     public float potentialEnergyScale = 2f;
     public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
+    
+    public bool useComplexEnergy = true;
+    public static bool UseComplexEnergy => Convert.ToBoolean(Get("complex_energy", Instance.useComplexEnergy ? 1f : 0f));
+    
+    // Alignment
+    
+    public float alignmentWeight = 1f;
+    public static float AlignmentWeight => Get("alignment_weight", Instance.alignmentWeight);
 
 
     // Everything else

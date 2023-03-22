@@ -55,6 +55,7 @@ namespace Observers
         Relative,
         Egocentric,
         Proprioceptive,
+        Family
     }
     
     public static class Mapper
@@ -67,6 +68,7 @@ namespace Observers
                 ObserversEnum.Relative => new Relative(),
                 ObserversEnum.Egocentric => new Egocentric(),
                 ObserversEnum.Proprioceptive => new Proprioceptive(),
+                ObserversEnum.Family => new Family(),
                 _ => null
             };
 
