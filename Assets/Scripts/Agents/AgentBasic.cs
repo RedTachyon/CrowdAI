@@ -130,7 +130,12 @@ namespace Agents
         public Vector3 PreviouserPositionPhysics { get; set; }
         // public Vector3 PreviousVelocityPhysics { get; set; }
 
+
+        public bool fixedSpeed;
+        public Vector2 fixedInput;
+        
         public List<Transform> neighborsOrder;
+
 
         private void Awake()
         {
@@ -309,6 +314,8 @@ namespace Agents
             var cActionsOut = actionsOut.ContinuousActions;
             
             // Simple heuristic
+
+
             // var xValue = 0f;
             // var zValue = MathF.Atanh(1.33f / Params.MaxSpeed);
             //
@@ -317,12 +324,25 @@ namespace Agents
             //
             // return;
             
-            // Regular heuristic
 
             var xValue = 0f;
             var zValue = 0f;
             Vector3 force;
             
+            
+            if (fixedSpeed)
+            {
+                xValue = MathF.Atanh(fixedInput.x / Params.MaxSpeed);
+                zValue = MathF.Atanh(fixedInput.y / Params.MaxSpeed);
+                
+                cActionsOut[0] = xValue;
+                cActionsOut[1] = zValue;
+
+                return;
+            }
+            
+            // Regular heuristic
+
             // Only for polar WASD controls
             // Ratio allows the agent to turn more or less in place, but still turn normally while moving.
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)

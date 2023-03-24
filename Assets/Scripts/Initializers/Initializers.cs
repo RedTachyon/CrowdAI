@@ -18,6 +18,7 @@ namespace Initializers
         Corridor,
         Choke,
         Family,
+        Car,
         JsonInitializer,
     }
     
@@ -31,6 +32,7 @@ namespace Initializers
         private static IInitializer _corridor = new Corridor();
         private static IInitializer _choke = new Choke();
         private static IInitializer _family = new Family();
+        private static IInitializer _car = new Car();
         
         public static IInitializer GetInitializer(InitializerEnum initializerType, string path = null)
         {
@@ -43,6 +45,7 @@ namespace Initializers
                 InitializerEnum.Corridor => _corridor,
                 InitializerEnum.Choke => _choke,
                 InitializerEnum.Family => _family,
+                InitializerEnum.Car => _car,
                 InitializerEnum.JsonInitializer => new JsonInitializer(path),
                 _ => null
             };
