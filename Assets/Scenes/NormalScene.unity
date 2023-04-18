@@ -594,7 +594,7 @@ MonoBehaviour:
   numAgents: 1
   dynamics: 0
   observer: 0
-  initializer: 7
+  initializer: 1
   rewarder: 0
   maxSpeed: 3
   maxAcceleration: 5
@@ -629,7 +629,7 @@ MonoBehaviour:
   spawnScale: 7
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 1
+  enableObstacles: 0
   blockScale: 3
   randomMass: 1
   randomEnergy: 0
