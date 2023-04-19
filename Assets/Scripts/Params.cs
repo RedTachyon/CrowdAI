@@ -126,6 +126,46 @@ public class Params : MonoBehaviour
     public float alignmentWeight = 1f;
     public static float AlignmentWeight => Get("alignment_weight", Instance.alignmentWeight);
 
+    [Header("Unified reward settings")] 
+    
+    public float rewardBMR = 1f;
+    public static float RewBMR => Get("r_bmr", Instance.rewardBMR);
+    
+    public float rewardDrag = 1f;
+    public static float RewDrag => Get("r_drag", Instance.rewardDrag);
+    
+    public float rewardDynamics = 1f;
+    public static float RewDyn => Get("r_dynamics", Instance.rewardDynamics);
+    
+    public float rewardPotential = 1f;
+    public static float RewPot => Get("r_potential", Instance.rewardPotential);
+
+    public float rewardSpeedMatching = 1f;
+    public static float RewSpeed => Get("r_s_matching", Instance.rewardSpeedMatching);
+    
+    public float rewardSpeedMatchingExp = 1f;
+    public static float RewSpeedExp => Get("r_s_matching_exp", Instance.rewardSpeedMatchingExp);
+
+    public float rewardSpeeding = 1f;
+    public static float RewSpeeding => Get("r_speeding", Instance.rewardSpeeding);
+    
+    public float rewardExpVelocityMatching = 1f;
+    public static float RewExpVel => Get("r_exp_v_matching", Instance.rewardExpVelocityMatching);
+    
+    public float rewardExpVelocitySigma = 1f;
+    public static float RewExpVelSigma => Get("r_exp_v_sigma", Instance.rewardExpVelocitySigma);
+    
+    public float rewardVelocityMatching = 1f;
+    public static float RewVel => Get("r_v_matching", Instance.rewardVelocityMatching);
+    
+    public float rewardGoal = 1f;
+    public static float RewGoal => Get("r_goal", Instance.rewardGoal);
+    
+    public float rewardFinal = 1f;
+    public static float RewFinal => Get("r_final", Instance.rewardFinal);
+    
+    
+
 
     // Everything else
     [Header("Observation settings")]

@@ -5,12 +5,10 @@ using System.Linq;
 using Agents;
 using Initializers;
 using Newtonsoft.Json;
-using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.SideChannels;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -610,5 +608,8 @@ namespace Managers
                 yield return (agent, component);
             }
         }
+        
+        public float PhysicsDeltaTime => Time.fixedDeltaTime;
+        public float DecisionDeltaTime => Time.fixedDeltaTime * decisionFrequency;
     }
 }
