@@ -595,7 +595,7 @@ MonoBehaviour:
   dynamics: 0
   observer: 0
   initializer: 1
-  rewarder: 0
+  rewarder: 6
   maxSpeed: 3
   maxAcceleration: 5
   rotationSpeed: 2
@@ -4568,7 +4568,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2065647885
 Transform:
   m_ObjectHideFlags: 0

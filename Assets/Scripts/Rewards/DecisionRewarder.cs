@@ -22,7 +22,7 @@ namespace Rewards
             
             var prevDistance = MLUtils.FlatDistance(agent.PreviousPosition, goal.localPosition);
             var currentDistance = MLUtils.FlatDistance(transform.localPosition, goal.localPosition);
-            var posDiff = prevDistance - currentDistance;
+            var posDiff = (prevDistance - currentDistance);
 
             var velocity = agent.Rigidbody.velocity;
             var prevVelocity = agent.PreviousVelocity;
@@ -56,7 +56,7 @@ namespace Rewards
             var r_bmr = -agent.e_s * Manager.Instance.DecisionDeltaTime;
             var r_drag = -agent.e_w * velocity.sqrMagnitude * Manager.Instance.DecisionDeltaTime;
             var r_dynamics = -dynamicsEnergy * Manager.Instance.DecisionDeltaTime;
-            var r_potential = posDiff;
+            var r_potential = 2 * Mathf.Sqrt(agent.e_s * agent.e_w) * posDiff;
             var r_speedmatch = -absSpeedPenalty;
             var r_speeding = -reluSpeedPenalty;
             var r_velocity = -velocityPenalty;
