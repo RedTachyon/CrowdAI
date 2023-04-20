@@ -48,8 +48,8 @@ namespace Rewards
             
             // Xu et al.
             var goalVector = (goal.localPosition - transform.localPosition).normalized;
-            var expVelocityPenalty = Mathf.Exp(Params.RewExpVelSigma * (velocity - idealSpeed * goalVector).magnitude);
-
+            var velocityPenalty = (velocity - idealSpeed * goalVector).magnitude;
+            var expVelocityPenalty = Mathf.Exp(Params.RewExpVelSigma * velocityPenalty);
             
             var r_bmr = -Params.RewBMR * agent.e_s * Manager.Instance.DecisionDeltaTime;
             var r_drag = -Params.RewDrag * agent.e_s * velocity.sqrMagnitude * Manager.Instance.DecisionDeltaTime;
@@ -57,7 +57,8 @@ namespace Rewards
             var r_potential = Params.RewPot * posDiff;
             var r_speedmatch = Params.RewSpeed * absSpeedPenalty;
             var r_speeding = Params.RewSpeeding * reluSpeedPenalty;
-            var r_velocity = Params.RewExpVel * expVelocityPenalty;
+            var r_velocity = Params.RewVel * velocityPenalty; 
+            var r_expVelocity = Params.RewExpVel * expVelocityPenalty;
 
             reward += r_bmr;
             agent.AddRewardPart(r_bmr, "bmr"); // TODO: check if this should be normalized
@@ -70,6 +71,19 @@ namespace Rewards
             
             reward += r_potential;
             agent.AddRewardPart(r_potential, "potential");
+            
+            reward += r_speedmatch;
+            agent.AddRewardPart(r_speedmatch, "speedmatch");
+            
+            reward += r_speeding;
+            agent.AddRewardPart(r_speeding, "speeding");
+            
+            reward += r_velocity;
+            agent.AddRewardPart(r_velocity, "velocity");
+            
+            reward += r_expVelocity;
+            agent.AddRewardPart(r_expVelocity, "expVelocity");
+            
             
 
             return reward;
@@ -121,7 +135,10 @@ namespace Rewards
             
             var finalDistance = MLUtils.FlatDistance(transform.localPosition, agent.Goal.localPosition);
 
-            reward += -2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+            var finalReward = -2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+            
+            reward += Params.RewFinal * finalReward;
+            agent.AddRewardPart(finalReward, "final");
             
             return reward;
         }
