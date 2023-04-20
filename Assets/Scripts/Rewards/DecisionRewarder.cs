@@ -26,9 +26,11 @@ namespace Rewards
 
             var velocity = agent.Rigidbody.velocity;
             var prevVelocity = agent.PreviousVelocity;
-            var acceleration = (velocity - agent.PreviousVelocity) / Time.fixedDeltaTime;
+            var acceleration = (velocity - agent.PreviousVelocity) / Manager.Instance.DecisionDeltaTime;
+            
+            // Debug.Log($"Acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, velocity: {velocity.magnitude}");
 
-            var dynamicsEnergy = -Mathf.Abs(
+            var dynamicsEnergy = Mathf.Abs(
                     Vector3.Dot(velocity, acceleration)
                     + agent.e_w * Vector3.Dot(velocity, prevVelocity)
                 );
@@ -51,38 +53,38 @@ namespace Rewards
             var velocityPenalty = (velocity - idealSpeed * goalVector).magnitude;
             var expVelocityPenalty = Mathf.Exp(Params.RewExpVelSigma * velocityPenalty);
             
-            var r_bmr = -Params.RewBMR * agent.e_s * Manager.Instance.DecisionDeltaTime;
-            var r_drag = -Params.RewDrag * agent.e_s * velocity.sqrMagnitude * Manager.Instance.DecisionDeltaTime;
-            var r_dynamics = -Params.RewDyn * agent.e_s * dynamicsEnergy * Manager.Instance.DecisionDeltaTime;
-            var r_potential = Params.RewPot * posDiff;
-            var r_speedmatch = Params.RewSpeed * absSpeedPenalty;
-            var r_speeding = Params.RewSpeeding * reluSpeedPenalty;
-            var r_velocity = Params.RewVel * velocityPenalty; 
-            var r_expVelocity = Params.RewExpVel * expVelocityPenalty;
+            var r_bmr = -agent.e_s * Manager.Instance.DecisionDeltaTime;
+            var r_drag = -agent.e_w * velocity.sqrMagnitude * Manager.Instance.DecisionDeltaTime;
+            var r_dynamics = -dynamicsEnergy * Manager.Instance.DecisionDeltaTime;
+            var r_potential = posDiff;
+            var r_speedmatch = -absSpeedPenalty;
+            var r_speeding = -reluSpeedPenalty;
+            var r_velocity = -velocityPenalty;
+            var r_expVelocity = -expVelocityPenalty;
 
-            reward += r_bmr;
-            agent.AddRewardPart(r_bmr, "bmr"); // TODO: check if this should be normalized
-            
-            reward += r_drag;
-            agent.AddRewardPart(r_drag, "drag");
-            
-            reward += r_dynamics;
-            agent.AddRewardPart(r_dynamics, "dynamics");
-            
-            reward += r_potential;
-            agent.AddRewardPart(r_potential, "potential");
-            
-            reward += r_speedmatch;
-            agent.AddRewardPart(r_speedmatch, "speedmatch");
-            
-            reward += r_speeding;
-            agent.AddRewardPart(r_speeding, "speeding");
-            
-            reward += r_velocity;
-            agent.AddRewardPart(r_velocity, "velocity");
-            
-            reward += r_expVelocity;
-            agent.AddRewardPart(r_expVelocity, "expVelocity");
+            reward += Params.RewBMR * r_bmr;
+            agent.AddRewardPart(r_bmr, "r_bmr");
+
+            reward += Params.RewDrag * r_drag;
+            agent.AddRewardPart(r_drag, "r_drag");
+
+            reward += Params.RewDyn * r_dynamics;
+            agent.AddRewardPart(r_dynamics, "r_dynamics");
+
+            reward += Params.RewPot * r_potential;
+            agent.AddRewardPart(r_potential, "r_potential");
+
+            reward += Params.RewSpeed * r_speedmatch;
+            agent.AddRewardPart(r_speedmatch, "r_speedmatch");
+
+            reward += Params.RewSpeeding * r_speeding;
+            agent.AddRewardPart(r_speeding, "r_speeding");
+
+            reward += Params.RewVel * r_velocity;
+            agent.AddRewardPart(r_velocity, "r_velocity");
+
+            reward += Params.RewExpVel * r_expVelocity;
+            agent.AddRewardPart(r_expVelocity, "r_expVelocity");
             
             
 

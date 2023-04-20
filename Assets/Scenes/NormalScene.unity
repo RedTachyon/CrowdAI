@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -617,6 +617,18 @@ MonoBehaviour:
   potentialEnergyScale: 2
   useComplexEnergy: 1
   alignmentWeight: 1
+  rewardBMR: 1
+  rewardDrag: 1
+  rewardDynamics: 1
+  rewardPotential: 1
+  rewardSpeedMatching: 1
+  rewardSpeedMatchingExp: 1
+  rewardSpeeding: 1
+  rewardExpVelocityMatching: 1
+  rewardExpVelocitySigma: 1
+  rewardVelocityMatching: 1
+  rewardGoal: 1
+  rewardFinal: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180
@@ -6269,8 +6281,16 @@ MonoBehaviour:
   totalReward: 0
   velocityDbg: {x: 0, y: 0, z: 0}
   speed: 0
+  r_bmr: 0
+  r_drag: 0
+  r_dynamics: 0
+  r_potential: 0
+  r_speedmatch: 0
+  r_speeding: 0
+  r_velocity: 0
+  r_expVelocity: 0
   debug: 1
-  fixedSpeed: 1
+  fixedSpeed: 0
   fixedInput: {x: 0.7, y: 0}
   neighborsOrder: []
 --- !u!114 &6668392869924176160

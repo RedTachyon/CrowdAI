@@ -117,6 +117,15 @@ namespace Agents
         public float totalReward;
         public Vector3 velocityDbg;
         public float speed;
+        
+        public float r_bmr;
+        public float r_drag;
+        public float r_dynamics;
+        public float r_potential;
+        public float r_speedmatch;
+        public float r_speeding;
+        public float r_velocity;
+        public float r_expVelocity;
 
         public bool debug;
         
@@ -227,6 +236,15 @@ namespace Agents
                 ["final"] = 0f,
                 ["energyPotential"] = 0f,
                 ["alignment"] = 0f,
+                // New
+                ["r_bmr"] = 0f,
+                ["r_drag"] = 0f,
+                ["r_dynamics"] = 0f,
+                ["r_potential"] = 0f,
+                ["r_speedmatch"] = 0f,
+                ["r_speeding"] = 0f,
+                ["r_velocity"] = 0f,
+                ["r_expVelocity"] = 0f
             };
             
             UpdateParams();
@@ -252,6 +270,15 @@ namespace Agents
                 finalReward = rewardParts["final"];
                 velocityDbg = Rigidbody.velocity;
                 speed = Rigidbody.velocity.magnitude;
+                
+                r_bmr = rewardParts["r_bmr"];
+                r_drag = rewardParts["r_drag"];
+                r_dynamics = rewardParts["r_dynamics"];
+                r_potential = rewardParts["r_potential"];
+                r_speedmatch = rewardParts["r_speedmatch"];
+                r_speeding = rewardParts["r_speeding"];
+                r_velocity = rewardParts["r_velocity"];
+                r_expVelocity = rewardParts["r_expVelocity"];
             }
         }
 
@@ -348,7 +375,7 @@ namespace Agents
             // The higher the ratio, the smaller circle the agent makes while turning in place (A/D)
             // const float ratio = 1f;
             
-            const float baseSpeed = 1.7f;
+            float baseSpeed = MathF.Atanh(1.33f / Params.MaxSpeed);
             
             if (Input.GetKey(KeyCode.W)) zValue = 1f;
             if (Input.GetKey(KeyCode.S)) zValue = -1f;
@@ -357,16 +384,16 @@ namespace Agents
             if (Input.GetKey(KeyCode.A)) xValue = -1f;
             
             // TODO: diagonals are faster with cartesian controls
-            force = new Vector3(xValue, 0, zValue) * baseSpeed;
+            force = new Vector3(xValue, 0, zValue).normalized * baseSpeed;
             
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 force *= 2;
             }
-            else
-            {
-                force *= 0.5f;
-            }
+            // else
+            // {
+                // force *= 0.5f;
+            // }
             
             // if (Input.GetKey(KeyCode.Space))
             // {
