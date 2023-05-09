@@ -61,6 +61,8 @@ namespace Rewards
             var r_speeding = -reluSpeedPenalty;
             var r_velocity = -velocityPenalty;
             var r_expVelocity = -expVelocityPenalty;
+            
+            // Debug.Log($"r_dynamics: {r_dynamics}, velocity: {velocity.magnitude}, acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, dynamicsEnergy: {dynamicsEnergy}");
 
             reward += Params.RewBMR * r_bmr;
             agent.AddRewardPart(r_bmr, "r_bmr");

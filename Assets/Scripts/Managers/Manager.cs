@@ -266,7 +266,6 @@ namespace Managers
                 {
                     agent.AddFinalReward();
                 }
-                
                 episodeStats = GetEpisodeStats();
                 if (Params.SavePath != "") WriteTrajectory();
                 else Debug.Log("Oops, not saving anything");
@@ -407,6 +406,8 @@ namespace Managers
             
             var energies = new List<float>();
             var energiesComplex = new List<float>();
+            var energiesPlus = new List<float>();
+            var energiesComplexPlus = new List<float>();
             var distances = new List<float>();
             var successes = new List<float>();
             var numAgents = 0;
@@ -415,6 +416,14 @@ namespace Managers
             {
                 energies.Add(agent.energySpent);
                 energiesComplex.Add(agent.energySpentComplex);
+                
+                var finalDistance = MLUtils.FlatDistance(agent.transform.localPosition, agent.Goal.localPosition);
+
+                var finalEnergy = 2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+                
+                energiesPlus.Add(agent.energySpent + finalEnergy);
+                energiesComplexPlus.Add(agent.energySpentComplex + finalEnergy);
+                
                 distances.Add(agent.distanceTraversed);
                 successes.Add(agent.CollectedGoal ? 1f : 0f);
                 numAgents++;
@@ -424,6 +433,8 @@ namespace Managers
             {
                 ["e_energy"] = energies.Average(),
                 ["e_energy_complex"] = energiesComplex.Average(),
+                ["e_energy_plus"] = energiesPlus.Average(),
+                ["e_energy_complex_plus"] = energiesComplexPlus.Average(),
                 ["e_distance"] = distances.Average(),
                 ["e_success"] = successes.Average(),
             };
