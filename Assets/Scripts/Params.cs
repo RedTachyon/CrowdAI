@@ -139,6 +139,9 @@ public class Params : MonoBehaviour
     
     public float rewardPotential = 1f;
     public static float RewPot => Get("r_potential", Instance.rewardPotential);
+    
+    public float rewardDiffPotential = 1f;
+    public static float RewDiffPot => Get("r_diff_potential", Instance.rewardDiffPotential);
 
     public float rewardSpeedMatching = 1f;
     public static float RewSpeed => Get("r_s_matching", Instance.rewardSpeedMatching);

@@ -122,6 +122,7 @@ namespace Agents
         public float r_drag;
         public float r_dynamics;
         public float r_potential;
+        public float r_diffPotential;
         public float r_speedmatch;
         public float r_speeding;
         public float r_velocity;
@@ -241,6 +242,7 @@ namespace Agents
                 ["r_drag"] = 0f,
                 ["r_dynamics"] = 0f,
                 ["r_potential"] = 0f,
+                ["r_diffPotential"] = 0f,
                 ["r_speedmatch"] = 0f,
                 ["r_speeding"] = 0f,
                 ["r_velocity"] = 0f,
@@ -275,6 +277,7 @@ namespace Agents
                 r_drag = rewardParts["r_drag"];
                 r_dynamics = rewardParts["r_dynamics"];
                 r_potential = rewardParts["r_potential"];
+                r_diffPotential = rewardParts["r_diffPotential"];
                 r_speedmatch = rewardParts["r_speedmatch"];
                 r_speeding = rewardParts["r_speeding"];
                 r_velocity = rewardParts["r_velocity"];

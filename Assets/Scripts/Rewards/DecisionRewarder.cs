@@ -13,6 +13,7 @@ namespace Rewards
         public float ComputeReward(Transform transform)
         {
             var reward = 0f;
+            var dt = Manager.Instance.DecisionDeltaTime;
             
             AgentBasic agent = transform.GetComponent<AgentBasic>();
             Transform goal = agent.Goal;
@@ -23,11 +24,13 @@ namespace Rewards
             var prevDistance = MLUtils.FlatDistance(agent.PreviousPosition, goal.localPosition);
             var currentDistance = MLUtils.FlatDistance(transform.localPosition, goal.localPosition);
             var posDiff = (prevDistance - currentDistance);
+            
 
             var velocity = agent.Rigidbody.velocity;
             var prevVelocity = agent.PreviousVelocity;
-            var acceleration = (velocity - agent.PreviousVelocity) / Manager.Instance.DecisionDeltaTime;
+            var acceleration = (velocity - agent.PreviousVelocity) / dt;
             
+
             // Debug.Log($"Acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, velocity: {velocity.magnitude}");
 
             var dynamicsEnergy = Mathf.Abs(
@@ -49,18 +52,25 @@ namespace Rewards
             
             
             // Xu et al.
-            var goalVector = (goal.localPosition - transform.localPosition).normalized;
-            var velocityPenalty = (velocity - idealSpeed * goalVector).magnitude;
-            var expVelocityPenalty = Mathf.Exp(Params.RewExpVelSigma * velocityPenalty);
+            var goalVector = (goal.localPosition - transform.localPosition);
+            goalVector.y = 0;
+            goalVector = goalVector.normalized;
+            var velocityDiff = velocity - idealSpeed * goalVector;
+            var velocityPenalty = velocityDiff.sqrMagnitude;
+            var expVelocityPenalty = Mathf.Exp(Params.RewExpVelSigma * velocityDiff.magnitude);
+
+            var diffPotential = Vector3.Dot(velocity, goalVector);
+
             
-            var r_bmr = -agent.e_s * Manager.Instance.DecisionDeltaTime;
-            var r_drag = -agent.e_w * velocity.sqrMagnitude * Manager.Instance.DecisionDeltaTime;
-            var r_dynamics = -dynamicsEnergy * Manager.Instance.DecisionDeltaTime;
+            var r_bmr = -agent.e_s * dt;
+            var r_drag = -agent.e_w * velocity.sqrMagnitude * dt;
+            var r_dynamics = -dynamicsEnergy * dt;
             var r_potential = 2 * Mathf.Sqrt(agent.e_s * agent.e_w) * posDiff;
-            var r_speedmatch = -absSpeedPenalty;
-            var r_speeding = -reluSpeedPenalty;
-            var r_velocity = -velocityPenalty;
-            var r_expVelocity = -expVelocityPenalty;
+            var r_diffPotential = 2 * Mathf.Sqrt(agent.e_s * agent.e_w) * diffPotential * dt;
+            var r_speedmatch = -absSpeedPenalty * dt;
+            var r_speeding = -reluSpeedPenalty * dt;
+            var r_velocity = -velocityPenalty * dt * agent.e_w;
+            var r_expVelocity = -expVelocityPenalty * dt;
             
             // Debug.Log($"r_dynamics: {r_dynamics}, velocity: {velocity.magnitude}, acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, dynamicsEnergy: {dynamicsEnergy}");
 
@@ -75,6 +85,9 @@ namespace Rewards
 
             reward += Params.RewPot * r_potential;
             agent.AddRewardPart(r_potential, "r_potential");
+            
+            reward += Params.RewDiffPot * r_diffPotential;
+            agent.AddRewardPart(r_diffPotential, "r_diffPotential");
 
             reward += Params.RewSpeed * r_speedmatch;
             agent.AddRewardPart(r_speedmatch, "r_speedmatch");
