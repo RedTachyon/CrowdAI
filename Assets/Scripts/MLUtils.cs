@@ -243,9 +243,10 @@ public class MLUtils
     public static float EnergyHeuristic(Vector3 position, Vector3 target, float e_s, float e_w)
     {
         var distance = FlatDistance(position, target);
-        var speed = Mathf.Sqrt(e_s / e_w);
-        var time = distance / speed;
+        return 2 * Mathf.Sqrt(e_s * e_w) * distance;
+        // var speed = Mathf.Sqrt(e_s / e_w);
+        // var time = distance / speed;
         
-        return e_s * time + e_w * speed * speed * time;
+        // return e_s * time + e_w * speed * speed * time;
     }
 }

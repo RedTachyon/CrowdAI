@@ -50,6 +50,36 @@ public class Params : MonoBehaviour
     public RewardersEnum rewarder = RewardersEnum.BaseRewarder;
     public static RewardersEnum Rewarder => Enum.Parse<RewardersEnum>(Get("rewarder", Instance.rewarder.ToString()));
     
+    // Spawn
+    [Header("Spawn settings")]
+    public float spawnNoiseScale = 0.5f;
+    public static float SpawnNoiseScale => Get("spawn_noise_scale", Instance.spawnNoiseScale);
+
+    public float spawnScale = 4f;
+    public static float SpawnScale => Get("spawn_scale", Instance.spawnScale);
+
+    public bool gridSpawn = true;
+    public static bool GridSpawn => Convert.ToBoolean(Get("grid_spawn", Instance.gridSpawn ? 1f : 0f));
+
+    public float groupSpawnScale = 1.5f;
+    public static float GroupSpawnScale => Get("group_spawn_scale", Instance.groupSpawnScale);
+    
+    public bool enableObstacles = true;
+    public static bool EnableObstacles => Convert.ToBoolean(Get("enable_obstacles", Instance.enableObstacles ? 1f : 0f));
+    
+    public float blockScale = 1f;
+    public static float BlockScale => Get("block_scale", Instance.blockScale);
+    
+    public bool randomMass = false;
+    public static bool RandomMass => Convert.ToBoolean(Get("random_mass", Instance.randomMass ? 1f : 0f));
+    
+    public bool randomEnergy = false;
+    public static bool RandomEnergy => Convert.ToBoolean(Get("random_energy", Instance.randomEnergy ? 1f : 0f));
+    
+    
+    public bool sharedGoal;
+    public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
+    
     [Header("Physics")]
     public float maxSpeed = 2f;
     public static float MaxSpeed => Get("max_speed", Instance.maxSpeed);
@@ -60,71 +90,6 @@ public class Params : MonoBehaviour
     public float rotationSpeed = 3f;
     public static float RotationSpeed => Get("rotation_speed", Instance.rotationSpeed);
     
-    
-    
-    [Header("Reward settings")]
-    public float potential = 1f;
-    public static float Potential => Get("potential", Instance.potential);
-
-    public float goal = 10f;
-    public static float Goal => Get("goal", Instance.goal);
-    
-    public float collision = -0.05f;
-    public static float Collision => Get("collision", Instance.collision);
-    
-    public float stepReward = -0.005f;
-    public static float StepReward => Get("step_reward", Instance.stepReward);
-    
-
-    public float comfortSpeed = 1.33f;
-    public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
-    
-    public float comfortSpeedWeight = -0.75f;
-    public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
-
-    public float comfortSpeedExponent = 1.0f;
-    public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
-
-    // Unused
-    
-    public float standstillWeight = 0f;
-    public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
-
-    public float standstillExponent = 0f;
-    public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
-    
-    public float goalSpeedThreshold = 0f;
-    public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
-
-    
-    public float comfortDistance = 0f;
-    public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
-    
-    public float comfortDistanceWeight = 0f;
-    public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
-
-
-    public float familyGoalRadius = 0.5f;
-    public static float FamilyGoalRadius => Get("family_goal_radius", Instance.familyGoalRadius);
-
-    // Energy rewarder
-    
-    public float energyWeight = 1f;
-    public static float EnergyWeight => Get("energy_weight", Instance.energyWeight);
-    
-    public float finalEnergyWeight = 1f;
-    public static float FinalEnergyWeight => Get("final_energy_weight", Instance.finalEnergyWeight);
-
-    public float potentialEnergyScale = 2f;
-    public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
-    
-    public bool useComplexEnergy = true;
-    public static bool UseComplexEnergy => Convert.ToBoolean(Get("complex_energy", Instance.useComplexEnergy ? 1f : 0f));
-    
-    // Alignment
-    
-    public float alignmentWeight = 1f;
-    public static float AlignmentWeight => Get("alignment_weight", Instance.alignmentWeight);
 
     [Header("Unified reward settings")] 
     
@@ -198,35 +163,7 @@ public class Params : MonoBehaviour
     public bool destroyRaycasts = false; // Only at launch
     public static bool DestroyRaycasts => Convert.ToBoolean(Get("destroy_raycasts", Instance.destroyRaycasts ? 1f : 0f));
     
-    // Spawn
-    [Header("Spawn settings")]
-    public float spawnNoiseScale = 0.5f;
-    public static float SpawnNoiseScale => Get("spawn_noise_scale", Instance.spawnNoiseScale);
 
-    public float spawnScale = 4f;
-    public static float SpawnScale => Get("spawn_scale", Instance.spawnScale);
-
-    public bool gridSpawn = true;
-    public static bool GridSpawn => Convert.ToBoolean(Get("grid_spawn", Instance.gridSpawn ? 1f : 0f));
-
-    public float groupSpawnScale = 1.5f;
-    public static float GroupSpawnScale => Get("group_spawn_scale", Instance.groupSpawnScale);
-    
-    public bool enableObstacles = true;
-    public static bool EnableObstacles => Convert.ToBoolean(Get("enable_obstacles", Instance.enableObstacles ? 1f : 0f));
-    
-    public float blockScale = 1f;
-    public static float BlockScale => Get("block_scale", Instance.blockScale);
-    
-    public bool randomMass = false;
-    public static bool RandomMass => Convert.ToBoolean(Get("random_mass", Instance.randomMass ? 1f : 0f));
-    
-    public bool randomEnergy = false;
-    public static bool RandomEnergy => Convert.ToBoolean(Get("random_energy", Instance.randomEnergy ? 1f : 0f));
-    
-    
-    public bool sharedGoal;
-    public static bool SharedGoal => Convert.ToBoolean(Get("shared_goal", Instance.sharedGoal ? 1f : 0f));
 
     // Meta
     [Header("Meta settings")]
@@ -247,6 +184,71 @@ public class Params : MonoBehaviour
     
     public bool backwardsAllowed = true;
     public static bool BackwardsAllowed => Convert.ToBoolean(Get("backwards_allowed", Instance.backwardsAllowed ? 1f : 0f));
+    
+    
+     [Header("Reward settings")]
+    public float potential = 1f;
+    public static float Potential => Get("potential", Instance.potential);
+
+    public float goal = 10f;
+    public static float Goal => Get("goal", Instance.goal);
+    
+    public float collision = -0.05f;
+    public static float Collision => Get("collision", Instance.collision);
+    
+    public float stepReward = -0.005f;
+    public static float StepReward => Get("step_reward", Instance.stepReward);
+    
+
+    public float comfortSpeed = 1.33f;
+    public static float ComfortSpeed => Get("comfort_speed", Instance.comfortSpeed);
+    
+    public float comfortSpeedWeight = -0.75f;
+    public static float ComfortSpeedWeight => Get("comfort_speed_weight", Instance.comfortSpeedWeight);
+
+    public float comfortSpeedExponent = 1.0f;
+    public static float ComfortSpeedExponent => Get("comfort_speed_exponent", Instance.comfortSpeedExponent);
+
+    // Unused
+    
+    public float standstillWeight = 0f;
+    public static float StandstillWeight => Get("standstill_weight", Instance.standstillWeight);
+
+    public float standstillExponent = 0f;
+    public static float StandstillExponent => Get("standstill_exponent", Instance.standstillExponent);
+    
+    public float goalSpeedThreshold = 0f;
+    public static float GoalSpeedThreshold => Get("goal_speed_threshold", Instance.goalSpeedThreshold);
+
+    
+    public float comfortDistance = 0f;
+    public static float ComfortDistance => Get("comfort_distance", Instance.comfortDistance);
+    
+    public float comfortDistanceWeight = 0f;
+    public static float ComfortDistanceWeight => Get("comfort_distance_weight", Instance.comfortDistanceWeight);
+
+
+    public float familyGoalRadius = 0.5f;
+    public static float FamilyGoalRadius => Get("family_goal_radius", Instance.familyGoalRadius);
+
+    // Energy rewarder
+    
+    public float energyWeight = 1f;
+    public static float EnergyWeight => Get("energy_weight", Instance.energyWeight);
+    
+    public float finalEnergyWeight = 1f;
+    public static float FinalEnergyWeight => Get("final_energy_weight", Instance.finalEnergyWeight);
+
+    public float potentialEnergyScale = 2f;
+    public static float PotentialEnergyScale => Get("potential_energy_scale", Instance.potentialEnergyScale);
+    
+    public bool useComplexEnergy = true;
+    public static bool UseComplexEnergy => Convert.ToBoolean(Get("complex_energy", Instance.useComplexEnergy ? 1f : 0f));
+    
+    // Alignment
+    
+    public float alignmentWeight = 1f;
+    public static float AlignmentWeight => Get("alignment_weight", Instance.alignmentWeight);
         
 
 

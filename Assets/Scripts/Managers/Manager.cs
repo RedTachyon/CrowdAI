@@ -417,9 +417,12 @@ namespace Managers
                 energies.Add(agent.energySpent);
                 energiesComplex.Add(agent.energySpentComplex);
                 
-                var finalDistance = MLUtils.FlatDistance(agent.transform.localPosition, agent.Goal.localPosition);
+                // var finalDistance = MLUtils.FlatDistance(agent.transform.localPosition, agent.Goal.localPosition);
 
-                var finalEnergy = 2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+                // var finalEnergy = 2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+
+                var finalEnergy = MLUtils.EnergyHeuristic(agent.transform.localPosition, agent.Goal.localPosition,
+                    agent.e_s, agent.e_w);
                 
                 energiesPlus.Add(agent.energySpent + finalEnergy);
                 energiesComplexPlus.Add(agent.energySpentComplex + finalEnergy);

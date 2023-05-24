@@ -149,13 +149,19 @@ namespace Rewards
             var agent = transform.GetComponent<AgentBasic>();
             float reward = 0f;
             if (success) return reward;
-            
-            var finalDistance = MLUtils.FlatDistance(transform.localPosition, agent.Goal.localPosition);
 
-            var finalReward = -2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+            var penalty = -MLUtils.EnergyHeuristic(transform.localPosition, agent.Goal.localPosition, agent.e_s, agent.e_w);
             
-            reward += Params.RewFinal * finalReward;
-            agent.AddRewardPart(finalReward, "final");
+            // var finalDistance = MLUtils.FlatDistance(transform.localPosition, agent.Goal.localPosition);
+
+            // var finalReward = -2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
+            // var finalReward = -2 * Mathf.Sqrt(agent.e_s * agent.e_w) * finalDistance;
+
+            reward += Params.RewFinal * penalty;
+            agent.AddRewardPart(penalty, "final");
+            
+            // TODO: Instead of assuming the optimal velocity, use the average velocity across the trajectory so far
+            // TODO: Track both of them as a metric, but add a switch to choose which one to use for the reward
             
             return reward;
         }
