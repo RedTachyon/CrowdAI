@@ -408,6 +408,8 @@ namespace Managers
             var energiesComplex = new List<float>();
             var energiesPlus = new List<float>();
             var energiesComplexPlus = new List<float>();
+            var energiesPlusAvg = new List<float>();
+            var energiesComplexPlusAvg = new List<float>();
             var distances = new List<float>();
             var successes = new List<float>();
             var numAgents = 0;
@@ -421,23 +423,33 @@ namespace Managers
 
                 // var finalEnergy = 2 * Mathf.Sqrt(agent.e_s * agent.e_w * finalDistance);
 
-                var finalEnergy = MLUtils.EnergyHeuristic(agent.transform.localPosition, agent.Goal.localPosition,
+                var localPosition = agent.transform.localPosition;
+                var goalPosition = agent.Goal.localPosition;
+                var finalEnergy = MLUtils.EnergyHeuristic(localPosition, goalPosition,
+                    agent.e_s, agent.e_w);
+                
+                var finalEnergyAvg = MLUtils.AverageEnergyHeuristic(localPosition, goalPosition, agent.startPosition,
                     agent.e_s, agent.e_w);
                 
                 energiesPlus.Add(agent.energySpent + finalEnergy);
                 energiesComplexPlus.Add(agent.energySpentComplex + finalEnergy);
                 
+                energiesPlusAvg.Add(agent.energySpent + finalEnergyAvg);
+                energiesComplexPlusAvg.Add(agent.energySpentComplex + finalEnergyAvg);
+                
                 distances.Add(agent.distanceTraversed);
                 successes.Add(agent.CollectedGoal ? 1f : 0f);
                 numAgents++;
             }
-            Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
+            // Debug.Log($"NumAgents detected in EpisodeStats: {numAgents}");
             var stats = new Dictionary<string, float>
             {
                 ["e_energy"] = energies.Average(),
                 ["e_energy_complex"] = energiesComplex.Average(),
                 ["e_energy_plus"] = energiesPlus.Average(),
                 ["e_energy_complex_plus"] = energiesComplexPlus.Average(),
+                ["e_energy_plus_avg"] = energiesPlusAvg.Average(),
+                ["e_energy_complex_plus_avg"] = energiesComplexPlusAvg.Average(),
                 ["e_distance"] = distances.Average(),
                 ["e_success"] = successes.Average(),
             };

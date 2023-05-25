@@ -79,9 +79,8 @@ namespace Agents
         // protected int Unfrozen = 1;
 
         internal int Collision = 0;
-
-
-
+        
+        public Vector3 startPosition;
 
         private float _originalHeight;
         private float _originalGoalHeight;
@@ -212,6 +211,8 @@ namespace Agents
             PreviousPosition = transform.localPosition;
             PreviousVelocity = Vector3.zero;
             
+            startPosition = transform.localPosition;
+            
             PreviousPositionPhysics = transform.localPosition;
             PreviouserPositionPhysics = transform.localPosition;
             // PreviousVelocityPhysics = Vector3.zero;
@@ -246,7 +247,9 @@ namespace Agents
                 ["r_speedmatch"] = 0f,
                 ["r_speeding"] = 0f,
                 ["r_velocity"] = 0f,
-                ["r_expVelocity"] = 0f
+                ["r_expVelocity"] = 0f,
+                ["r_final"] = 0f,
+                ["r_avgFinal"] = 0f,
             };
             
             UpdateParams();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -248,5 +249,21 @@ public class MLUtils
         // var time = distance / speed;
         
         // return e_s * time + e_w * speed * speed * time;
+    }
+    
+    public static float AverageEnergyHeuristic(Vector3 position, Vector3 target, Vector3 startPosition, float e_s, float e_w)
+    {
+        var finalDistance = FlatDistance(position, target);  // d'
+        var totalDistance = FlatDistance(startPosition, target);  // d
+        var timeLimit = Manager.Instance.maxStep * Manager.Instance.DecisionDeltaTime;  // T0
+        
+        
+        var avgSpeed = (totalDistance - finalDistance) / timeLimit;  // v'
+        
+        var remainingTime = finalDistance / avgSpeed;  // T'
+        
+        var energy = e_s * remainingTime + e_w * avgSpeed * avgSpeed * remainingTime;
+
+        return energy;
     }
 }

@@ -132,6 +132,9 @@ public class Params : MonoBehaviour
     public float rewardFinal = 1f;
     public static float RewFinal => Get("r_final", Instance.rewardFinal);
     
+    public float rewardAvgFinal = 1f;
+    public static float RewAvgFinal => Get("r_avg_final", Instance.rewardAvgFinal);
+    
     
 
 

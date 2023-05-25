@@ -158,8 +158,14 @@ namespace Rewards
             // var finalReward = -2 * Mathf.Sqrt(agent.e_s * agent.e_w) * finalDistance;
 
             reward += Params.RewFinal * penalty;
-            agent.AddRewardPart(penalty, "final");
+            agent.AddRewardPart(penalty, "r_final");
             
+            
+            var avgPenalty = -MLUtils.AverageEnergyHeuristic(transform.localPosition, agent.Goal.localPosition, agent.startPosition, agent.e_s, agent.e_w);
+            
+            
+            reward += Params.RewAvgFinal * avgPenalty;
+            agent.AddRewardPart(avgPenalty, "r_avgFinal");
             // TODO: Instead of assuming the optimal velocity, use the average velocity across the trajectory so far
             // TODO: Track both of them as a metric, but add a switch to choose which one to use for the reward
             
