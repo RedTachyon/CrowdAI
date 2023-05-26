@@ -135,6 +135,9 @@ public class Params : MonoBehaviour
     public float rewardAvgFinal = 1f;
     public static float RewAvgFinal => Get("r_avg_final", Instance.rewardAvgFinal);
     
+    public float heuristicEpsilon = 0.1f;
+    public static float HeuristicEpsilon => Get("heuristic_epsilon", Instance.heuristicEpsilon);
+    
     
 
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
 using Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -259,6 +260,8 @@ public class MLUtils
         
         
         var avgSpeed = (totalDistance - finalDistance) / timeLimit;  // v'
+
+        avgSpeed = Mathf.Max(avgSpeed, Params.HeuristicEpsilon);
         
         var remainingTime = finalDistance / avgSpeed;  // T'
         

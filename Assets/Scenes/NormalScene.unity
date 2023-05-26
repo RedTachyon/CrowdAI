@@ -600,7 +600,7 @@ MonoBehaviour:
   spawnScale: 7
   gridSpawn: 1
   groupSpawnScale: 1.5
-  enableObstacles: 1
+  enableObstacles: 0
   blockScale: 3
   randomMass: 1
   randomEnergy: 0
@@ -621,6 +621,7 @@ MonoBehaviour:
   rewardVelocityMatching: 1
   rewardGoal: 1
   rewardFinal: 1
+  rewardAvgFinal: 1
   sightRadius: 10
   sightAgents: 12
   sightAngle: 180
@@ -6263,6 +6264,7 @@ MonoBehaviour:
   PreferredSpeed: 1.33
   mass: 1
   squasherType: 3
+  startPosition: {x: 0, y: 0, z: 0}
   CollectedGoal: 0
   rewardDisabled: 0
   distanceTraversed: 0
