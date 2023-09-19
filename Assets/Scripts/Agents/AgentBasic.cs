@@ -118,14 +118,16 @@ namespace Agents
         public float speed;
         
         public float r_bmr;
-        public float r_drag;
         public float r_dynamics;
+        public float r_alignment;
+        public float r_drag;
         public float r_potential;
         public float r_diffPotential;
         public float r_speedmatch;
         public float r_speeding;
         public float r_velocity;
         public float r_expVelocity;
+        
 
         public bool debug;
         
@@ -250,6 +252,7 @@ namespace Agents
                 ["r_expVelocity"] = 0f,
                 ["r_final"] = 0f,
                 ["r_avgFinal"] = 0f,
+                ["r_alignment"] = 0f
             };
             
             UpdateParams();
@@ -279,6 +282,7 @@ namespace Agents
                 r_bmr = rewardParts["r_bmr"];
                 r_drag = rewardParts["r_drag"];
                 r_dynamics = rewardParts["r_dynamics"];
+                r_alignment = rewardParts["r_alignment"];
                 r_potential = rewardParts["r_potential"];
                 r_diffPotential = rewardParts["r_diffPotential"];
                 r_speedmatch = rewardParts["r_speedmatch"];

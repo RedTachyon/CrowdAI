@@ -9,9 +9,50 @@ namespace Rewards
 {
     public class FamilyRewarder : IRewarder
     {
-        public float ComputeReward(Transform transform)
+public float ComputeReward(Transform transform)
         {
             var reward = 0f;
+            var dt = Manager.Instance.DecisionDeltaTime;
+            
+            AgentBasic agent = transform.GetComponent<AgentBasic>();
+            Transform goal = agent.Goal;
+            
+            if (agent.rewardDisabled) return reward;
+            if (agent.CollectedGoal) return reward;
+            
+            var prevDistance = MLUtils.FlatDistance(agent.PreviousPosition, goal.localPosition);
+            var currentDistance = MLUtils.FlatDistance(transform.localPosition, goal.localPosition);
+            var posDiff = (prevDistance - currentDistance);
+            
+
+            var velocity = agent.Rigidbody.velocity;
+            var prevVelocity = agent.PreviousVelocity;
+            var acceleration = (velocity - agent.PreviousVelocity) / dt;
+            
+
+            // Debug.Log($"Acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, velocity: {velocity.magnitude}");
+
+            var dynamicsEnergy = Mathf.Abs(
+                    Vector3.Dot(velocity, acceleration)
+                    + agent.e_w * Vector3.Dot(velocity, prevVelocity)
+                );
+            
+
+            // Speed similarity
+            
+            
+            var r_bmr = -agent.e_s * dt;
+            var r_dynamics = -dynamicsEnergy * dt;
+            
+            // Debug.Log($"r_dynamics: {r_dynamics}, velocity: {velocity.magnitude}, acceleration: {acceleration.magnitude}, prevVelocity: {prevVelocity.magnitude}, dynamicsEnergy: {dynamicsEnergy}");
+
+            reward += Params.RewBMR * r_bmr;
+            agent.AddRewardPart(r_bmr, "r_bmr");
+
+
+            reward += Params.RewDyn * r_dynamics;
+            agent.AddRewardPart(r_dynamics, "r_dynamics");
+
             return reward;
         }
 
@@ -65,13 +106,14 @@ namespace Rewards
             var v = new Vector2(velocity.x, velocity.z);
             var a = new Vector2(lastOrder[0], lastOrder[1]);
 
-            var alignment = Vector2.Dot(v, a.normalized); // [0, 1]
+            var alignment = 2*Mathf.Sqrt(agent.e_s * agent.e_w) * Vector2.Dot(v, a.normalized) * Time.fixedDeltaTime;
+            Debug.Log($"Alignment: {alignment}");
             
             // Debug.Log($"Current alignment: {alignment}, v.x: {v.x}, v.y: {v.y}, a.x: {a.x}, a.y: {a.y}");
             // Debug.Log($"Current alignment: {alignment}");
             
-            agent.AddRewardPart(alignment, "alignment");
-            reward += Params.AlignmentWeight * 2*Mathf.Sqrt(agent.e_s * agent.e_w) * alignment * Time.fixedDeltaTime;
+            agent.AddRewardPart(alignment, "r_alignment");
+            reward += Params.AlignmentWeight * alignment;
             
             
             
@@ -80,27 +122,7 @@ namespace Rewards
         
         public float LateReward(Transform transform)
         {
-            var agent = transform.GetComponent<AgentBasic>();
-            var dt = Time.fixedDeltaTime;
-            if (agent.CollectedGoal)
-            {
-                return 0f;
-            }
-            
-            // var velocity = agent.Rigidbody.velocity;
-            // var lastVelocity = agent.PreviousVelocityPhysics;
-            var velocity = (transform.localPosition - agent.PreviousPositionPhysics) / Time.fixedDeltaTime;
-            var lastVelocity = (agent.PreviousPositionPhysics - agent.PreviouserPositionPhysics) / Time.fixedDeltaTime;
-            var (normalEnergy, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
-            
-            var energy = Params.UseComplexEnergy ? complexEnergy : normalEnergy;
-            
-            var reward = -Params.EnergyWeight * energy;
-            
-            
-            agent.AddRewardPart(energy, "energy");
-
-            return reward;
+            return 0f;
 
         }
     }

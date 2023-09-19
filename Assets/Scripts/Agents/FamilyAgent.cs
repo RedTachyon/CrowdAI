@@ -76,8 +76,8 @@ namespace Agents
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var cActionsOut = actionsOut.ContinuousActions;
-            cActionsOut[0] = 0;
-            cActionsOut[1] = -1;
+            cActionsOut[0] = 1;
+            cActionsOut[1] = 0;
         }
         
         public Vector3 GetPosition(float? y = null)
