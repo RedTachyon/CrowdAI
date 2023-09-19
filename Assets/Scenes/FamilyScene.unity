@@ -596,6 +596,47 @@ MonoBehaviour:
   observer: 2
   initializer: 6
   rewarder: 5
+  spawnNoiseScale: 0.3
+  spawnScale: 5
+  gridSpawn: 1
+  groupSpawnScale: 1.5
+  enableObstacles: 1
+  blockScale: 3
+  randomMass: 1
+  randomEnergy: 1
+  sharedGoal: 1
+  maxSpeed: 2
+  maxAcceleration: 5
+  rotationSpeed: 3
+  rewardBMR: 1
+  rewardDrag: 1
+  rewardDynamics: 1
+  rewardPotential: 1
+  rewardDiffPotential: 1
+  rewardSpeedMatching: 1
+  rewardSpeedMatchingExp: 1
+  rewardSpeeding: 1
+  rewardExpVelocityMatching: 1
+  rewardExpVelocitySigma: 1
+  rewardVelocityMatching: 1
+  rewardGoal: 1
+  rewardFinal: 1
+  rewardAvgFinal: 1
+  heuristicEpsilon: 0.1
+  sightRadius: 10
+  sightAgents: 12
+  sightAngle: 180
+  raysPerDirection: 10
+  rayLength: 10
+  rayDegrees: 90
+  rayAgentVision: 1
+  destroyRaycasts: 0
+  evaluationMode: 0
+  savePath: 
+  earlyFinish: 0
+  niceColors: 1
+  showAttention: 0
+  backwardsAllowed: 1
   potential: 1
   goal: 10
   collision: -0.05
@@ -612,30 +653,8 @@ MonoBehaviour:
   energyWeight: 1
   finalEnergyWeight: 1
   potentialEnergyScale: 2
+  useComplexEnergy: 1
   alignmentWeight: 1
-  sightRadius: 10
-  sightAgents: 12
-  sightAngle: 180
-  raysPerDirection: 10
-  rayLength: 10
-  rayDegrees: 90
-  rayAgentVision: 1
-  destroyRaycasts: 0
-  spawnNoiseScale: 0.3
-  spawnScale: 5
-  gridSpawn: 1
-  groupSpawnScale: 1.5
-  enableObstacles: 0
-  blockScale: 3
-  randomMass: 1
-  randomEnergy: 1
-  sharedGoal: 1
-  evaluationMode: 0
-  savePath: 
-  earlyFinish: 0
-  niceColors: 1
-  showAttention: 0
-  backwardsAllowed: 1
 --- !u!4 &218126829
 Transform:
   m_ObjectHideFlags: 0
@@ -6379,14 +6398,12 @@ MonoBehaviour:
   MaxStep: 0
   <Goal>k__BackingField: {fileID: 3898099998562990149}
   controllable: 1
-  maxSpeed: 2
-  maxAcceleration: 5
-  rotationSpeed: 1
   e_s: 2.23
   e_w: 1.26
   PreferredSpeed: 1.33
   mass: 1
   squasherType: 3
+  startPosition: {x: 0, y: 0, z: 0}
   CollectedGoal: 0
   rewardDisabled: 0
   distanceTraversed: 0
@@ -6401,11 +6418,23 @@ MonoBehaviour:
   timeReward: 0
   standstillReward: 0
   energyReward: 0
+  energyPotentialReward: 0
   finalReward: 0
   totalReward: 0
   velocityDbg: {x: 0, y: 0, z: 0}
   speed: 0
+  r_bmr: 0
+  r_drag: 0
+  r_dynamics: 0
+  r_potential: 0
+  r_diffPotential: 0
+  r_speedmatch: 0
+  r_speeding: 0
+  r_velocity: 0
+  r_expVelocity: 0
   debug: 1
+  fixedSpeed: 0
+  fixedInput: {x: 0, y: 0}
   neighborsOrder: []
 --- !u!114 &6668392869924176160
 MonoBehaviour:

@@ -12,39 +12,6 @@ namespace Rewards
         public float ComputeReward(Transform transform)
         {
             var reward = 0f;
-            // Debug.Log($"Boring reward at timestep {Manager.Instance.Timestep}");
-            
-            AgentBasic agent = transform.GetComponent<AgentBasic>();
-            Transform goal = agent.Goal;
-            if (agent.rewardDisabled)
-            {
-                var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
-                var speedNorm = Mathf.Pow(currentSpeed, Params.StandstillExponent);
-                reward += Params.StandstillWeight * speedNorm;
-                agent.AddRewardPart(-speedNorm, "standstill");
-            }
-            else
-            {
-                // Speed similarity
-                var idealSpeed = Params.RandomEnergy ? Mathf.Sqrt(agent.e_s / agent.e_w) : Params.ComfortSpeed;
-                var currentSpeed = transform.GetComponent<Rigidbody>().velocity.magnitude;
-                var speedDiff = Mathf.Pow(Mathf.Abs(currentSpeed - idealSpeed), Params.ComfortSpeedExponent);
-                
-                if (!agent.CollectedGoal)
-                {
-                    // Only add the speed reward if the agent hasn't collected the goal yet
-                    reward += Params.ComfortSpeedWeight * speedDiff;
-                    agent.AddRewardPart(-speedDiff, "speed");
-                    // Debug.Log($"speedDiff: {speedDiff}");
-
-                }
-
-                reward += Params.StepReward; // Always add this for simplicity
-                agent.AddRewardPart(-1, "time");
-            }
-            
-            // TODO: add non-finishing penalty
-
             return reward;
         }
 
@@ -98,22 +65,43 @@ namespace Rewards
             var v = new Vector2(velocity.x, velocity.z);
             var a = new Vector2(lastOrder[0], lastOrder[1]);
 
-            var alignment = Vector2.Dot(v.normalized, a.normalized); // [0, 1]
+            var alignment = Vector2.Dot(v, a.normalized); // [0, 1]
             
             // Debug.Log($"Current alignment: {alignment}, v.x: {v.x}, v.y: {v.y}, a.x: {a.x}, a.y: {a.y}");
-            Debug.Log($"Current alignment: {alignment}");
+            // Debug.Log($"Current alignment: {alignment}");
+            
             agent.AddRewardPart(alignment, "alignment");
-            reward += Params.AlignmentWeight * alignment;
+            reward += Params.AlignmentWeight * 2*Mathf.Sqrt(agent.e_s * agent.e_w) * alignment * Time.fixedDeltaTime;
+            
+            
             
             return reward;
         }
         
         public float LateReward(Transform transform)
         {
-            // Debug.Log($"Computing late reward at timestep {Manager.Instance.Timestep}");
+            var agent = transform.GetComponent<AgentBasic>();
+            var dt = Time.fixedDeltaTime;
+            if (agent.CollectedGoal)
+            {
+                return 0f;
+            }
+            
+            // var velocity = agent.Rigidbody.velocity;
+            // var lastVelocity = agent.PreviousVelocityPhysics;
+            var velocity = (transform.localPosition - agent.PreviousPositionPhysics) / Time.fixedDeltaTime;
+            var lastVelocity = (agent.PreviousPositionPhysics - agent.PreviouserPositionPhysics) / Time.fixedDeltaTime;
+            var (normalEnergy, complexEnergy) = MLUtils.EnergyUsage(velocity, lastVelocity, agent.e_s, agent.e_w, dt);
+            
+            var energy = Params.UseComplexEnergy ? complexEnergy : normalEnergy;
+            
+            var reward = -Params.EnergyWeight * energy;
+            
+            
+            agent.AddRewardPart(energy, "energy");
 
-            float reward = 0f;
             return reward;
+
         }
     }
 }
